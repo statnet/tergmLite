@@ -1,4 +1,5 @@
 
+#' @export
 simulate_network <- function(object,
                              formation,
                              dissolution,
@@ -123,6 +124,7 @@ simulate_network <- function(object,
 }
 
 
+#' @export
 stergm_getMCMCsample <- function(nw,
                                  model.form,
                                  model.diss,
@@ -269,6 +271,7 @@ stergm_getMCMCsample <- function(nw,
 }
 
 
+#' @export
 newnw_extract <- function(oldnw, z, output = "network", response = NULL) {
 
   if ("newedgelist" %in% names(z)) {
