@@ -1,6 +1,7 @@
 
 #' @export
-simulate_network <- function(object,
+simulate_network <- function(nw,
+                             el,
                              formation,
                              dissolution,
                              coef.form,
@@ -13,19 +14,15 @@ simulate_network <- function(object,
                              time.interval = 1,
                              time.offset = 0,
                              control = control.simulate.network(),
-                             output = "networkDynamic") {
+                             output = "network") {
 
+  control$changes <- TRUE
 
-  output <- match.arg(output)
-
-  control$changes <- output != "stats"
-
-  nw <- as.network(object)
   if (!is.network(nw)) {
     stop("A network object must be given")
   }
 
-  formation <- ergm.update.formula(formation, nw ~ ., from.new = "nw")
+  formation <- ergm.update.formula(formation, nw ~ ., from.new = "nw")          ## NW
   dissolution <- ergm.update.formula(dissolution, nw ~ ., from.new = "nw")
 
   if (is.character(monitor)) {
@@ -33,25 +30,24 @@ simulate_network <- function(object,
   }
 
   if (!is.null(monitor)) {
-    monitor <- ergm.update.formula(monitor, nw ~ ., from.new = "nw")
+    monitor <- ergm.update.formula(monitor, nw ~ ., from.new = "nw")            ## NW
   }
 
   nw$gal$lasttoggle <- NULL
 
-  model.form <- ergm.getmodel(formation, nw, role = "formation")
+  model.form <- ergm_getmodel(formation, nw, role = "formation")                ## NW
   if (!missing(coef.form) && coef.length.model(model.form) != length(coef.form)) {
     stop("coef.form has ", length(coef.form), " elements, while the model requires ",
          coef.length.model(model.form), " parameters.")
   }
-  model.diss <- ergm.getmodel(dissolution, nw, role = "dissolution")
-
+  model.diss <- ergm_getmodel(dissolution, nw, role = "dissolution")            ## NW
   if (!missing(coef.diss) && coef.length.model(model.diss) != length(coef.diss)) {
     stop("coef.diss has ", length(coef.diss), " elements, while the model requires ",
          coef.length.model(model.diss), " parameters.")
   }
 
   model.mon <- if (!is.null(monitor)) {
-    ergm.getmodel(monitor, nw, role = "target")
+    ergm.getmodel(monitor, nw, role = "target")                                 ## NW
   } else {
     NULL
   }
@@ -59,7 +55,7 @@ simulate_network <- function(object,
 
   ####### Model simulation #######
 
-  MHproposal.form <- MHproposal(constraints,
+  MHproposal.form <- MHproposal(constraints,                                    ## NW
                                 control$MCMC.prop.args.form,
                                 nw,
                                 weights = control$MCMC.prop.weights.form,
@@ -78,9 +74,8 @@ simulate_network <- function(object,
   control$collect.form <- FALSE
   control$collect.diss <- FALSE
 
-  nw <- tergm:::.set.default.net.obs.period(nw, time.start)
-  nw %n% "time" <- start <- tergm:::.get.last.obs.time(nw, time.start)
   z <- stergm_getMCMCsample(nw,
+                            el,
                             model.form,
                             model.diss,
                             model.mon,
@@ -88,36 +83,14 @@ simulate_network <- function(object,
                             MHproposal.diss,
                             eta.form,
                             eta.diss,
-                            control)
+                            control,
+                            output)
 
-  stats.form <- NULL
-  stats.diss <- NULL
-  stats <- NULL
-
-  if (output == "networkDynamic") {
-    ond <- function() {
-      changes <- z$changed
-      changes[, 1] <- changes[, 1] - 1 + time.offset
-      nwd <- tergm:::to.networkDynamic.lasttoggle(nw)
-      nwd <- tergm:::networkDynamic.apply.changes(nwd, changes)
-      attributes(nwd) <- c(attributes(nwd),
-                           list(formation = formation,
-                                dissolution = dissolution,
-                                stats.form = stats.form,
-                                stats.diss = stats.diss,
-                                monitor = monitor,
-                                stats = stats,
-                                coef.form = coef.form,
-                                coef.diss = coef.diss,
-                                constraints = constraints,
-                                changes = changes))
-      nwd <- tergm:::.add.net.obs.period.spell(nwd, start - 1 +
-                                                 time.offset, time.slices)
-      return(nwd)
-    }
-    # summary(microbenchmark(ond()), unit = "s") # med = 0.12 sec
-    out <- ond()
-
+  if (output == "network") {
+    out <- z$newnetwork
+  }
+  if (output == "edgelist") {
+    out <- z
   }
 
   return(out)
@@ -126,6 +99,7 @@ simulate_network <- function(object,
 
 #' @export
 stergm_getMCMCsample <- function(nw,
+                                 el,
                                  model.form,
                                  model.diss,
                                  model.mon,
@@ -133,15 +107,18 @@ stergm_getMCMCsample <- function(nw,
                                  MHproposal.diss,
                                  eta.form,
                                  eta.diss,
-                                 control) {
-
+                                 control,
+                                 output) {
+# browser()
   verbose <- FALSE
 
   # summary(microbenchmark(ergm.Cprepare(nw, model.form)), unit = "s") # med = 0.044 s
   # summary(microbenchmark(ergm.Cprepare(nw, model.diss)), unit = "s") # med = 0.043 s
 
-  Clist.form <- ergm.Cprepare(nw, model.form)
-  Clist.diss <- ergm.Cprepare(nw, model.diss)
+  Clist.form <- ergm_Cprepare(nw, el, model.form)
+  Clist.diss <- ergm_Cprepare(nw, el, model.diss)
+
+  # str(Clist.form)
 
   Clist.mon <- NULL
   collect.form <- control$collect.form
@@ -155,7 +132,8 @@ stergm_getMCMCsample <- function(nw,
       z <- .C("MCMCDyn_wrapper",
               as.integer(Clist.form$tails),
               as.integer(Clist.form$heads),
-              time = if (is.null(Clist.form$time)) as.integer(0) else as.integer(Clist.form$time),
+              time = if (is.null(Clist.form$time)) as.integer(0)
+                         else as.integer(Clist.form$time),
               lasttoggle = as.integer(NVL(Clist.form$lasttoggle,
                                           Clist.diss$lasttoggle, Clist.mon$lasttoggle, 0)),
               as.integer(Clist.form$nedges),
@@ -196,12 +174,15 @@ stergm_getMCMCsample <- function(nw,
               as.integer(control$time.interval),
               collect.form = as.integer(collect.form),
               s.form = if (collect.form) double(Clist.form$nstats *
-                                                  (control$time.samplesize + 1)) else double(0),
+                                                  (control$time.samplesize + 1))
+                         else double(0),
               collect.diss = as.integer(collect.diss),
               s.diss = if (collect.diss) double(Clist.diss$nstats *
-                                                  (control$time.samplesize + 1)) else double(0),
+                                                  (control$time.samplesize + 1))
+                         else double(0),
               s.mon = if (!is.null(model.mon)) double(Clist.mon$nstats *
-                                                        (control$time.samplesize + 1)) else double(0),
+                                                        (control$time.samplesize + 1))
+                         else double(0),
               as.integer(maxedges),
               newnwtails = integer(maxchanges),
               newnwheads = integer(maxchanges),
@@ -231,64 +212,32 @@ stergm_getMCMCsample <- function(nw,
     return(z)
   }
 
-  # browser()
-
-  # summary(microbenchmark(getz()), unit = "s") # med = 0.019 s
+  # summary(microbenchmark(getz()), unit = "s") # med = 0.016 s
   z <- getz()
 
-  statsmatrix.form <- NULL
-  statsmatrix.diss <- NULL
-  statsmatrix.mon <-  NULL
+  # summary(microbenchmark(newnw_extract(nw, z)), unit = "s") # med = 0.141
+  newnetwork <- newnw_extract(nw, z, output)
 
-  newnetwork <- newnw_extract(nw, z)
-
-  # summary(microbenchmark(newnw_extract(nw, z)), unit = "s") # med = 0.133
-
-  diffedgelist <- if (control$changes) {
-    if (z$diffnwtime[1] > 0) {
-      tmp <- cbind(z$diffnwtime[2:(z$diffnwtime[1] + 1)],
-                   z$diffnwtails[2:(z$diffnwtails[1] + 1)],
-                   z$diffnwheads[2:(z$diffnwheads[1] + 1)],
-                   z$diffnwdirs[2:(z$diffnwdirs[1] + 1)])
-      colnames(tmp) <- c("time", "tail", "head", "to")
-      tmp
-    } else {
-      tmp <- matrix(0, ncol = 4, nrow = 0)
-      colnames(tmp) <- c("time", "tail", "head", "to")
-      tmp
-    }
-  } else {
-    NULL
-  }
-  mode(diffedgelist) <- "integer"
-
-  list(statsmatrix.form = statsmatrix.form,
-       statsmatrix.diss = statsmatrix.diss,
-       statsmatrix.mon = statsmatrix.mon,
-       newnetwork = newnetwork,
-       changed = diffedgelist,
-       maxchanges = control$MCMC.maxchanges)
+  return(newnetwork)
 }
 
 
 #' @export
 newnw_extract <- function(oldnw, z, output = "network", response = NULL) {
 
-  if ("newedgelist" %in% names(z)) {
-    newedgelist <- z$newedgelist[, 1:2, drop = FALSE]
-    if (!is.null(response))
-      newnwweights <- z$newedgelist[, 3]
+  nedges <- z$newnwtails[1]
+  newedgelist <- if (nedges > 0) {
+    cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
   } else {
-    nedges <- z$newnwtails[1]
-    newedgelist <- if (nedges > 0) {
-      cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
-    } else {
-      matrix(0, ncol = 2, nrow = 0)
-    }
-    newnwweights <- z$newnwweights[2:(nedges + 1)]
+    matrix(0, ncol = 2, nrow = 0)
   }
 
-  newnw <- network.update(oldnw, newedgelist, matrix.type = "edgelist", output = output)
+  if (output == "edgelist") {
+    newnw <- newedgelist
+  } else {
+    newnw <- network.initialize(oldnw$gal$n, directed = FALSE)
+    newnw <- add.edges(newnw, tail = newedgelist[, 1], head = newedgelist[, 2])
+  }
 
   return(newnw)
 }
