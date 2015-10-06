@@ -16,4 +16,4 @@ nw <- network.initialize(n, directed = FALSE)
 nw <- add.edges(nw, tail = el[, 1], head = el[, 2])
 
 res <- microbenchmark(delete_vertices(el, deaths), delete.vertices(nw, deaths))
-summary(res, unit = "relative")
+summary(res, unit = "s")

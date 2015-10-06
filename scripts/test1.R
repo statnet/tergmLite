@@ -68,9 +68,10 @@ fn3 <- function() {
 t2 <- fn3()
 
 el <- as.edgelist(nw)
+attributes(el)$vnames <- NULL
 fn4 <- function() {
-  simulate_network(nw,
-                   el,
+  simulate_network(nw = nw,
+                   el = el,
                    formation = est$formation,
                    dissolution = est$coef.diss$dissolution,
                    coef.form = est$coef.form,
@@ -82,12 +83,27 @@ fn4 <- function() {
 }
 t2 <- fn4()
 
-fp <- profr(fn4())
+
+el <- as.edgelist(nw)
+attributes(el)$vnames <- NULL
+p <- ergm_prep(nw, est$formation, est$coef.diss$dissolution, est$coef.form,
+               est$coef.diss$coef.adj, est$constraints, control = control.simulate.network())
+fn5 <- function() {
+  simulate_network(p = p,
+                   el = el,
+                   coef.form = est$coef.form,
+                   coef.diss = est$coef.diss$coef.adj,
+                   time.start = 2,
+                   output = "edgelist")
+}
+t2 <- fn5()
+
+fp <- profr(fn5())
 fp
 ggplot(fp)
 
-res <- microbenchmark(f(), fn2(), fn3(), fn4(), times = 50)
-res <- microbenchmark(fn4(), times = 50)
+res <- microbenchmark(f(), fn5(), times = 100)
+res <- microbenchmark(fn5(), times = 100)
 
 summary(res, unit = "s")
 summary(res, unit = "relative")
