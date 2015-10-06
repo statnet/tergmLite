@@ -15,6 +15,11 @@ delete_vertices <- function(el, vid) {
   shifted.elv <- vapply(1:length(elv),
                         function(x) elv[x] - sum(elv[x] > vid), FUN.VALUE = integer(1))
 
-  return(matrix(shifted.elv, ncol = 2))
-}
+  # vid <- sort(vid)
+  # for (i in 1:length(vid)) {
+  #   new.el[new.el > vid[i]] <- new.el[new.el > vid[i]] - 1
+  # }
 
+  return(matrix(shifted.elv, ncol = 2))
+  # return(new.el)
+}
