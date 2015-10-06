@@ -1,17 +1,23 @@
 
 #' @export
-ergm_Cprepare <- function(nw, el = NULL, m, response = NULL) {
-# browser()
-  n <- nw$gal$n
+ergm_Cprepare <- function(nw = NULL, el = NULL, m, response = NULL) {
+
+  if (is.null(el)) {
+    n <- nw$gal$n
+  } else {
+    n <- attributes(el)$n
+  }
+
   dir <- FALSE
 
   Clist <- list(n = n, dir = dir)
-  bip <- nw$gal$bipartite
+  bip <- FALSE
   if (is.null(bip)) {
     bip <- 0
   }
   Clist$bipartite <- bip
-  Clist$ndyads <- network.dyadcount(nw)
+  # Clist$ndyads <- network.dyadcount(nw)
+  Clist$ndyads <- choose(n, 2)
 
   if (is.null(el)) {
     e <- as.edgelist(nw, attrname = response)
