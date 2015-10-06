@@ -3,6 +3,7 @@
 export(delete_vertices)
 export(ergm_Cprepare)
 export(ergm_getmodel)
+export(ergm_prep)
 export(newnw_extract)
 export(simulate_network)
 export(stergm_getMCMCsample)
