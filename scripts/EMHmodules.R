@@ -3,90 +3,92 @@
 
 new.initialize.hiv <- function(x, param, init, control, s) {
 
-  # Restarted simulation
-  reinit <- ifelse(class(x) == "netsim", TRUE, FALSE)
-
-  if (reinit == FALSE) {
-    dat <- list()
-    dat$temp <- list()
-    if (class(x$fit) == "network") {
-      dat$nw <- simulate(x$formation,
-                         basis = x$fit,
-                         coef = x$coef.form.crude,
-                         constraints = x$constraints,
-                         control = control.simulate.formula(MCMC.burnin = 1e6))
-    } else {
-      dat$nw <- simulate(x$fit,
-                         control = control.simulate.ergm(MCMC.burnin = 1e6))
-    }
-
-    if (class(dat$nw)[1] == "networkDynamic") {
-      dat$nw <- network.collapse(dat$nw, at = 1)
-    }
-
-    dat$nw <- activate.vertices(dat$nw, onset = 1, terminus = Inf)
-    if (control$delete.nodes == TRUE) {
-      dat$nw <- network.extract(dat$nw, at = 1)
-    }
-
-    ## Network Model Parameters
-    dat$nwparam <- list(x[-which(names(x) == "fit")])
-
-    ## Simulation Parameters
-    dat$param <- param
-    dat$param$modes <- 1
-
-    dat$init <- init
-    dat$control <- control
-
-    ## Nodal Attributes
-    dat$attr <- list()
-
-    dat$attr$male <- get.vertex.attribute(dat$nw, "male")
-
-    n <- network.size(dat$nw)
-    dat$attr$active <- rep(1, n)
-    dat$attr$entTime <- rep(1, n)
-    dat$attr$deathTime <- rep(NA, n)
-    dat$attr$deathCause <- rep(NA, n)
-
-    ## Initialize HIV related attributes
-    dat <- EpiModelHIV:::initStatus(dat)
-    dat <- EpiModelHIV:::initAge(dat)
-    dat <- EpiModelHIV:::initInfTime(dat)
-    dat <- EpiModelHIV:::initDx(dat)
-    dat <- EpiModelHIV:::initTx(dat)
-    dat <- circ(dat, at = 1)
-
-    ## Stats List
-    dat$stats <- list()
-
-    ## Final steps
-    dat$epi <- list()
-    dat <- prevalence.hiv(dat, at = 1)
-    dat <- new.simnet.hiv(dat, at = 1)
-
+  # browser()
+  dat <- list()
+  dat$temp <- list()
+  if (class(x$fit) == "network") {
+    nw <- simulate(x$formation,
+                   basis = x$fit,
+                   coef = x$coef.form.crude,
+                   constraints = x$constraints)
   } else {
-    dat <- list()
-    dat$nw <- x$network[[s]]
-    dat$param <- param
-    dat$param$modes <- 1
-    dat$control <- control
-    dat$nwparam <- x$nwparam
-    dat$epi <- sapply(x$epi, function(var) var[s])
-    names(dat$epi) <- names(x$epi)
-    dat$attr <- x$attr[[s]]
-    dat$stats <- list()
-    dat$stats$nwstats <- x$stats$nwstats[[s]]
-    dat$temp <- list()
+    nw <- simulate(x$fit)
   }
+
+  if (class(nw)[1] == "networkDynamic") {
+    nw <- network.collapse(nw, at = 1)
+  }
+
+  dat$el <- as.edgelist(nw)
+  attributes(dat$el)$vnames <- NULL
+  p <- ergm_prep(nw, x$formation, x$coef.diss$dissolution, x$coef.form,
+                 x$coef.diss$coef.adj, x$constraints, control = control.simulate.network())
+  p$model.form$formula <- NULL
+  p$model.diss$formula <- NULL
+  dat$p <- p
+
+  ## Network Model Parameters
+  dat$nwparam <- list(x[-which(names(x) == "fit")])
+
+  ## Simulation Parameters
+  dat$param <- param
+  dat$param$modes <- 1
+
+  dat$init <- init
+  dat$control <- control
+
+  ## Nodal Attributes
+  dat$attr <- list()
+
+  dat$attr$male <- get.vertex.attribute(nw, "male")
+
+  n <- network.size(nw)
+  dat$attr$active <- rep(1, n)
+  dat$attr$entTime <- rep(1, n)
+  dat$attr$deathTime <- rep(NA, n)
+  dat$attr$deathCause <- rep(NA, n)
+
+  ## Initialize HIV related attributes
+  dat <- EpiModelHIV:::initStatus(dat)
+
+  dat$attr$age <- get.vertex.attribute(nw, "age")
+  dat$attr$agecat <- get.vertex.attribute(nw, "agecat")
+
+  dat <- EpiModelHIV:::initInfTime(dat)
+  dat <- EpiModelHIV:::initDx(dat)
+  dat <- EpiModelHIV:::initTx(dat)
+  dat <- circ(dat, at = 1)
+
+  ## Stats List
+  dat$stats <- list()
+
+  ## Final steps
+  dat$epi <- list()
+  dat <- prevalence.hiv(dat, at = 1)
+  dat <- new.simnet.hiv(dat, at = 1)
+
+}
+
+
+reinit.hiv <- function(x, param, init, control) {
+  dat <- list()
+  dat$nw <- x$network[[s]]
+  dat$param <- param
+  dat$param$modes <- 1
+  dat$control <- control
+  dat$nwparam <- x$nwparam
+  dat$epi <- sapply(x$epi, function(var) var[s])
+  names(dat$epi) <- names(x$epi)
+  dat$attr <- x$attr[[s]]
+  dat$stats <- list()
+  dat$stats$nwstats <- x$stats$nwstats[[s]]
+  dat$temp <- list()
 
   dat$param$modes <- 1
   class(dat) <- "dat"
 
   return(dat)
 }
-
 
 new.aging.hiv <- function(dat, at) {
 
@@ -110,18 +112,13 @@ new.aging.hiv <- function(dat, at) {
   dat$attr$age <- age
   dat$attr$agecat <- agecat
 
-  dat$nw <- network::set.vertex.attribute(dat$nw,
-                                          attrname = c("age", "agecat"),
-                                          value = list(age = age,
-                                                       agecat = agecat))
-
   return(dat)
 }
 
 
 new.deaths.hiv <- function(dat, at) {
 
-  # Susceptible Deaths ------------------------------------------------------
+  ### 1. Susceptible Deaths ###
 
   ## Variables
   active <- dat$attr$active
@@ -162,7 +159,7 @@ new.deaths.hiv <- function(dat, at) {
   }
 
 
-  # Infected Deaths ---------------------------------------------------------
+  ### 2. Infected Deaths ###
 
   ## Variables
   active <- dat$attr$active
@@ -192,7 +189,7 @@ new.deaths.hiv <- function(dat, at) {
   }
 
 
-  ## Update Attributes
+  ### 3. Update Attributes ###
   if (nDeathsInf > 0) {
     dat$attr$active[idsDeathsInf] <- 0
     dat$attr$deathTime[idsDeathsInf] <- at
@@ -200,15 +197,7 @@ new.deaths.hiv <- function(dat, at) {
   }
 
 
-  # Update Network ----------------------------------------------------------
-  idsDeaths <- c(idsDeathsSus, idsDeathsInf)
-  if (length(idsDeaths) > 0) {
-    dat$nw <- networkDynamic::deactivate.vertices(dat$nw, onset = at, terminus = Inf,
-                                                  v = idsDeaths, deactivate.edges = TRUE)
-  }
-
-
-  # Output ------------------------------------------------------------------
+  ### 4. Summary Statistics ###
   dat$epi$ds.flow[at] <- nDeathsSus
   dat$epi$di.flow[at] <- nDeathsInf
 
@@ -218,14 +207,13 @@ new.deaths.hiv <- function(dat, at) {
 
 new.births.hiv <- function(dat, at) {
 
-  # Variables ---------------------------------------------------------------
+  # Variables
   b.rate.method <- dat$param$b.rate.method
   b.rate <- dat$param$b.rate
   active <- dat$attr$active
-  currNwSize <- network::network.size(dat$nw)
 
 
-  # Process -----------------------------------------------------------------
+  # Process
   nBirths <- 0
   if (b.rate.method == "stgrowth") {
     exptPopSize <- dat$epi$num[1] * (1 + b.rate*at)
@@ -248,32 +236,13 @@ new.births.hiv <- function(dat, at) {
   }
 
 
-  # Update Attr -------------------------------------------------------------
+  # Update Attr
   if (nBirths > 0) {
     dat <- setBirthAttr(dat, at, nBirths)
   }
 
 
-  # Update Network ----------------------------------------------------------
-  if (nBirths > 0) {
-    newIds <- (currNwSize + 1):(currNwSize + nBirths)
-
-    stopifnot(unique(sapply(dat$attr, length)) == (currNwSize + nBirths))
-
-    dat$nw <- networkDynamic::add.vertices.active(x = dat$nw, nv = nBirths,
-                                                  onset = at, terminus = Inf)
-
-    dat$nw <- network::set.vertex.attribute(x = dat$nw,
-                                            attrname = c("male", "age", "agecat"),
-                                            value = list(male = dat$attr$male[newIds],
-                                                         age = dat$attr$age[newIds],
-                                                         agecat = dat$attr$agecat[newIds]),
-                                            v = newIds)
-
-  }
-
-
-  # Output ------------------------------------------------------------------
+  # Output
   dat$epi$b.flow[at] <- nBirths
 
   return(dat)
@@ -282,19 +251,16 @@ new.births.hiv <- function(dat, at) {
 
 new.simnet.hiv <- function(dat, at) {
 
-  resim.int <- dat$control$resim.int
-  if (at > 1 & at %% resim.int > 0) {
-    return(dat)
-  }
-
-  # Delete Nodes ------------------------------------------------------------
-  if (at > 1 & dat$control$delete.nodes == TRUE) {
-    dat$nw <- network.extract(dat$nw, at = at)
+  # Update population structure
+  if (at > 1) {
     inactive <- which(dat$attr$active == 0)
+    dat$el <- delete_vertices(dat$el, inactive)
     dat$attr <- deleteAttr(dat$attr, inactive)
+    attributes(dat$el)$n <- attributes(dat$el)$n + dat$epi$b.flow[at]
+    dat <- update_p.hiv(dat)
   }
 
-  # Resimulation ------------------------------------------------------------
+  # Resimulation
   nwparam <- get_nwparam(dat)
   if (at == 1) {
     coef.diss <- as.numeric(nwparam$coef.diss$coef.crude)
@@ -302,81 +268,79 @@ new.simnet.hiv <- function(dat, at) {
     coef.diss <- as.numeric(nwparam$coef.diss$coef.adj)
   }
 
-  suppressWarnings(
-    dat$nw <- simulate(
-      dat$nw,
-      formation = nwparam$formation,
-      dissolution = nwparam$coef.diss$dissolution,
-      coef.form = as.numeric(nwparam$coef.form),
-      coef.diss = coef.diss,
-      constraints = nwparam$constraints,
-      time.start = at,
-      time.slices = 1 * resim.int,
-      time.offset = 0,
-      output = "networkDynamic",
-      monitor = dat$control$nwstats.formula))
+  dat$el <- simulate_network(p = dat$p,
+                             el = dat$el,
+                             coef.form = nwparam$coef.form,
+                             coef.diss = coef.diss,
+                             time.start = at,
+                             output = "edgelist")
 
-  summary(microbenchmark(
-    simulate(
-      dat$nw,
-      formation = nwparam$formation,
-      dissolution = nwparam$coef.diss$dissolution,
-      coef.form = as.numeric(nwparam$coef.form),
-      coef.diss = coef.diss,
-      constraints = nwparam$constraints,
-      time.start = at,
-      time.slices = 1 * resim.int,
-      time.offset = 0,
-      output = "networkDynamic",
-      monitor = dat$control$nwstats.formula), times = 25), unit = "s")
-
-  el <- as.edgelist(dat$nw)
-  attributes(el)$vnames <- NULL
-
-  summary(microbenchmark(
-    simulate_network(nw = dat$nw,
-                     el = el,
-                     formation = nwparam$formation,
-                     dissolution = nwparam$coef.diss$dissolution,
-                     coef.form = nwparam$coef.form,
-                     coef.diss = nwparam$coef.diss$coef.adj,
-                     time.start = 2,
-                     time.slices = 1,
-                     time.offset = 0,
-                     output = "edgelist"), times = 25), unit = "s")
+  return(dat)
+}
 
 
-  el <- as.edgelist(dat$nw)
-  attributes(el)$vnames <- NULL
-  p <- ergm_prep(dat$nw, nwparam$formation, nwparam$coef.diss$dissolution, nwparam$coef.form,
-                 nwparam$coef.diss$coef.adj, nwparam$constraints, control = control.simulate.network())
+new.infect.hiv <- function(dat, at) {
 
-  summary(microbenchmark(
-    simulate_network(p = p,
-                     el = el,
-                     coef.form = nwparam$coef.form,
-                     coef.diss = nwparam$coef.diss$coef.adj,
-                     time.start = 2,
-                     output = "edgelist"), times = 25), unit = "s")
+  ## Discordant Edgelist
+  del <- new.discord_edgelist.hiv(dat, at)
 
+  nInf <- 0
+  idsInf <- idsTrans <- NULL
 
+  if (!is.null(del)) {
 
+    ## Acts
+    del <- EpiModelHIV:::acts(dat, del, at)
 
+    ## Transmission
+    del <- EpiModelHIV:::trans(dat, del, at)
 
+    ## Update Nodal Attr
+    idsInf <- unique(del$sus)
+    idsTrans <- unique(del$inf)
+    nInf <- length(idsInf)
 
-  if (at == 1) {
-    dat$stats$nwstats <- as.data.frame(attributes(dat$nw)$stats)
-  } else {
-    dat$stats$nwstats <- rbind(dat$stats$nwstats,
-                               tail(attributes(dat$nw)$stats, 1 * resim.int))
+    if (nInf > 0) {
+      dat$attr$status[idsInf] <- "i"
+      dat$attr$infTime[idsInf] <- at
+      dat$attr$ageInf[idsInf] <- dat$attr$age[idsInf]
+      dat$attr$dxStat[idsInf] <- 0
+      dat$attr$vlLevel[idsInf] <- 0
+      dat$attr$txCD4min[idsInf] <- pmin(rnbinom(nInf,
+                                                size = EpiModelHIV:::nbsdtosize(dat$param$tx.init.cd4.mean,
+                                                                  dat$param$tx.init.cd4.sd),
+                                                mu = dat$param$tx.init.cd4.mean),
+                                        dat$param$tx.elig.cd4)
+    }
+
+    ## Transmission data frame
+    if (dat$control$save.transmat == TRUE) {
+      if (nInf > 0) {
+        if (at == 2) {
+          dat$stats$transmat <- as.data.frame(del)
+        } else {
+          dat$stats$transmat <- rbind(dat$stats$transmat, as.data.frame(del))
+        }
+      }
+    }
+
   }
 
+  ## Incidence vector
+  dat$epi$si.flow[at] <- nInf
+  dat$epi$si.flow.male[at] <- sum(dat$attr$male[idsInf] == 1, na.rm = TRUE)
+  dat$epi$si.flow.feml[at] <- sum(dat$attr$male[idsInf] == 0, na.rm = TRUE)
+
+  ## Supplemental incidence stats
+  if (!is.null(dat$control$getincid.infect)) {
+    dat <- do.call(dat$control[["getincid.infect"]], list(dat, at, idsInf, idsTrans))
+  }
 
   return(dat)
 }
 
 ## within the prevalence module
-discord_edgelist.hiv <- function(dat, at) {
+new.discord_edgelist.hiv <- function(dat, at) {
 
   status <- dat$attr$status
   active <- dat$attr$active
@@ -388,7 +352,7 @@ discord_edgelist.hiv <- function(dat, at) {
 
   if (nInft > 0) {
 
-    el <- get.dyads.active(dat$nw, at = at)
+    el <- dat$el
     if (nrow(el) > 0) {
       el <- el[sample(1:nrow(el)), , drop = FALSE]
       stat <- matrix(status[el], ncol = 2)
@@ -400,8 +364,8 @@ discord_edgelist.hiv <- function(dat, at) {
 
       del <- list()
       del$at <- rep(at, nrow(pairs))
-      del$sus <- numeric()
-      del$inf <- numeric()
+      del$sus <- numeric(nrow(pairs))
+      del$inf <- numeric(nrow(pairs))
       if (nrow(pairs) > 0) {
         del$sus <- pairs[, 1]
         del$inf <- pairs[, 2]

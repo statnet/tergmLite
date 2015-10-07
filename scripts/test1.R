@@ -93,7 +93,14 @@ el <- as.edgelist(nw)
 attributes(el)$vnames <- NULL
 p <- ergm_prep(nw, est$formation, est$coef.diss$dissolution, est$coef.form,
                est$coef.diss$coef.adj, est$constraints, control = control.simulate.network())
-fn5 <- function() {
+
+str(p)
+
+# No longer need formulas, with their bloated environments
+p$model.form$formula <- NULL
+p$model.diss$formula <- NULL
+
+fn5 <- function(p, el, est) {
   simulate_network(p = p,
                    el = el,
                    coef.form = est$coef.form,
@@ -101,14 +108,14 @@ fn5 <- function() {
                    time.start = 2,
                    output = "edgelist")
 }
-t2 <- fn5()
+t2 <- fn5(p, el, est)
 
-fp <- profr(fn4(), interval = 0.005)
+fp <- profr(fn5(), interval = 0.005)
 fp
 ggplot(fp)
 
 res <- microbenchmark(f(), fn5(), times = 50)
-res <- microbenchmark(fn4(), times = 50)
+res <- microbenchmark(fn5(p, el, est), times = 100)
 
 summary(res, unit = "s")
 summary(res, unit = "relative")
