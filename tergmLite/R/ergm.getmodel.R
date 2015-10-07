@@ -89,16 +89,16 @@ ergm_getmodel <- function(formula,
       } else {
         model <- eval(v[[i]], formula.env)
       }
-      if (is.null(model$terms[[length(model$terms)]]$pkgname))
+      if (is.null(model$terms[[length(model$terms)]]$pkgname)) {
         model$terms[[length(model$terms)]]$pkgname <-
-                     ergm:::which.package.InitFunction(v[[i]][[1]], formula.env)
+          ergm:::which.package.InitFunction(v[[i]][[1]], formula.env)
+      }
     } else {
       v[[i]][[2]] <- nw
       names(v[[i]])[2] <- ""
       v[[i]][[3]] <- args
       names(v[[i]])[3] <- ""
-      dotdotdot <- c(if (!is.null(response)) list(response = response),
-                     list(role = role), list(...))
+      dotdotdot <- c(if (!is.null(response)) list(response = response), list(role = role), list(...))
       for (j in seq_along(dotdotdot)) {
         if (is.null(dotdotdot[[j]]))
           next
@@ -119,6 +119,7 @@ ergm_getmodel <- function(formula,
   class(model) <- "ergm.model"
   return(model)
 }
+
 
 #' @export
 updatemodel_ErgmTerm <- function(model, outlist) {
