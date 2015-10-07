@@ -98,12 +98,12 @@ fn5 <- function() {
 }
 t2 <- fn5()
 
-fp <- profr(fn5())
+fp <- profr(fn4(), interval = 0.005)
 fp
 ggplot(fp)
 
-res <- microbenchmark(f(), fn5(), times = 100)
-res <- microbenchmark(fn5(), times = 100)
+res <- microbenchmark(f(), fn5(), times = 50)
+res <- microbenchmark(fn4(), times = 50)
 
 summary(res, unit = "s")
 summary(res, unit = "relative")
