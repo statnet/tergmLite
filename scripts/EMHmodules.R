@@ -51,11 +51,11 @@ new.initialize.hiv <- function(x, param, init, control, s) {
     dat$attr$deathCause <- rep(NA, n)
 
     ## Initialize HIV related attributes
-    dat <- initStatus(dat)
-    dat <- initAge(dat)
-    dat <- initInfTime(dat)
-    dat <- initDx(dat)
-    dat <- initTx(dat)
+    dat <- EpiModelHIV:::initStatus(dat)
+    dat <- EpiModelHIV:::initAge(dat)
+    dat <- EpiModelHIV:::initInfTime(dat)
+    dat <- EpiModelHIV:::initDx(dat)
+    dat <- EpiModelHIV:::initTx(dat)
     dat <- circ(dat, at = 1)
 
     ## Stats List
@@ -64,7 +64,7 @@ new.initialize.hiv <- function(x, param, init, control, s) {
     ## Final steps
     dat$epi <- list()
     dat <- prevalence.hiv(dat, at = 1)
-    dat <- simnet.hiv(dat, at = 1)
+    dat <- new.simnet.hiv(dat, at = 1)
 
   } else {
     dat <- list()
@@ -306,7 +306,7 @@ new.simnet.hiv <- function(dat, at) {
     dat$nw <- simulate(
       dat$nw,
       formation = nwparam$formation,
-      dissolution = nwparam$dissolution,
+      dissolution = nwparam$coef.diss$dissolution,
       coef.form = as.numeric(nwparam$coef.form),
       coef.diss = coef.diss,
       constraints = nwparam$constraints,
@@ -315,6 +315,54 @@ new.simnet.hiv <- function(dat, at) {
       time.offset = 0,
       output = "networkDynamic",
       monitor = dat$control$nwstats.formula))
+
+  summary(microbenchmark(
+    simulate(
+      dat$nw,
+      formation = nwparam$formation,
+      dissolution = nwparam$coef.diss$dissolution,
+      coef.form = as.numeric(nwparam$coef.form),
+      coef.diss = coef.diss,
+      constraints = nwparam$constraints,
+      time.start = at,
+      time.slices = 1 * resim.int,
+      time.offset = 0,
+      output = "networkDynamic",
+      monitor = dat$control$nwstats.formula), times = 25), unit = "s")
+
+  el <- as.edgelist(dat$nw)
+  attributes(el)$vnames <- NULL
+
+  summary(microbenchmark(
+    simulate_network(nw = dat$nw,
+                     el = el,
+                     formation = nwparam$formation,
+                     dissolution = nwparam$coef.diss$dissolution,
+                     coef.form = nwparam$coef.form,
+                     coef.diss = nwparam$coef.diss$coef.adj,
+                     time.start = 2,
+                     time.slices = 1,
+                     time.offset = 0,
+                     output = "edgelist"), times = 25), unit = "s")
+
+
+  el <- as.edgelist(dat$nw)
+  attributes(el)$vnames <- NULL
+  p <- ergm_prep(dat$nw, nwparam$formation, nwparam$coef.diss$dissolution, nwparam$coef.form,
+                 nwparam$coef.diss$coef.adj, nwparam$constraints, control = control.simulate.network())
+
+  summary(microbenchmark(
+    simulate_network(p = p,
+                     el = el,
+                     coef.form = nwparam$coef.form,
+                     coef.diss = nwparam$coef.diss$coef.adj,
+                     time.start = 2,
+                     output = "edgelist"), times = 25), unit = "s")
+
+
+
+
+
 
   if (at == 1) {
     dat$stats$nwstats <- as.data.frame(attributes(dat$nw)$stats)

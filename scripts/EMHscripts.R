@@ -28,7 +28,7 @@ save(est, file = "scripts/agemix.est.rda")
 param <- param.hiv(aids.stage.mult = 2)
 init <- init.hiv(i.prev.male = 0.01, i.prev.feml = 0.01)
 control <- control.hiv(simno = 1,
-                       nsteps = 50,
+                       nsteps = 10,
                        nsims = 1,
                        ncores = 1,
                        resim.int = 1,
@@ -38,8 +38,8 @@ control <- control.hiv(simno = 1,
                        vl.FUN = vl.hiv,
                        dx.FUN = dx.hiv,
                        tx.FUN = tx.hiv,
-                       deaths.FUN = new.deaths.hiv,
-                       births.FUN = new.births.hiv,
+                       deaths.FUN = deaths.hiv,
+                       births.FUN = births.hiv,
                        edges_correct.FUN = edges_correct.hiv,
                        resim_nets.FUN = new.simnet.hiv,
                        infection.FUN = infect.hiv,
@@ -48,4 +48,5 @@ control <- control.hiv(simno = 1,
                        verbose = TRUE,
                        verbose.int = 1)
 
+load("scripts/agemix.est.rda")
 sim <- netsim(est, param, init, control)
