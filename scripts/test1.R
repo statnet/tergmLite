@@ -67,6 +67,10 @@ fn3 <- function() {
 }
 t2 <- fn3()
 
+
+# Candidates --------------------------------------------------------------
+
+# EL + NW in // EL out
 el <- as.edgelist(nw)
 attributes(el)$vnames <- NULL
 fn4 <- function() {
@@ -84,6 +88,7 @@ fn4 <- function() {
 t2 <- fn4()
 
 
+# Pure EL in/out: generalizability unknown
 el <- as.edgelist(nw)
 attributes(el)$vnames <- NULL
 p <- ergm_prep(nw, est$formation, est$coef.diss$dissolution, est$coef.form,
@@ -108,3 +113,34 @@ res <- microbenchmark(fn4(), times = 50)
 summary(res, unit = "s")
 summary(res, unit = "relative")
 
+
+
+# Test network.initialize -------------------------------------------------
+
+load("scripts/agemix.est.rda")
+
+sim <- simulate(est$fit)
+el <- as.edgelist(sim)
+attributes(el)$vnames <- NULL
+
+male <- sim %v% "male"
+age <- sim %v% "age"
+agecat <- sim %v% "agecat"
+
+nwf <- function(el, age, agecat, male) {
+
+  nw <- as.network(el)
+
+  nw <- set.vertex.attribute(nw,
+                             attrname = c("age", "agecat", "male"),
+                             value = list(age = age, agecat = agecat, male = male))
+
+  return(nw)
+}
+bn <- nwf(el, age, agecat, male)
+
+res <- microbenchmark(nwf(el, age, agecat, male), times = 100)
+summary(res, unit = "s")
+
+fp <- profr(nwf(el, age, agecat, male), interval = 0.005)
+ggplot(fp)

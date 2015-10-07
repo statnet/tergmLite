@@ -88,6 +88,37 @@ new.initialize.hiv <- function(x, param, init, control, s) {
 }
 
 
+new.aging.hiv <- function(dat, at) {
+
+  ## Parameters
+  time.unit <- dat$param$time.unit
+  agecat.cutoff <- dat$param$agecat.cutoff
+
+  ## Attributes
+  age <- dat$attr$age
+  male <- dat$attr$male
+  active <- dat$attr$active
+  agecat <- dat$attr$agecat
+
+  ## Updates
+  age[active == 1] <- age[active == 1] + time.unit/365
+
+  agecat[active == 1 & male == 0 & age >= agecat.cutoff] <- 1
+  agecat[active == 1 & male == 1 & age >= agecat.cutoff] <- 3
+
+  ## Save out
+  dat$attr$age <- age
+  dat$attr$agecat <- agecat
+
+  dat$nw <- network::set.vertex.attribute(dat$nw,
+                                          attrname = c("age", "agecat"),
+                                          value = list(age = age,
+                                                       agecat = agecat))
+
+  return(dat)
+}
+
+
 new.deaths.hiv <- function(dat, at) {
 
   # Susceptible Deaths ------------------------------------------------------
