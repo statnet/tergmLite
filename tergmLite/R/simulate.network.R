@@ -15,11 +15,15 @@ simulate_network <- function(nw = NULL,
                              time.offset = 0,
                              control = control.simulate.network(),
                              output = "network") {
-# browser()
+
   control$changes <- TRUE
 
   if (!is.null(nw) & is.null(p)) {
     p <- ergm_prep(nw, formation, dissolution, coef.form, coef.diss, constraints, control)
+  }
+
+  if (!is.null(el)) {
+    n <- attributes(el)$n
   }
 
   eta.form <- ergm.eta(coef.form, p$model.form$etamap)
@@ -41,13 +45,13 @@ simulate_network <- function(nw = NULL,
   }
   if (output == "edgelist") {
     out <- z
+    attributes(out)$n <- n
   }
 
   return(out)
 }
 
 
-# this can operate without a nw object
 #' @export
 stergm_getMCMCsample <- function(nw = NULL, el = NULL,
                                  model.form, model.diss,
