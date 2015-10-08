@@ -17,7 +17,7 @@ st <- make_nw.hiv(n = 10000,
 
 est <- netest(st$nw,
               formation = ~edges + concurrent(by = "male") +
-                absdiffby("age", "male", 5.38) + offset(nodematch("male")),
+                           absdiffby("age", "male", 5.38) + offset(nodematch("male")),
               target.stats = st$stats[c(1:3, 6)],
               coef.diss = st$coef.diss,
               coef.form = -Inf,
@@ -25,12 +25,19 @@ est <- netest(st$nw,
               set.control.ergm = control.ergm(MCMLE.maxit = 500, MPLE.type = "penalized"),
               nonconv.error = TRUE)
 
+dx <- netdx(est, nsims = 5, nsteps = 300,
+            set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e6))
+dx <- netdx(est, nsims = 1000, dynamic = FALSE,
+            set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e6,
+                                                     MCMC.interval = 1e4))
+plot(dx)
+
 # save(est, file = "scripts/agemix.est.rda")
 
 param <- param.hiv(aids.stage.mult = 2)
 init <- init.hiv(i.prev.male = 0.1, i.prev.feml = 0.1)
 control <- control.hiv(simno = 1,
-                       nsteps = 100,
+                       nsteps = 200,
                        nsims = 1,
                        ncores = 1,
                        resim.int = 1,
@@ -43,6 +50,8 @@ control <- control.hiv(simno = 1,
                        deaths.FUN = new.deaths.hiv,
                        births.FUN = new.births.hiv,
                        edges_correct.FUN = edges_correct.hiv,
+                       updatepop.FUN = update_population,
+                       updatenwp.FUN = update_nwp,
                        resim_nets.FUN = new.simnet.hiv,
                        infection.FUN = new.infect.hiv,
                        get_prev.FUN = prevalence.hiv,
@@ -55,7 +64,7 @@ sim <- netsim(est, param, init, control)
 
 
 at <- 1
-dat <- new.initialize.hiv(est, param, init, control)
+dat <- new.initialize.hiv(est, param, init, control, s = 1)     # 1.3148
 
 at <- 2
 dat <- new.aging.hiv(dat, at)         # 0.0013
@@ -66,12 +75,18 @@ dat <- tx.hiv(dat, at)                # 0.0025
 dat <- new.deaths.hiv(dat, at)        # 0.0020
 dat <- new.births.hiv(dat, at)        # 0.0016
 dat <- edges_correct.hiv(dat, at)     # 0.0000
-dat <- new.simnet.hiv(dat, at)        # 0.0399
+dat <- update_population(dat, at)     # 0.0129
+dat <- update_nwp(dat, at)            # 0.0015
+dat <- new.simnet.hiv(dat, at)        # 0.0248
 dat <- new.infect.hiv(dat, at)        # 0.0015
 dat <- prevalence.hiv(dat, at)        # 0.0144
 
 
-res <- microbenchmark(prevalence.hiv(dat, at), times = 100)
+fp <- profr(new.initialize.hiv(est, param, init, control, s = 1), interval = 0.005)
+fp
+ggplot(fp)
+
+res <- microbenchmark(new.simnet.hiv(dat, at), times = 100)
 summary(res, unit = "s")
 
 

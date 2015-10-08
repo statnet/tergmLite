@@ -332,6 +332,7 @@ update_nwp <- function(dat, at) {
 
 }
 
+
 new.simnet.hiv <- function(dat, at) {
 
   # Resimulation
@@ -380,11 +381,12 @@ new.infect.hiv <- function(dat, at) {
       dat$attr$ageInf[idsInf] <- dat$attr$age[idsInf]
       dat$attr$dxStat[idsInf] <- 0
       dat$attr$vlLevel[idsInf] <- 0
-      dat$attr$txCD4min[idsInf] <- pmin(rnbinom(nInf,
-                                                size = EpiModelHIV:::nbsdtosize(dat$param$tx.init.cd4.mean,
-                                                                  dat$param$tx.init.cd4.sd),
-                                                mu = dat$param$tx.init.cd4.mean),
-                                        dat$param$tx.elig.cd4)
+      dat$attr$txCD4min[idsInf] <-
+        pmin(rnbinom(nInf,
+                     size = EpiModelHIV:::nbsdtosize(dat$param$tx.init.cd4.mean,
+                                                     dat$param$tx.init.cd4.sd),
+                                                     mu = dat$param$tx.init.cd4.mean),
+              dat$param$tx.elig.cd4)
     }
 
     ## Transmission data frame
