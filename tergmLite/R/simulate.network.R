@@ -9,8 +9,7 @@ simulate_network <- function(p,
                              time.burnin = 0,
                              time.interval = 1,
                              time.offset = 0,
-                             control = control.simulate.network(),
-                             output = "network") {
+                             control = control.simulate.network()) {
 
   control$changes <- TRUE
 
@@ -27,10 +26,11 @@ simulate_network <- function(p,
   z <- stergm_getMCMCsample(el, p$model.form, p$model.diss,
                             p$MHproposal.form, p$MHproposal.diss,
                             eta.form, eta.diss,
-                            control, output)
+                            control)
 
-  out <- z
+  out <- z[[1]]
   attributes(out)$n <- n
+  attributes(out)$changes <- z[[2]]
 
   return(out)
 }
@@ -40,7 +40,7 @@ simulate_network <- function(p,
 stergm_getMCMCsample <- function(el, model.form, model.diss,
                                  MHproposal.form, MHproposal.diss,
                                  eta.form, eta.diss,
-                                 control, output) {
+                                 control) {
 
   verbose <- FALSE
   model.mon <- NULL
@@ -135,7 +135,18 @@ stergm_getMCMCsample <- function(el, model.form, model.diss,
     }
   }
 
-  out <- el_extract(z)
+  out <- list()
+  out[[1]] <- el_extract(z)
+
+  if (z$diffnwtime[1] > 0) {
+    changes <- cbind(z$diffnwtails[2:(z$diffnwtails[1] + 1)],
+                     z$diffnwheads[2:(z$diffnwheads[1] + 1)],
+                     z$diffnwdirs[2:(z$diffnwdirs[1] + 1)])
+  } else {
+    changes <- matrix(0, ncol = 3, nrow = 0)
+  }
+  colnames(changes) <- c("tail", "head", "to")
+  out[[2]] <- changes
 
   return(out)
 }
