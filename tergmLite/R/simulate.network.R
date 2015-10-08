@@ -1,13 +1,9 @@
 
 #' @export
-simulate_network <- function(nw = NULL,
-                             p = NULL,
+simulate_network <- function(p,
                              el,
-                             formation = NULL,
-                             dissolution = NULL,
-                             coef.form = NULL,
-                             coef.diss = NULL,
-                             constraints = ~.,
+                             coef.form,
+                             coef.diss,
                              time.slices = 1,
                              time.start = NULL,
                              time.burnin = 0,
@@ -18,13 +14,7 @@ simulate_network <- function(nw = NULL,
 
   control$changes <- TRUE
 
-  if (!is.null(nw) & is.null(p)) {
-    p <- ergm_prep(nw, formation, dissolution, coef.form, coef.diss, constraints, control)
-  }
-
-  if (!is.null(el)) {
-    n <- attributes(el)$n
-  }
+  n <- attributes(el)$n
 
   eta.form <- ergm.eta(coef.form, p$model.form$etamap)
   eta.diss <- ergm.eta(coef.diss, p$model.diss$etamap)
@@ -34,27 +24,20 @@ simulate_network <- function(nw = NULL,
   control$collect.form <- FALSE
   control$collect.diss <- FALSE
 
-  z <- stergm_getMCMCsample(nw, el,
-                            p$model.form, p$model.diss,
+  z <- stergm_getMCMCsample(el, p$model.form, p$model.diss,
                             p$MHproposal.form, p$MHproposal.diss,
                             eta.form, eta.diss,
                             control, output)
 
-  if (output == "network") {
-    out <- z$newnetwork
-  }
-  if (output == "edgelist") {
-    out <- z
-    attributes(out)$n <- n
-  }
+  out <- z
+  attributes(out)$n <- n
 
   return(out)
 }
 
 
 #' @export
-stergm_getMCMCsample <- function(nw = NULL, el = NULL,
-                                 model.form, model.diss,
+stergm_getMCMCsample <- function(el, model.form, model.diss,
                                  MHproposal.form, MHproposal.diss,
                                  eta.form, eta.diss,
                                  control, output) {
@@ -62,15 +45,8 @@ stergm_getMCMCsample <- function(nw = NULL, el = NULL,
   verbose <- FALSE
   model.mon <- NULL
 
-  if (output == "edgelist") {
-    Clist.form <- ergm_Cprepare(el = el, m = model.form)
-    Clist.diss <- ergm_Cprepare(el = el, m = model.diss)
-  }
-  if (output == "network") {
-    Clist.form <- ergm_Cprepare(nw = nw, m = model.form)
-    Clist.diss <- ergm_Cprepare(nw = nw, m = model.diss)
-  }
-
+  Clist.form <- ergm_Cprepare(el = el, m = model.form)
+  Clist.diss <- ergm_Cprepare(el = el, m = model.diss)
 
   Clist.mon <- NULL
   collect.form <- control$collect.form
@@ -159,14 +135,14 @@ stergm_getMCMCsample <- function(nw = NULL, el = NULL,
     }
   }
 
-  out <- newnw_extract(nw, z, output)
+  out <- el_extract(z)
 
   return(out)
 }
 
 
 #' @export
-newnw_extract <- function(oldnw = NULL, z, output = "network") {
+el_extract <- function(z) {
 
   nedges <- z$newnwtails[1]
   newedgelist <- if (nedges > 0) {
@@ -175,12 +151,5 @@ newnw_extract <- function(oldnw = NULL, z, output = "network") {
     matrix(0, ncol = 2, nrow = 0)
   }
 
-  if (output == "edgelist") {
-    newnw <- newedgelist
-  } else {
-    newnw <- network.initialize(oldnw$gal$n, directed = FALSE)
-    newnw <- add.edges(newnw, tail = newedgelist[, 1], head = newedgelist[, 2])
-  }
-
-  return(newnw)
+  return(newedgelist)
 }
