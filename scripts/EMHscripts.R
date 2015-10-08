@@ -37,7 +37,7 @@ plot(dx)
 param <- param.hiv(aids.stage.mult = 2)
 init <- init.hiv(i.prev.male = 0.1, i.prev.feml = 0.1)
 control <- control.hiv(simno = 1,
-                       nsteps = 200,
+                       nsteps = 5200,
                        nsims = 1,
                        ncores = 1,
                        resim.int = 1,
@@ -50,7 +50,7 @@ control <- control.hiv(simno = 1,
                        deaths.FUN = new.deaths.hiv,
                        births.FUN = new.births.hiv,
                        edges_correct.FUN = edges_correct.hiv,
-                       updatepop.FUN = update_population,
+                       updatepop.FUN = function(dat, at) return(dat),
                        updatenwp.FUN = update_nwp,
                        resim_nets.FUN = new.simnet.hiv,
                        infection.FUN = new.infect.hiv,
@@ -61,7 +61,7 @@ control <- control.hiv(simno = 1,
 
 load("scripts/agemix.est.rda")
 sim <- netsim(est, param, init, control)
-
+plot(sim)
 
 at <- 1
 dat <- new.initialize.hiv(est, param, init, control, s = 1)     # 1.3148
@@ -81,14 +81,31 @@ dat <- new.simnet.hiv(dat, at)        # 0.0248
 dat <- new.infect.hiv(dat, at)        # 0.0015
 dat <- prevalence.hiv(dat, at)        # 0.0144
 
+tlf <- function(dat, at = 2) {
+  dat <- new.aging.hiv(dat, at)
+  dat <- cd4.hiv(dat, at)
+  dat <- vl.hiv(dat, at)
+  dat <- dx.hiv(dat, at)
+  dat <- tx.hiv(dat, at)
+  dat <- new.deaths.hiv(dat, at)
+  dat <- new.births.hiv(dat, at)
+  dat <- edges_correct.hiv(dat, at)
+  dat <- update_population(dat, at)
+  dat <- update_nwp(dat, at)
+  dat <- new.simnet.hiv(dat, at)
+  dat <- new.infect.hiv(dat, at)
+  dat <- prevalence.hiv(dat, at)
+  return(dat)
+}
 
 fp <- profr(new.initialize.hiv(est, param, init, control, s = 1), interval = 0.005)
 fp
 ggplot(fp)
 
-res <- microbenchmark(new.simnet.hiv(dat, at), times = 100)
+res <- microbenchmark(tlf(dat, at = 2), times = 500)
 summary(res, unit = "s")
-
-
+par(mar = c(3,3,1,1), mgp = c(2,1,0))
+boxplot(res, unit = "s", outline = TRUE, log = FALSE)
+autoplot(res)
 
 

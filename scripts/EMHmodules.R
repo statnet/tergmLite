@@ -196,8 +196,16 @@ new.deaths.hiv <- function(dat, at) {
     dat$attr$deathCause[idsDeathsInf] <- "i"
   }
 
+  ## 4. Update Population Structure ##
+  inactive <- which(dat$attr$active == 0)
+  dat$el <- delete_vertices(dat$el, inactive)
+  dat$attr <- deleteAttr(dat$attr, inactive)
 
-  ### 4. Summary Statistics ###
+  if (unique(sapply(dat$attr, length)) != attributes(dat$el)$n) {
+    stop("mismatch between el and attr length in death mod")
+  }
+
+  ### 5. Summary Statistics ###
   dat$epi$ds.flow[at] <- nDeathsSus
   dat$epi$di.flow[at] <- nDeathsInf
 
@@ -236,24 +244,18 @@ new.births.hiv <- function(dat, at) {
   }
 
 
-  # Update Attr
+  # Update Population Structure
   if (nBirths > 0) {
     dat <- setBirthAttr(dat, at, nBirths)
+    attributes(dat$el)$n <- attributes(dat$el)$n + nBirths
   }
 
+  if (unique(sapply(dat$attr, length)) != attributes(dat$el)$n) {
+    stop("mismatch between el and attr length in births mod")
+  }
 
   # Output
   dat$epi$b.flow[at] <- nBirths
-
-  return(dat)
-}
-
-update_population <- function(dat, at) {
-
-  inactive <- which(dat$attr$active == 0)
-  dat$el <- delete_vertices(dat$el, inactive)
-  dat$attr <- deleteAttr(dat$attr, inactive)
-  attributes(dat$el)$n <- attributes(dat$el)$n + dat$epi$b.flow[at]
 
   return(dat)
 }
@@ -335,7 +337,6 @@ update_nwp <- function(dat, at) {
 
 new.simnet.hiv <- function(dat, at) {
 
-  # Resimulation
   nwparam <- get_nwparam(dat)
   if (at == 1) {
     coef.diss <- as.numeric(nwparam$coef.diss$coef.crude)
@@ -347,8 +348,18 @@ new.simnet.hiv <- function(dat, at) {
                              el = dat$el,
                              coef.form = nwparam$coef.form,
                              coef.diss = coef.diss,
-                             time.start = at,
-                             output = "edgelist")
+                             time.start = at)
+
+  # if (at == 1) {
+  #   dat$stats$nwstats <- matrix(NA, ncol = 5, nrow = dat$control$nsteps)
+  #   colnames(dat$stats$nwstats) <- c("edges", "meandeg", "deg0", "deg1", "concurrent")
+  # }
+  # n <- attributes(dat$el)$n
+  # dat$stats$nwstats[at, 1] <- nrow(dat$el)
+  # dat$stats$nwstats[at, 2] <- nrow(dat$el)/n
+  # dat$stats$nwstats[at, 4] <- sum(table(dat$el) == 1)/n
+  # dat$stats$nwstats[at, 5] <- sum(table(dat$el) > 1)/n
+  # dat$stats$nwstats[at, 3] <- (n - sum(table(dat$el) == 1) - sum(table(dat$el) > 1))/n
 
   return(dat)
 }
@@ -365,10 +376,10 @@ new.infect.hiv <- function(dat, at) {
   if (!is.null(del)) {
 
     ## Acts
-    del <- EpiModelHIV:::acts(dat, del, at)
+    del <- acts(dat, del, at)
 
     ## Transmission
-    del <- EpiModelHIV:::trans(dat, del, at)
+    del <- trans(dat, del, at)
 
     ## Update Nodal Attr
     idsInf <- unique(del$sus)
@@ -383,9 +394,9 @@ new.infect.hiv <- function(dat, at) {
       dat$attr$vlLevel[idsInf] <- 0
       dat$attr$txCD4min[idsInf] <-
         pmin(rnbinom(nInf,
-                     size = EpiModelHIV:::nbsdtosize(dat$param$tx.init.cd4.mean,
-                                                     dat$param$tx.init.cd4.sd),
-                                                     mu = dat$param$tx.init.cd4.mean),
+                     size = nbsdtosize(dat$param$tx.init.cd4.mean,
+                                       dat$param$tx.init.cd4.sd),
+                                        mu = dat$param$tx.init.cd4.mean),
               dat$param$tx.elig.cd4)
     }
 
@@ -447,8 +458,158 @@ new.discord_edgelist.hiv <- function(dat, at) {
         del$inf <- pairs[, 2]
       }
     }
+    if (any(is.na(del$sus))) stop("NA in del$sus")
 
   }
 
   return(del)
+}
+
+
+acts <- function(dat, del, at) {
+
+  # Variables
+  nedges <- length(del[[1]])
+
+  act.rate.early <- dat$param$act.rate.early
+  act.rate.late <- dat$param$act.rate.late
+  act.rate.cd4 <- dat$param$act.rate.cd4
+
+  cd4Count <- dat$attr$cd4Count[del$inf]
+
+  isLate <- which(cd4Count < act.rate.cd4)
+
+  rates <- rep(act.rate.early, nedges)
+  rates[isLate] <- act.rate.late
+
+
+  # Process
+  act.rand <- dat$param$acts.rand
+  if (act.rand == TRUE) {
+    numActs <- rpois(nedges, rates)
+  } else {
+    numActs <- rates
+  }
+
+  cond.prob <- dat$param$cond.prob
+  cond.prob <- rep(cond.prob, nedges)
+
+  del$numActs <- numActs
+
+  if (act.rand == TRUE) {
+    del$protActs <- rbinom(nedges, rpois(nedges, numActs), cond.prob)
+  } else {
+    del$protActs <- numActs * cond.prob
+  }
+
+  del$protActs <- pmin(numActs, del$protActs)
+  del$unprotActs <- numActs - del$protActs
+
+  stopifnot(all(del$unprotActs >= 0))
+
+  return(del)
+}
+
+
+trans <- function(dat, del, at) {
+
+  nedges <- length(del[[1]])
+  if (nedges == 0) {
+    return(del)
+  }
+
+  # Base transmission probability
+  vlLevel <- dat$attr$vlLevel[del$inf]
+  males <- dat$attr$male[del$sus]
+  ages <- dat$attr$age[del$sus]
+  circs <- dat$attr$circStat[del$sus]
+  prop.male <- dat$epi$propMale[at - 1]
+  base.tprob <- hughes_tp(vlLevel, males, ages, circs, prop.male)
+
+  # Acute and aids stage multipliers
+  acute.stage.mult <- dat$param$acute.stage.mult
+  aids.stage.mult <- dat$param$aids.stage.mult
+
+  isAcute <- which(at - dat$attr$infTime[del$inf] <
+                     (dat$param$vl.acute.topeak + dat$param$vl.acute.toset))
+  isAIDS <- which(dat$attr$cd4Count[del$inf] < 200)
+
+  base.tprob[isAcute] <- base.tprob[isAcute] * acute.stage.mult
+  base.tprob[isAIDS] <- base.tprob[isAIDS] * aids.stage.mult
+
+
+  # Condoms
+  # Probability as a mixture function of protected and unprotected acts
+  cond.eff <- dat$param$cond.eff
+  prob.stasis.protacts <- (1 - base.tprob*(1 - cond.eff)) ^ del$protActs
+  prob.stasis.unptacts <- (1 - base.tprob) ^ del$unprotActs
+  prob.stasis <- prob.stasis.protacts * prob.stasis.unptacts
+  finl.tprob <- 1 - prob.stasis
+
+  # Transmission
+  del$base.tprob <- base.tprob
+  del$finl.tprob <- finl.tprob
+
+  stopifnot(length(unique(sapply(del, length))) == 1)
+
+  # Random transmission given final trans prob
+  idsTrans <- which(rbinom(nedges, 1, del$finl.tprob) == 1)
+
+  # Subset discord edgelist to transmissions
+  del <- keep.attr(del, idsTrans)
+
+  return(del)
+}
+
+hughes_tp <- function(vls, susmales, susages, suscircs, prop.male, fmat = FALSE) {
+
+  suscircs[is.na(suscircs)] <- 0
+
+  sus.hsv2 <- 0.59*prop.male + 0.86*(1 - prop.male)
+  sus.gud <- 0.039*prop.male + 0.053*(1 - prop.male)
+  sus.tvagin <- 0.068*prop.male + 0.12*(1 - prop.male)
+  sus.cerv <- 0.066*(1 - prop.male)
+
+  interc <- -8.3067
+  coef.vl <- 1.062566
+  coef.male <- 0.6430989
+  coef.age <- -0.0403451
+  coef.hsv2 <- 0.7625081
+  coef.circ <- -0.6377294
+  coef.gud <- 0.9749536
+  coef.vagin <- 0.9435334
+  coef.cerv <- 1.288279
+
+  tp.full <- exp(interc + coef.vl*(vls - 4) +
+                   coef.male*susmales + coef.age*(susages - 35) +
+                   coef.hsv2*sus.hsv2 + coef.circ*susmales*suscircs +
+                   coef.gud*sus.gud + coef.vagin*sus.tvagin +
+                   coef.cerv*sus.cerv)
+
+  if (fmat == TRUE) {
+    tp.full <- data.frame(tp.full, vls, susmales, susages, suscircs)
+  }
+
+  return(tp.full)
+}
+
+
+nbsdtosize <- function(mu, sd) {
+  mu ^ 2 / (sd ^ 2 - mu)
+}
+
+get_attr <- function(x, sim = 1) {
+  if (is.null(x$attr)) {
+    stop("No attr on x")
+  } else {
+    x$attr[[1]]
+  }
+}
+
+cut_age <- function(age, breaks = c(0, 29, 39, Inf)) {
+  cut(age, breaks = breaks, labels = FALSE)
+}
+
+keep.attr <- function(attrList, keep) {
+  lapply(attrList, function(x) x[keep])
 }
