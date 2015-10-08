@@ -12,7 +12,7 @@ new.initialize.hiv <- function(x, param, init, control, s) {
                    coef = x$coef.form.crude,
                    constraints = x$constraints)
   } else {
-    nw <- simulate(x$fit)
+    nw <- simulate(x$fit, control = control.simulate.ergm(MCMC.burnin = 1e6))
   }
 
   if (class(nw)[1] == "networkDynamic") {
@@ -248,6 +248,7 @@ new.births.hiv <- function(dat, at) {
   return(dat)
 }
 
+update_population <- function(dat, at) {
 
   inactive <- which(dat$attr$active == 0)
   dat$el <- delete_vertices(dat$el, inactive)
