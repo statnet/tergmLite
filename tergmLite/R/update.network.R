@@ -16,8 +16,9 @@ delete_vertices <- function(el, vid) {
     }
     if (nrow(new.el) > 0) {
       elv <- as.vector(new.el)
-      shifted.elv <- vapply(1:length(elv),
-                            function(x) elv[x] - sum(elv[x] > vid), FUN.VALUE = integer(1))
+      # shifted.elv <- vapply(1:length(elv),
+      #                       function(x) elv[x] - sum(elv[x] > vid), FUN.VALUE = integer(1))
+      shifted.elv <- shiftVec(elv, vid)
       new.el <- matrix(shifted.elv, ncol = 2)
     }
     attributes(new.el)$n <- attributes(el)$n - length(vid)

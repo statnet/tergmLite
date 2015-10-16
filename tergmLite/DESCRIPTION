@@ -7,4 +7,6 @@ Description: What the package does (one paragraph).
 Depends: R (>= 3.2.0)
 License: What license is it under?
 LazyData: true
-Imports: tergm
+Imports: tergm,
+    Rcpp
+LinkingTo: Rcpp

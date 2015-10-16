@@ -4,3 +4,6 @@
 *.Rproj
 *.rda
 *.pdf
+*.o
+*.so
+*.dll
