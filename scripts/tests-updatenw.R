@@ -36,18 +36,22 @@ test_delete_vertices <- function(n, edges, dfrac) {
   if (!(all(new.el[, 1] == tel[, 1])) |
       !(all(new.el[, 2] == tel[, 2])) |
       !(attributes(new.el)$n == attributes(tel)$n)) {
-    # stop("test problem when n = ", n, " and edges = ", edges, " and dth vec = ", dth)
-    browser()
+    stop("test problem when n = ", n, " and edges = ", edges, " and dth vec = ", dth)
   }
+
 
 }
 
-sample.n <- 100
+sample.n <- 2000
 max.n <- 1e4
 grid <- data.frame(n = sample(1:max.n, sample.n))
-grid$edges <- round((grid$n/2) * runif(sample.n, min = 0.1, max = 1.5))
-grid$dfrac <- runif(sample.n, min = 0, max = 0.5)
+grid$edges <- round((grid$n/2) * runif(sample.n, min = 0.05, max = 2))
+grid$dfrac <- runif(sample.n, min = 0, max = 0.9)
 
 for (i in 1:nrow(grid)) {
   test_delete_vertices(grid$n[i], grid$edges[i], grid$dfrac[i])
+  cat("+")
+  if (i %% 100 == 0) {
+    cat("| \n")
+  }
 }
