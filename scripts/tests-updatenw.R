@@ -19,7 +19,7 @@ res <- microbenchmark(delete_vertices(el, deaths), delete.vertices(nw, deaths))
 summary(res, unit = "s")
 
 
-test_delete_vertices <- function(n, edges) {
+test_delete_vertices <- function(n, edges, dfrac) {
 
   require(network)
   el <- t(replicate(edges, sample(n, 2)))
@@ -27,7 +27,7 @@ test_delete_vertices <- function(n, edges) {
   nw <- as.network(el, directed = FALSE, matrix.type = "edgelist")
   el <- as.edgelist(nw)
 
-  dth <- sample(1:n, round(n * 0.05))
+  dth <- sample(1:n, round(n * dfrac))
   new.nw <- nw
   new.nw <- delete.vertices(new.nw, dth)
   new.el <- delete_vertices(el, dth)
@@ -42,19 +42,12 @@ test_delete_vertices <- function(n, edges) {
 
 }
 
+sample.n <- 100
 max.n <- 1e4
-grid <- data.frame(n = seq(10, max.n, 20))
-grid <- data.frame(n = sample(1:max.n, 100))
-grid$edges <- round((grid$n/2) * runif(nrow(grid), min = 0.1, max = 1.5))
+grid <- data.frame(n = sample(1:max.n, sample.n))
+grid$edges <- round((grid$n/2) * runif(sample.n, min = 0.1, max = 1.5))
+grid$dfrac <- runif(sample.n, min = 0, max = 0.5)
 
 for (i in 1:nrow(grid)) {
-  test_delete_vertices(grid$n[i], grid$edges[i])
+  test_delete_vertices(grid$n[i], grid$edges[i], grid$dfrac[i])
 }
-test_delete_vertices(30, 13)
-
-
-el <- structure(c(1L, 2L, 2L, 3L, 5L, 10L, 10L, 13L, 17L, 8L, 14L,
-            16L, 21L, 10L, 18L, 19L, 14L, 23L), .Dim = c(9L, 2L), n = 30, vnames = 1:30, directed = FALSE, bipartite = FALSE, loops = FALSE, inverted = FALSE, class = c("edgelist", "matrix"))
-dth <- c(4L, 25L)
-
-new.el <- delete_vertices(el, dth)
