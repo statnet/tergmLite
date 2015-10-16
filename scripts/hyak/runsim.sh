@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### User specs
-#PBS -N tbig
+#PBS -N tlite
 #PBS -l nodes=1:ppn=16,mem=44gb,feature=16core,walltime=24:00:00
 #PBS -o /gscratch/csde/sjenness/tlite
 #PBS -e /gscratch/csde/sjenness/tlite
@@ -23,4 +23,4 @@ export MX_RCACHE=0
 module load r_3.2.0
 
 ### App
-Rscript sim.tbig.R
+Rscript sim.R

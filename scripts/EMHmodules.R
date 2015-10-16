@@ -667,6 +667,75 @@ hughes_tp <- function(vls, susmales, susages, suscircs, prop.male, fmat = FALSE)
 }
 
 
+new.prevalence.hiv <- function(dat, at) {
+
+  status <- dat$attr$status
+  active <- dat$attr$active
+  male <- dat$attr$male
+  age <- dat$attr$age
+  dxTime <- dat$attr$dxTime
+  vlLevel <- dat$attr$vlLevel
+  txTimeOn <- dat$attr$txTimeOn
+  txTimeOff <- dat$attr$txTimeOff
+  txType <- dat$attr$txType
+
+  nsteps <- dat$control$nsteps
+  rNA <- rep(NA, nsteps)
+
+  # Initialize vectors
+  if (at == 1) {
+
+    # Prev vectors
+    dat$epi$s.num <-  dat$epi$i.num <- rNA
+    dat$epi$num <- dat$epi$cumlNum <- rNA
+    dat$epi$cumlInc <- dat$epi$incr <- rNA
+
+    dat$epi$s.num.male <- dat$epi$s.num.feml <- rNA
+    dat$epi$i.num.male <- dat$epi$i.num.feml <- rNA
+    dat$epi$i.prev.male <- dat$epi$i.prev.feml <- rNA
+    dat$epi$incr.male <- dat$epi$incr.feml <- rNA
+
+    dat$epi$num.male <- dat$epi$num.feml <- rNA
+    dat$epi$meanAge <- rNA
+    dat$epi$propMale <- rNA
+
+    # Incidence vectors
+    dat$epi$si.flow <- rNA
+    dat$epi$si.flow.male <- rNA
+    dat$epi$si.flow.feml <- rNA
+
+    dat$epi$b.flow <- rNA
+    dat$epi$ds.flow <- dat$epi$di.flow <- rNA
+
+  }
+
+  ### Prevalence ###
+
+  ## Overall prevalence/incidence
+  dat$epi$s.num[at] <- sum(active == 1 & status == 0, na.rm = TRUE)
+  dat$epi$i.num[at] <- sum(active == 1 & status == 1, na.rm = TRUE)
+  dat$epi$num[at] <- sum(active == 1, na.rm = TRUE)
+  dat$epi$cumlNum[at] <- dat$epi$num[1] + sum(dat$epi$b.flow, na.rm = TRUE)
+  dat$epi$cumlInc[at] <- sum(dat$epi$si.flow, na.rm = TRUE)
+  dat$epi$incr[at] <- (dat$epi$si.flow[at] / dat$epi$s.num[at])*5200
+
+
+  ### Demographics ###
+  dat$epi$num.male[at] <- sum(active == 1 & male == 1, na.rm = TRUE)
+  dat$epi$num.feml[at] <- sum(active == 1 & male == 0, na.rm = TRUE)
+
+  ## Age
+  dat$epi$meanAge[at] <- mean(age[active == 1], na.rm = TRUE)
+  dat$epi$propMale[at] <- mean(male[active == 1], na.rm = TRUE)
+
+
+  ### Diagnosis and treatment ###
+  dat$epi$newDx[at] <- sum(dxTime == at, na.rm = TRUE)
+
+  return(dat)
+}
+
+
 nbsdtosize <- function(mu, sd) {
   mu ^ 2 / (sd ^ 2 - mu)
 }

@@ -52,9 +52,9 @@ plot(dx, plots.joined = FALSE)
 param <- param.hiv()
 init <- init.hiv(i.prev.male = 0.05, i.prev.feml = 0.05)
 control <- control.hiv(simno = 1,
-                       nsteps = 1000,
-                       nsims = 1,
-                       ncores = 1,
+                       nsteps = 25,
+                       nsims = 2,
+                       ncores = 2,
                        resim.int = 1,
                        initialize.FUN = new.initialize.hiv,
                        aging.FUN = new.aging.hiv,
@@ -70,12 +70,12 @@ control <- control.hiv(simno = 1,
                        infection.FUN = new.infect.hiv,
                        get_prev.FUN = prevalence.hiv,
                        verbose.FUN = verbose.hiv,
+                       save.nwstats = FALSE,
                        verbose = TRUE,
                        verbose.int = 1)
 
-# load("scripts/agemix.est.rda")
-# load("scripts/agemix.est.lim.rda")
-sim <- netsim(est, param, init, control)
+load("scripts/agemix.est.rda")
+sim <- netsim_par(est, param, init, control)
 
 
 at <- 1
@@ -103,7 +103,7 @@ tlf <- function(dat, at = 2) {
 # fp
 # ggplot(fp)
 
-res <- microbenchmark(tlf(dat, at = 2), times = 500)
+res <- microbenchmark(tlf(dat, at = 2), times = 100)
 summary(res, unit = "s")
 
 library(ggplot2)
@@ -154,8 +154,30 @@ tlf.old <- function(dat2, at = 2) {
 }
 
 res <- microbenchmark(tlf.old(dat2, at = 2), tlf(dat, at = 2), times = 100)
+res <- microbenchmark(tlf(dat, at = 2))
 summary(res, unit = "s")
+summary(res, unit = "relative")
 
 library(ggplot2)
+
+pdf(file = "scripts/hyak/timing.pdf", height = 4, width = 8)
 autoplot(res, log = FALSE)
+dev.off()
+autoplot(res, log = TRUE)
+boxplot(res, outline = FALSE)
+
+# validation of old versus new --------------------------------------------
+
+load("scripts/hyak/sim.tbig.rda")
+big <- sim
+
+load("scripts/hyak/sim.tlite.rda")
+lite <- sim
+
+pdf(file = "scripts/hyak/validate.pdf", height = 4, width = 8)
+par(mar = c(3,3,1,1), mgp = c(2,1,0))
+plot(big, y = "i.num", ylim = c(0, 0.25), qnts = 1)
+plot(lite, y = "i.num", qnts = 1, add = TRUE, mean.col = "firebrick",
+     mean.lty = 2, qnts.col = "firebrick")
+dev.off()
 
