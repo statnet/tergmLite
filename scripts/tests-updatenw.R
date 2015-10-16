@@ -5,7 +5,8 @@ n <- 10000
 edges <- 3500
 el <- t(replicate(edges, sample(n, 2)))
 
-delete_vertices(el, 8)
+# delete_vertices(el, 8)
+# delete_vertices2(el, 8)
 
 deaths <- sample(1:n, 100)
 
@@ -15,9 +16,9 @@ library(network)
 nw <- network.initialize(n, directed = FALSE)
 nw <- add.edges(nw, tail = el[, 1], head = el[, 2])
 
-res <- microbenchmark(delete_vertices(el, deaths), delete.vertices(nw, deaths))
+res <- microbenchmark(delete.vertices(nw, deaths), delete_vertices(el, deaths))
 summary(res, unit = "s")
-
+summary(res, unit = "relative")
 
 test_delete_vertices <- function(n, edges, dfrac) {
 
@@ -42,7 +43,7 @@ test_delete_vertices <- function(n, edges, dfrac) {
 
 }
 
-sample.n <- 2000
+sample.n <- 100
 max.n <- 1e4
 grid <- data.frame(n = sample(1:max.n, sample.n))
 grid$edges <- round((grid$n/2) * runif(sample.n, min = 0.05, max = 2))
@@ -55,3 +56,8 @@ for (i in 1:nrow(grid)) {
     cat("| \n")
   }
 }
+
+
+
+
+
