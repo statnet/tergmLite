@@ -50,7 +50,7 @@ plot(dx, plots.joined = FALSE)
 param <- param.hiv()
 init <- init.hiv(i.prev.male = 0.05, i.prev.feml = 0.05)
 control <- control.hiv(simno = 1,
-                       nsteps = 1000,
+                       nsteps = 25,
                        nsims = 1,
                        ncores = 1,
                        resim.int = 1,

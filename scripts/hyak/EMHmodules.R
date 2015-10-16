@@ -496,7 +496,12 @@ new.discord_edgelist.hiv <- function(dat, at) {
 
   if (nInft > 0) {
 
-    el <- dat$el
+    if (is.null(dat$el)) {
+      el <- get.dyads.active(dat$nw, at = at)
+    } else {
+      el <- dat$el
+    }
+
     if (nrow(el) > 0) {
       el <- el[sample(1:nrow(el)), , drop = FALSE]
 
