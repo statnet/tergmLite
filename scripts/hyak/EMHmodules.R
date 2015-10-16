@@ -410,11 +410,12 @@ new.simnet.hiv <- function(dat, at) {
     colnames(dat$stats$nwstats) <- c("edges", "meandeg", "deg0", "deg1", "concurrent")
   }
   n <- attributes(dat$el)$n
+  tab <- table(dat$el)
   dat$stats$nwstats[at, 1] <- nrow(dat$el)
   dat$stats$nwstats[at, 2] <- nrow(dat$el)/n
-  dat$stats$nwstats[at, 4] <- sum(table(dat$el) == 1)/n
-  dat$stats$nwstats[at, 5] <- sum(table(dat$el) > 1)/n
-  dat$stats$nwstats[at, 3] <- (n - sum(table(dat$el) == 1) - sum(table(dat$el) > 1))/n
+  dat$stats$nwstats[at, 4] <- sum(tab == 1)/n
+  dat$stats$nwstats[at, 5] <- sum(tab > 1)/n
+  dat$stats$nwstats[at, 3] <- (n - sum(tab == 1) - sum(tab > 1))/n
 
   return(dat)
 }
