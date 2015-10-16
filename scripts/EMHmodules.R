@@ -405,16 +405,17 @@ new.simnet.hiv <- function(dat, at) {
                              coef.diss = coef.diss,
                              time.start = at)
 
-  if (at == 1) {
-    dat$stats$nwstats <- matrix(NA, ncol = 5, nrow = dat$control$nsteps)
-    colnames(dat$stats$nwstats) <- c("edges", "meandeg", "deg0", "deg1", "concurrent")
-  }
-  n <- attributes(dat$el)$n
-  dat$stats$nwstats[at, 1] <- nrow(dat$el)
-  dat$stats$nwstats[at, 2] <- nrow(dat$el)/n
-  dat$stats$nwstats[at, 4] <- sum(table(dat$el) == 1)/n
-  dat$stats$nwstats[at, 5] <- sum(table(dat$el) > 1)/n
-  dat$stats$nwstats[at, 3] <- (n - sum(table(dat$el) == 1) - sum(table(dat$el) > 1))/n
+  # if (at == 1) {
+  #   dat$stats$nwstats <- matrix(NA, ncol = 5, nrow = dat$control$nsteps)
+  #   colnames(dat$stats$nwstats) <- c("edges", "meandeg", "deg0", "deg1", "concurrent")
+  # }
+  # n <- attributes(dat$el)$n
+  # tab <- table(dat$el)
+  # dat$stats$nwstats[at, 1] <- nrow(dat$el)
+  # dat$stats$nwstats[at, 2] <- nrow(dat$el)/n
+  # dat$stats$nwstats[at, 4] <- sum(tab == 1)/n
+  # dat$stats$nwstats[at, 5] <- sum(tab > 1)/n
+  # dat$stats$nwstats[at, 3] <- (n - sum(tab == 1) - sum(tab > 1))/n
 
   return(dat)
 }
@@ -496,7 +497,12 @@ new.discord_edgelist.hiv <- function(dat, at) {
 
   if (nInft > 0) {
 
-    el <- dat$el
+    if (is.null(dat$el)) {
+      el <- get.dyads.active(dat$nw, at = at)
+    } else {
+      el <- dat$el
+    }
+
     if (nrow(el) > 0) {
       el <- el[sample(1:nrow(el)), , drop = FALSE]
 
@@ -606,19 +612,19 @@ new.trans <- function(dat, del, at) {
   # Random transmission given final trans prob
   idsTrans <- which(rbinom(nedges, 1, del$finl.tprob) == 1)
 
-  if (at == 2) {
-    dat$epi$del.length <- length(del[[1]])
-    dat$epi$del.numActs <- mean(del$numActs)
-    dat$epi$del.unprotActs <- mean(del$unprotActs)
-    dat$epi$del.base.tprob <- mean(del$base.tprob)
-    dat$epi$del.finl.tprob <- mean(del$finl.tprob)
-  } else {
-    dat$epi$del.length[at] <- length(del[[1]])
-    dat$epi$del.numActs[at] <- mean(del$numActs)
-    dat$epi$del.unprotActs[at] <- mean(del$unprotActs)
-    dat$epi$del.base.tprob[at] <- mean(del$base.tprob)
-    dat$epi$del.finl.tprob[at] <- mean(del$finl.tprob)
-  }
+  # if (at == 2) {
+  #   dat$epi$del.length <- length(del[[1]])
+  #   dat$epi$del.numActs <- mean(del$numActs)
+  #   dat$epi$del.unprotActs <- mean(del$unprotActs)
+  #   dat$epi$del.base.tprob <- mean(del$base.tprob)
+  #   dat$epi$del.finl.tprob <- mean(del$finl.tprob)
+  # } else {
+  #   dat$epi$del.length[at] <- length(del[[1]])
+  #   dat$epi$del.numActs[at] <- mean(del$numActs)
+  #   dat$epi$del.unprotActs[at] <- mean(del$unprotActs)
+  #   dat$epi$del.base.tprob[at] <- mean(del$base.tprob)
+  #   dat$epi$del.finl.tprob[at] <- mean(del$finl.tprob)
+  # }
 
   # Subset discord edgelist to transmissions
   del <- keep.attr(del, idsTrans)

@@ -3,6 +3,8 @@
 
 library(EpiModelHIV)
 library(tergmLite)
+library(microbenchmark)
+library(profr)
 source("scripts/EMHmodules.R")
 
 # Estimation --------------------------------------------------------------
@@ -50,7 +52,7 @@ plot(dx, plots.joined = FALSE)
 param <- param.hiv()
 init <- init.hiv(i.prev.male = 0.05, i.prev.feml = 0.05)
 control <- control.hiv(simno = 1,
-                       nsteps = 25,
+                       nsteps = 1000,
                        nsims = 1,
                        ncores = 1,
                        resim.int = 1,
@@ -63,7 +65,7 @@ control <- control.hiv(simno = 1,
                        deaths.FUN = new.deaths.hiv,
                        births.FUN = new.births.hiv,
                        edges_correct.FUN = edges_correct.hiv,
-                       updatenwp.FUN = update_nwp_lim,
+                       updatenwp.FUN = update_nwp,
                        resim_nets.FUN = new.simnet.hiv,
                        infection.FUN = new.infect.hiv,
                        get_prev.FUN = prevalence.hiv,
@@ -80,29 +82,80 @@ at <- 1
 dat <- new.initialize.hiv(est, param, init, control, s = 1)
 
 tlf <- function(dat, at = 2) {
-  dat <- new.aging.hiv(dat, at)
-  dat <- cd4.hiv(dat, at)
-  dat <- vl.hiv(dat, at)
-  dat <- dx.hiv(dat, at)
-  dat <- tx.hiv(dat, at)
-  dat <- new.deaths.hiv(dat, at)
-  dat <- new.births.hiv(dat, at)
-  dat <- edges_correct.hiv(dat, at)
-  dat <- update_nwp_lim(dat, at)
-  dat <- new.simnet.hiv(dat, at)
-  dat <- new.infect.hiv(dat, at)
-  dat <- prevalence.hiv(dat, at)
+  dat <- new.aging.hiv(dat, at) # 0.0014
+  dat <- cd4.hiv(dat, at) # 0.0014
+  dat <- vl.hiv(dat, at) # 0.0029
+  dat <- dx.hiv(dat, at) # 0.0006
+  dat <- tx.hiv(dat, at) # 0.0025
+  dat <- new.deaths.hiv(dat, at) # 0.0048
+  dat <- new.births.hiv(dat, at) # 0.0016
+  dat <- edges_correct.hiv(dat, at) # Nada
+  dat <- update_nwp(dat, at) # 0.0009
+  dat <- new.simnet.hiv(dat, at) # 0.0191
+  dat <- new.infect.hiv(dat, at) # 0.0010
+  dat <- prevalence.hiv(dat, at) # 0.0109
   return(dat)
 }
-dat <- tlf(dat, at = 6)
-dat$el
+# dat <- tlf(dat, at = 6)
+# dat$el
 
-fp <- profr(new.initialize.hiv(est, param, init, control, s = 1), interval = 0.005)
-fp
-ggplot(fp)
+# fp <- profr(tlf(dat, at = 2), interval = 0.005)
+# fp
+# ggplot(fp)
 
-res <- microbenchmark(tlf(dat, at = 2), times = 100)
+res <- microbenchmark(tlf(dat, at = 2), times = 500)
 summary(res, unit = "s")
-par(mar = c(3,3,1,1), mgp = c(2,1,0))
-boxplot(res, unit = "s", outline = TRUE, log = FALSE)
+
+library(ggplot2)
 autoplot(res)
+
+
+
+# apples to apples benchmark ----------------------------------------------
+
+control.old <- control.hiv(simno = 1,
+                       nsteps = 1000,
+                       nsims = 1,
+                       ncores = 1,
+                       resim.int = 1,
+                       initialize.FUN = initialize.hiv,
+                       aging.FUN = aging.hiv,
+                       cd4.FUN = cd4.hiv,
+                       vl.FUN = vl.hiv,
+                       dx.FUN = dx.hiv,
+                       tx.FUN = tx.hiv,
+                       deaths.FUN = deaths.hiv,
+                       births.FUN = births.hiv,
+                       edges_correct.FUN = edges_correct.hiv,
+                       updatenwp.FUN = NULL,
+                       resim_nets.FUN = simnet.hiv,
+                       infection.FUN = infect.hiv,
+                       get_prev.FUN = prevalence.hiv,
+                       verbose.FUN = verbose.hiv,
+                       verbose = TRUE,
+                       verbose.int = 1)
+
+at <- 1
+dat2 <- initialize.hiv(est, param, init, control.old, s = 1)
+
+tlf.old <- function(dat2, at = 2) {
+  dat2 <- aging.hiv(dat2, at)
+  dat2 <- cd4.hiv(dat2, at)
+  dat2 <- vl.hiv(dat2, at)
+  dat2 <- dx.hiv(dat2, at)
+  dat2 <- tx.hiv(dat2, at)
+  dat2 <- deaths.hiv(dat2, at)
+  dat2 <- births.hiv(dat2, at)
+  dat2 <- edges_correct.hiv(dat2, at)
+  dat2 <- simnet.hiv(dat2, at)
+  dat2 <- infect.hiv(dat2, at)
+  dat2 <- prevalence.hiv(dat2, at)
+  return(dat2)
+}
+
+res <- microbenchmark(tlf.old(dat2, at = 2), tlf(dat, at = 2), times = 100)
+summary(res, unit = "s")
+
+library(ggplot2)
+autoplot(res, log = FALSE)
+
