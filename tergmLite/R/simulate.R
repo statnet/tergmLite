@@ -27,11 +27,9 @@ simulate_network <- function(p,
                             p$MHproposal.form, p$MHproposal.diss,
                             eta.form, eta.diss, control)
 
-  out <- z[[1]]
-  attributes(out)$n <- n
-  attributes(out)$changes <- z[[2]]
+  attributes(z)$n <- n
 
-  return(out)
+  return(z)
 }
 
 
