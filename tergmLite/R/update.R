@@ -2,9 +2,14 @@
 ## functions to add and delete "vertices"
 
 # adding vertices just means changing n in the attributes of the edgelist
+#' @export
+add_vertices <- function(el, nv) {
+  attributes(el)$n <- attributes(el)$n + nv
+  return(el)
+}
+
 
 # deleting vertices
-
 #' @export
 delete_vertices <- function(el, vid) {
 

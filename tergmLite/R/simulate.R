@@ -25,8 +25,7 @@ simulate_network <- function(p,
 
   z <- stergm_getMCMCsample(el, p$model.form, p$model.diss,
                             p$MHproposal.form, p$MHproposal.diss,
-                            eta.form, eta.diss,
-                            control)
+                            eta.form, eta.diss, control)
 
   out <- z[[1]]
   attributes(out)$n <- n
@@ -39,8 +38,7 @@ simulate_network <- function(p,
 #' @export
 stergm_getMCMCsample <- function(el, model.form, model.diss,
                                  MHproposal.form, MHproposal.diss,
-                                 eta.form, eta.diss,
-                                 control) {
+                                 eta.form, eta.diss, control) {
 
   verbose <- FALSE
   model.mon <- NULL
@@ -135,26 +133,6 @@ stergm_getMCMCsample <- function(el, model.form, model.diss,
     }
   }
 
-  out <- list()
-  out[[1]] <- el_extract(z)
-
-  if (z$diffnwtime[1] > 0) {
-    changes <- cbind(z$diffnwtails[2:(z$diffnwtails[1] + 1)],
-                     z$diffnwheads[2:(z$diffnwheads[1] + 1)],
-                     z$diffnwdirs[2:(z$diffnwdirs[1] + 1)])
-  } else {
-    changes <- matrix(0, ncol = 3, nrow = 0)
-  }
-  colnames(changes) <- c("tail", "head", "to")
-  out[[2]] <- changes
-
-  return(out)
-}
-
-
-#' @export
-el_extract <- function(z) {
-
   nedges <- z$newnwtails[1]
   newedgelist <- if (nedges > 0) {
     cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
@@ -163,4 +141,81 @@ el_extract <- function(z) {
   }
 
   return(newedgelist)
+}
+
+
+ergm_Cprepare <- function(el, m, response = NULL) {
+
+  n <- attributes(el)$n
+
+  dir <- FALSE
+
+  Clist <- list(n = n, dir = dir)
+  bip <- FALSE
+  if (is.null(bip)) {
+    bip <- 0
+  }
+  Clist$bipartite <- bip
+  Clist$ndyads <- choose(n, 2)
+
+  e <- el
+
+  if (length(e) == 0) {
+    Clist$nedges <- 0
+    Clist$tails <- NULL
+    Clist$heads <- NULL
+    if (!is.null(response))
+      Clist$weights <- numeric(0)
+  } else {
+    if (!is.matrix(e)) {
+      e <- matrix(e, ncol = 2 + (!is.null(response)))
+    }
+    if (!is.null(response)) {
+      e <- e[e[, 3] != 0, , drop = FALSE]
+    }
+
+    Clist$nedges <- dim(e)[1]
+    Clist$tails <- e[, 1]
+    Clist$heads <- e[, 2]
+    if (!is.null(response)) {
+      Clist$weights <- e[, 3]
+    }
+
+  }
+
+  Clist$lasttoggle <- NULL
+  Clist$time <- NULL
+  mo <- m$terms
+  Clist$nterms <- length(mo)
+  Clist$nstats <- 0
+  Clist$fnamestring <- ""
+  Clist$snamestring <- ""
+  Clist$inputs <- numeric(0)
+  if (Clist$nterms > 0) {
+    for (i in 1:Clist$nterms) {
+      term_i <- mo[[i]]
+      Clist$fnamestring <- paste(Clist$fnamestring, term_i$name)
+      Clist$snamestring <- paste(Clist$snamestring, if (!is.null(term_i$soname)) {
+        term_i$soname
+      }
+      else if (!is.null(term_i$pkgname)) {
+        term_i$pkgname
+      }
+      else stop("ERGM term specifying C function `", term_i$name,
+                "' is missing C library or package name."))
+      Clist$inputs <- c(Clist$inputs, term_i$inputs)
+      Clist$nstats <- Clist$nstats + term_i$inputs[2]
+    }
+  }
+  while (substring(Clist$fnamestring, 1, 1) == " ") {
+    Clist$fnamestring <- substring(Clist$fnamestring, 2)
+  }
+  while (substring(Clist$snamestring, 1, 1) == " ") {
+    Clist$snamestring <- substring(Clist$snamestring, 2)
+  }
+
+  Clist$diagnosable <- !m$etamap$offsetmap
+  names(Clist$diagnosable) <- m$coef.names
+
+  return(Clist)
 }
