@@ -1,6 +1,6 @@
 
 #' @export
-simulate_network <- function(p, el, coef.form, coef.diss) {
+simulate_network <- function(p, el, coef.form, coef.diss, save.changes = FALSE) {
 
   control <- tergm::control.simulate.network()
   control$changes <- TRUE
@@ -16,7 +16,7 @@ simulate_network <- function(p, el, coef.form, coef.diss) {
 
   z <- stergm_getMCMCsample(el, p$model.form, p$model.diss,
                             p$MHproposal.form, p$MHproposal.diss,
-                            eta.form, eta.diss, control)
+                            eta.form, eta.diss, control, save.changes)
 
   attributes(z)$n <- attributes(el)$n
 
@@ -27,7 +27,7 @@ simulate_network <- function(p, el, coef.form, coef.diss) {
 #' @export
 stergm_getMCMCsample <- function(el, model.form, model.diss,
                                  MHproposal.form, MHproposal.diss,
-                                 eta.form, eta.diss, control) {
+                                 eta.form, eta.diss, control, save.changes) {
 
   verbose <- FALSE
   model.mon <- NULL
@@ -123,13 +123,26 @@ stergm_getMCMCsample <- function(el, model.form, model.diss,
   }
 
   nedges <- z$newnwtails[1]
-  newedgelist <- if (nedges > 0) {
+  out <- if (nedges > 0) {
     cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
   } else {
     matrix(0, ncol = 2, nrow = 0)
   }
 
-  return(newedgelist)
+  if (save.changes == TRUE) {
+    if (z$diffnwtime[1] > 0) {
+      changes <- cbind(z$diffnwtails[2:(z$diffnwtails[1] + 1)],
+                       z$diffnwheads[2:(z$diffnwheads[1] + 1)],
+                       z$diffnwdirs[2:(z$diffnwdirs[1] + 1)])
+
+    } else {
+      changes <- matrix(0, ncol = 3, nrow = 0)
+    }
+    colnames(changes) <- c("tail", "head", "to")
+    attributes(out)$changes <- changes
+  }
+
+  return(out)
 }
 
 
