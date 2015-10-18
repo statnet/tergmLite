@@ -1,25 +1,16 @@
 
 #' @export
-simulate_network <- function(p,
-                             el,
-                             coef.form,
-                             coef.diss,
-                             time.slices = 1,
-                             time.start = NULL,
-                             time.burnin = 0,
-                             time.interval = 1,
-                             time.offset = 0,
-                             control = control.simulate.network()) {
+simulate_network <- function(p, el, coef.form, coef.diss) {
 
+  control <- tergm::control.simulate.network()
   control$changes <- TRUE
-
-  n <- attributes(el)$n
 
   eta.form <- ergm.eta(coef.form, p$model.form$etamap)
   eta.diss <- ergm.eta(coef.diss, p$model.diss$etamap)
-  control$time.burnin <- time.burnin
-  control$time.interval <- time.interval
-  control$time.samplesize <- time.slices
+
+  control$time.burnin <- 0
+  control$time.interval <- 1
+  control$time.samplesize <- 1
   control$collect.form <- FALSE
   control$collect.diss <- FALSE
 
@@ -27,7 +18,7 @@ simulate_network <- function(p,
                             p$MHproposal.form, p$MHproposal.diss,
                             eta.form, eta.diss, control)
 
-  attributes(z)$n <- n
+  attributes(z)$n <- attributes(el)$n
 
   return(z)
 }
