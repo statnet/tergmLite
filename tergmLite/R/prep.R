@@ -1,7 +1,8 @@
 
 #' @export
 ergm_prep <- function(nw, formation, dissolution,
-                      coef.form, coef.diss, constraints, control) {
+                      coef.form, coef.diss, constraints,
+                      control = tergm::control.simulate.network()) {
 
   if (!is.network(nw)) {
     stop("A network object must be given")
