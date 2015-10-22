@@ -1,8 +1,8 @@
 
 #' @export
-ergm_prep <- function(nw, formation, dissolution,
-                      coef.form, coef.diss, constraints,
-                      control = tergm::control.simulate.network()) {
+stergm_prep <- function(nw, formation, dissolution,
+                        coef.form, coef.diss, constraints,
+                        control = tergm::control.simulate.network()) {
 
   if (!is.network(nw)) {
     stop("A network object must be given")
@@ -35,6 +35,19 @@ ergm_prep <- function(nw, formation, dissolution,
   return(out)
 }
 
+#' @export
+ergm_prep <- function(nw, formation, coef, constraints, control = control.simulate.ergm()) {
+
+  form <- ergm.update.formula(formation, nw ~ ., from.new = "nw")
+  m <- ergm.getmodel(form, nw, response = NULL, role = "static")
+
+  MHproposal <- MHproposal(constraints, arguments = control$MCMC.prop.args,
+                           nw = nw, weights = control$MCMC.prop.weights, class = "c",
+                           reference = ~Bernoulli, response = NULL)
+
+  out <- list(model.form = m, MHproposal = MHproposal)
+  return(out)
+}
 
 
 # used for testing, not needed for simulation

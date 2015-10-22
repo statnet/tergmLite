@@ -223,67 +223,42 @@ ergm_Cprepare <- function(el, m, response = NULL) {
 }
 
 
+
 #' @export
-simulate_ergm <- function(object, coef, constraints = ~.) {
+simulate_ergm <- function(p, el, coef) {
 
-  control = control.simulate.formula()
+  control <- control.simulate.formula()
 
-  nw <- ergm.getnetwork(object)
-  basis <- nw
-
-  form <- ergm.update.formula(object, basis ~ ., from.new = "basis")
-
-  m <- ergm.getmodel(form, basis, response = NULL, role = "static")
-
-  MHproposal <- MHproposal(constraints, arguments = control$MCMC.prop.args,
-                           nw = nw, weights = control$MCMC.prop.weights, class = "c",
-                           reference = ~Bernoulli, response = NULL)
-
-  eta0 <- ergm.eta(coef, m$etamap)
-
-  curstats <- summary(form, response = NULL)
-  names(curstats) <- m$coef.names
-
-  control$MCMC.init.maxedges <- 1 + max(control$MCMC.init.maxedges, network.edgecount(nw))
+  eta0 <- ergm.eta(coef, p$model.form$etamap)
 
   control$MCMC.samplesize <- 1
-  z <- ergm_getMCMCsample(nw, m, MHproposal, eta0,
-                          control, verbose = FALSE, response = NULL)
-  out <- z$newnetwork
 
-  return(out)
+  z <- ergm_getMCMCsample(el, p$model.form, p$MHproposal, eta0, control)
+
+  attributes(z)$n <- attributes(el)$n
+
+  return(z)
 }
 
 
 #' @export
-ergm_getMCMCsample <- function(nw, model, MHproposal, eta0, control, verbose, response = NULL,
-                                ...) {
+ergm_getMCMCsample <- function(el, model, MHproposal, eta0, control) {
 
-  browser()
-
-  nthreads <- 1
-  cl <- NULL
-
-  Clist <- ergm::ergm.Cprepare(nw, model, response)
+  Clist <- ergm_Cprepare(el, model, response = NULL)
   control.parallel <- control
   control.parallel$MCMC.samplesize <- 1
 
-  doruns <- function(prev.runs = rep(list(NULL), nthreads),
-                     burnin = NULL, samplesize = NULL, interval = NULL, maxedges = NULL) {
-    ergm.mcmcslave(Clist = Clist, prev.run = prev.runs[[1]],
-                    burnin = burnin, samplesize = samplesize, interval = interval,
-                    maxedges = maxedges, MHproposal = MHproposal, eta0 = eta0,
-                    control = control.parallel, verbose = verbose, ...)
-  }
-
-  z <- doruns()
+  z <- ergm.mcmcslave(Clist = Clist, prev.run = NULL,
+                      burnin = NULL, samplesize = NULL, interval = NULL,
+                      maxedges = NULL, MHproposal = MHproposal, eta0 = eta0,
+                      control = control.parallel, verbose = FALSE)
 
   nedges <- z$newnwtails[1]
-  newedgelist <- if (nedges > 0) {
+  el <- if (nedges > 0) {
     cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
   } else {
     matrix(0, ncol = 2, nrow = 0)
   }
 
-  return(newedgelist)
+  return(el)
 }
