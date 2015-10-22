@@ -224,138 +224,66 @@ ergm_Cprepare <- function(el, m, response = NULL) {
 
 
 #' @export
-simulate_ergm_formula <- function(object,
-                                  nsim = 1,
-                                  seed = NULL,
-                                  coef,
-                                  response = NULL,
-                                  reference = ~Bernoulli,
-                                  constraints = ~.,
-                                  monitor = NULL,
-                                  basis = NULL,
-                                  statsonly = FALSE,
-                                  esteq = FALSE,
-                                  sequential = TRUE,
-                                  control = control.simulate.formula(),
-                                  verbose = FALSE, ...) {
+simulate_ergm <- function(object, coef, constraints = ~.) {
 
-  check.control.class(myname = "ERGM simulate.formula")
+  control = control.simulate.formula()
 
-  control <- control.simulate.ergm.toplevel(control, ...)
-  if (!is.null(seed)) {
-    set.seed(as.integer(seed))
-  }
-  if (is.null(nw <- basis)) {
-    nw <- ergm.getnetwork(object)
-  }
+  nw <- ergm.getnetwork(object)
+  basis <- nw
 
-  nw <- as.network(nw)
-  if (!is.network(nw)) {
-    stop("A network object on the LHS of the formula or via",
-         " the 'basis' argument must be given")
-  }
-
-  if (is.null(basis)) {
-    basis <- nw
-  }
   form <- ergm.update.formula(object, basis ~ ., from.new = "basis")
-  if (!is.null(monitor)) {
-    monitor <- ergm.update.formula(monitor, nw ~ ., from.new = "nw")
-    monitor.m <- ergm.getmodel(monitor, basis, response = response)
-    monitored.length <- coef.length.model(monitor.m)
-    monitor <- term.list.formula(monitor[[3]])
-    form <- append.rhs.formula(form, monitor)
-  }
-  else {
-    monitored.length <- 0
-  }
 
-  m <- ergm.getmodel(form, basis, response = response, role = "static")
-  if (missing(coef)) {
-    coef <- c(rep(0, coef.length.model(m)))
-    warning("No parameter values given, using Bernouli network\n\t")
-  }
-
-  coef <- c(coef, rep(0, monitored.length))
-  if (coef.length.model(m) != length(coef)) {
-    stop("coef has ", length(coef) - monitored.length, " elements, while the model requires ",
-         coef.length.model(m) - monitored.length, " parameters.")
-  }
+  m <- ergm.getmodel(form, basis, response = NULL, role = "static")
 
   MHproposal <- MHproposal(constraints, arguments = control$MCMC.prop.args,
                            nw = nw, weights = control$MCMC.prop.weights, class = "c",
-                           reference = reference, response = response)
-  if (any(is.nan(coef) | is.na(coef))) {
-    stop("Illegal value of coef passed to simulate.formula")
-  }
+                           reference = ~Bernoulli, response = NULL)
 
   eta0 <- ergm.eta(coef, m$etamap)
-  curstats <- summary(form, response = response)
+
+  curstats <- summary(form, response = NULL)
   names(curstats) <- m$coef.names
-  control$MCMC.init.maxedges <- 1 + max(control$MCMC.init.maxedges,
-                                        network.edgecount(nw))
 
-  if (verbose) {
-    cat(paste("Starting MCMC iterations to generate ", nsim,
-              " network", ifelse(nsim > 1, "s\n", "\n"), sep = ""))
+  control$MCMC.init.maxedges <- 1 + max(control$MCMC.init.maxedges, network.edgecount(nw))
+
+  control$MCMC.samplesize <- 1
+  z <- ergm_getMCMCsample(nw, m, MHproposal, eta0,
+                          control, verbose = FALSE, response = NULL)
+  out <- z$newnetwork
+
+  return(out)
+}
+
+
+#' @export
+ergm_getMCMCsample <- function(nw, model, MHproposal, eta0, control, verbose, response = NULL,
+                                ...) {
+
+  browser()
+
+  nthreads <- 1
+  cl <- NULL
+
+  Clist <- ergm::ergm.Cprepare(nw, model, response)
+  control.parallel <- control
+  control.parallel$MCMC.samplesize <- 1
+
+  doruns <- function(prev.runs = rep(list(NULL), nthreads),
+                     burnin = NULL, samplesize = NULL, interval = NULL, maxedges = NULL) {
+    ergm.mcmcslave(Clist = Clist, prev.run = prev.runs[[1]],
+                    burnin = burnin, samplesize = samplesize, interval = interval,
+                    maxedges = maxedges, MHproposal = MHproposal, eta0 = eta0,
+                    control = control.parallel, verbose = verbose, ...)
   }
 
-  nthreads <- max(if (inherits(control$parallel, "cluster"))
-    nrow(summary(control$parallel)) else control$parallel, 1)
+  z <- doruns()
 
-  if (sequential && statsonly) {
-    control$MCMC.samplesize <- nsim
-    z <- ergm.getMCMCsample(nw, m, MHproposal, eta0, control,
-                            verbose = verbose, response = response)
-    colnames(z$statsmatrix) <- m$coef.names
-    out.mat <- sweep(z$statsmatrix[seq_len(nsim), , drop = FALSE], 2, curstats, "+")
+  nedges <- z$newnwtails[1]
+  newedgelist <- if (nedges > 0) {
+    cbind(z$newnwtails[2:(nedges + 1)], z$newnwheads[2:(nedges + 1)])
   } else {
-    if (!statsonly) {
-      nw.list <- list()
-    }
-    out.mat <- matrix(nrow = 0, ncol = length(curstats),
-                      dimnames = list(NULL, m$coef.names))
-    if (nthreads > 1)
-      curstats <- matrix(curstats, nrow = nthreads, ncol = length(curstats),
-                         byrow = TRUE)
-    for (i in 1:ceiling(nsim/nthreads)) {
-      control$MCMC.samplesize <- nthreads
-      control$MCMC.burnin <- if (i == 1 || sequential == FALSE) {
-        control$MCMC.burnin
-      } else {
-        control$MCMC.interval
-      }
-      z <- ergm.getMCMCsample(nw, m, MHproposal, eta0,
-                              control, verbose = verbose, response = response)
-      out.mat <- rbind(out.mat, curstats + z$statsmatrix)
-      if (!statsonly)
-        if (nthreads > 1)
-          nw.list[[length(nw.list) + 1]] <- z$newnetwork
-      else nw.list <- c(nw.list, z$newnetworks)
-      if (sequential) {
-        nw <- if (nthreads > 1)
-          z$newnetwork
-        else z$newnetworks
-        curstats <- curstats + z$statsmatrix
-      }
-      if (verbose) {
-        cat(sprintf("Finished simulation %d of %d.\n", i, nsim))
-      }
-    }
+    matrix(0, ncol = 2, nrow = 0)
   }
-  out.mat <- out.mat[seq_len(nsim), , drop = FALSE]
-  if (esteq)
-    out.mat <- .ergm.esteq(coef, m, out.mat)
-  if (statsonly)
-    return(out.mat)
-  if (nsim == 1) {
-    return(nw.list[[1]])
-  } else {
-    nw.list <- nw.list[seq_len(nsim)]
-    attributes(nw.list) <- list(formula = object, stats = out.mat,
-                                coef = coef, control = control, constraints = constraints,
-                                reference = reference, monitor = monitor, response = response)
-    class(nw.list) <- "network.list"
-    return(nw.list)
-  }
+
+  return(newedgelist)
 }

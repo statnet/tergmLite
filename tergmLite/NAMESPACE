@@ -2,8 +2,9 @@
 
 export(add_vertices)
 export(delete_vertices)
+export(ergm_getMCMCsample)
 export(ergm_prep)
-export(simulate_ergm_formula)
+export(simulate_ergm)
 export(simulate_network)
 export(stergm_getMCMCsample)
 importFrom(Rcpp,sourceCpp)
