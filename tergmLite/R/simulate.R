@@ -17,8 +17,13 @@ simulate_network <- function(p, el, coef.form, coef.diss, save.changes = FALSE) 
   z <- stergm_getMCMCsample(el, p$model.form, p$model.diss,
                             p$MHproposal.form, p$MHproposal.diss,
                             eta.form, eta.diss, control, save.changes)
-
+  # copy other attributes of the input el (size, directedness, etc) to the output
   attributes(z)$n <- attributes(el)$n
+  attributes(z)$directed <- attributes(el)$directed
+  attributes(z)$bipartite <- attributes(el)$bipartite
+  attributes(z)$loops <- attributes(el)$loops
+  attributes(z)$inverted <- attributes(el)$inverted
+  class(z)<-c('edgelist',class(z))
 
   return(z)
 }
