@@ -262,13 +262,13 @@ updateModelTermInputs<-function(dat){
 #' with offsets removed, evaluated in the formula calling environment
 #' returns a list where the first element is the term name and subsequent 
 #' (named) elements are the argument values named by the argument names. 
-#' Currently uses the internal ergm function term.list.formula
 #' @export
+#' @importFrom statnet.common term.list.formula
 get_formula_term_args_in_formula_env <-function(form,termIndex){
   # get the calling environment of the formula in case
   # there are substitutions
   formula.env<-environment(formula)
-  args<-ergm:::term.list.formula(form[[2]])[[termIndex]] # TODO: <-- this is not exported by ergm, should change ergm
+  args<-statnet.common::term.list.formula(form[[2]])[[termIndex]] 
   # remove the offset term if it exists
   if(args[1]=='offset()'){
     args <- args[[-1]]

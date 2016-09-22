@@ -9,6 +9,7 @@ Depends:
 License: What license is it under?
 LazyData: true
 Imports:
+    statnet.common,
     tergm,
     Rcpp
 LinkingTo: Rcpp
