@@ -1,7 +1,18 @@
-
-#' function to appropriately update model params based on ergm model terms.
-#' contains hard-coded implementations of some of the most commonly used ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc. 
-#' Implemented terms are edges, nodematch, nodefactor,concurrent,degree,absdiff, nodecov, nodemix.  All other terms will return errors
+#' @title Alternate Methods for Computing Ergm Term Inputs
+#' @description function to appropriately update model params based on ergm model terms when using 'fast_edgelist' representations.
+#' @details Contains hard-coded implementations of some of the most commonly used ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc. 
+#' Implemented terms are:
+#' \itemize{ 
+#'   \item edges
+#'   \item nodematch
+#'   \item nodefactor
+#'   \item concurrent
+#'   \item degree
+#'   \item absdiff
+#'   \item nodecov
+#'   \item nodemix
+#' }  All other terms will return errors
+#' @param dat EpiModel dat object tracking simulation state
 #' @export
 #'@importFrom statnet.common NVL
 updateModelTermInputs<-function(dat){
@@ -256,12 +267,14 @@ updateModelTermInputs<-function(dat){
   return(dat)
 }
 
-#' 
-#' This is a work-around for evaluating model terms in the non-standard tergmLite sequence,
+#' @title Evaluate Ergm Model Formula Terms
+#' @description This is a work-around for evaluating model terms in the non-standard tergmLite sequence,
 #' as an alternative to ergm.getModel. Computes a list of the arguments to the terms in the formula
 #' with offsets removed, evaluated in the formula calling environment
 #' returns a list where the first element is the term name and subsequent 
-#' (named) elements are the argument values named by the argument names. 
+#' (named) elements are the argument values named by the argument names.
+#' @param form an ergm model formula
+#' @param termIndex an integer index for the formula term in form to be evaluated 
 #' @export
 #' @importFrom statnet.common term.list.formula
 get_formula_term_args_in_formula_env <-function(form,termIndex){
