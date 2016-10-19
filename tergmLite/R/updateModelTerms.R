@@ -1,20 +1,27 @@
 #' @title Alternate Methods for Computing Ergm Term Inputs
-#' @description function to appropriately update model params based on ergm model terms when using 'fast_edgelist' representations.
-#' @details Contains hard-coded implementations of some of the most commonly used ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc. 
-#' Implemented terms are:
-#' \itemize{ 
-#'   \item edges
-#'   \item nodematch
-#'   \item nodefactor
-#'   \item concurrent
-#'   \item degree
-#'   \item absdiff
-#'   \item nodecov
-#'   \item nodemix
-#' }  All other terms will return errors
+#'
+#' @description Function to appropriately update model params based on ergm model
+#'              terms when using 'fast_edgelist' representations.
+#'
 #' @param dat EpiModel dat object tracking simulation state
+#'
+#' @details Contains hard-coded implementations of some of the most commonly used
+#' ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc.
+#'
+#' Implemented terms are:
+#'  \itemize{
+#'    \item edges
+#'    \item nodematch
+#'    \item nodefactor
+#'    \item concurrent
+#'    \item degree
+#'    \item absdiff
+#'    \item nodecov
+#'    \item nodemix
+#'  }  All other terms will return errors
 #' @export
-#'@importFrom statnet.common NVL
+#' @importFrom statnet.common NVL
+#'
 updateModelTermInputs<-function(dat){
   p <- dat$p
   mf <- p$model.form
@@ -27,21 +34,21 @@ updateModelTermInputs<-function(dat){
   # by ergm.getmodel using the network object, and this has also validated the terms
   # so for most terms we only need to setup the specific values of the input vectors
   # loop over formation model terms and update
-  
+
   # the input vectors are padded out as the would be by updatemodel.ErgmTerm
   #  outlist$inputs <- c(ifelse(is.null(tmp), 0, tmp),
-  # length(outlist$coef.names), 
+  # length(outlist$coef.names),
   # length(outlist$inputs), outlist$inputs)
   for (t in seq_along(mf$terms)){
     term<-mf$terms[[t]]
-    
-    if (term$name=='edges'){
-      # ---- EDGES -----------------------------  
+
+    if (term$name == 'edges') {
       maxdyads <- choose(n, 2)
       mf$terms[[t]]$maxval <- maxdyads  # TODO: can we pull maxdyads from the term$maxval?
       combindMaxDyads <- combindMaxDyads + maxdyads
-    } else if (term$name=='nodematch'){
-      # ---- NODEMATCH -------------------
+    }
+
+    else if (term$name == 'nodematch') {
       # see ergm:::InitErgmTerm.nodematch
       # need to get the formation formula to try to parse the params
       form <- dat$nwparam[[1]]$formation
@@ -68,10 +75,11 @@ updateModelTermInputs<-function(dat){
       }
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-      
-    } else if (term$name=='nodefactor'){
-      
-      # ---- NODEFACTOR -------------------
+
+    }
+
+    else if (term$name == 'nodefactor') {
+
       # see ergm:::InitErgmTerm.nodefactor
       form <- dat$nwparam[[1]]$formation
       args<-get_formula_term_args_in_formula_env(form,t)
@@ -91,19 +99,23 @@ updateModelTermInputs<-function(dat){
       attr(inputs, "ParamsBeforeCov") <- length(ui)
       mf$terms[[t]]$inputs <- c(length(ui), length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-    } else if (term$name=='concurrent'){
-      # ---- CONCURRENT -------------------
+    }
+
+    else if (term$name == 'concurrent') {
+
       # concurrent doesn't actually accept any inputs
       inputs <- NULL
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-      
-    } else if (term$name=='degree'){
-      # ---- DEGREEE -------------------
+
+    }
+
+    else if (term$name == 'degree') {
+
       # see ergm:::InitErgmTerm.degree
       form <- dat$nwparam[[1]]$formation
       args<-get_formula_term_args_in_formula_env(form,t)
-      
+
       d <- args[[1]]
       byarg <- args$byarg
       homophily <- args$homophily
@@ -116,17 +128,17 @@ updateModelTermInputs<-function(dat){
         }
         nodecov <- match(nodecov, u)
         if (length(u) == 1) {
-          stop("Attribute given to degree() has only one value", 
+          stop("Attribute given to degree() has only one value",
                call. = FALSE)
         }
-      } 
+      }
       if (!is.null(byarg) && !homophily) {
         lu <- length(u)
         du <- rbind(rep(d, lu), rep(1:lu, rep(length(d), lu)))
         if (any(du[1, ] == 0)) {
           emptynwstats <- rep(0, ncol(du))
           tmp <- du[2, du[1, ] == 0]
-          for (i in 1:length(tmp)) tmp[i] <- sum(nodecov == 
+          for (i in 1:length(tmp)) tmp[i] <- sum(nodecov ==
                                                    tmp[i])
           emptynwstats[du[1, ] == 0] <- tmp
         }
@@ -135,7 +147,7 @@ updateModelTermInputs<-function(dat){
           emptynwstats <- rep(0, length(d))
           emptynwstats[d == 0] <- attr(dat$el,'n') # network size
         }
-      } 
+      }
       if (is.null(byarg)) {
         if (length(d) == 0) {
           return(NULL)
@@ -156,18 +168,19 @@ updateModelTermInputs<-function(dat){
         mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                   length(inputs), inputs)
         mf$terms[[t]]$emptynwstats <- emptynwstats
-        
+
       } else {
         mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                   length(inputs), inputs)
         # belive it is also necessary to update the maxval for this statistic?
         mf$terms[[t]]$maxval<- attr(dat$el,'n') # network size
       }
-      
-      
-    } 
-    else if (term$name=='absdiff'){
-      # ---- ABSDIFF -------------------
+
+
+    }
+
+    else if (term$name == 'absdiff') {
+
       # see ergm:::InitErgmTerm.absdiff
       form <- dat$nwparam[[1]]$formation
       args<-get_formula_term_args_in_formula_env(form,t)
@@ -178,8 +191,10 @@ updateModelTermInputs<-function(dat){
       #TODO: check of pow passed in correctly
       mf$terms[[t]]$inputs <- c(pow, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-    } else if (term$name=='nodecov'){
-      # ---- NODECOV -------------------
+
+    }
+
+    else if (term$name == 'nodecov') {
       # see ergm:::InitErgmTerm.nodecov
       form <- dat$nwparam[[1]]$formation
       args<-get_formula_term_args_in_formula_env(form,t)
@@ -187,7 +202,8 @@ updateModelTermInputs<-function(dat){
       # get the transformation function
       f <- args$transform
       nodecov <- dat$attr[[attrname]]
-      # strange that the original version of the term doesn't require this logic to implement the default term..
+      # strange that the original version of the term doesn't require this
+      #    logic to implement the default term..
       if(!is.null(f)){
         inputs <- f(nodecov)
       } else {
@@ -195,7 +211,9 @@ updateModelTermInputs<-function(dat){
       }
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-    } else if (term$name=='nodemix'){
+    }
+
+    else if (term$name == 'nodemix') {
       # ---- NODEMIX -------------------
       # see ergm:::InitErgmTerm.nodemix
       form <- dat$nwparam[[1]]$formation
@@ -222,7 +240,7 @@ updateModelTermInputs<-function(dat){
       urm <- urm[upper.tri(urm, diag = TRUE)]
       ucm <- ucm[upper.tri(ucm, diag = TRUE)]
       uun <- uun[upper.tri(uun, diag = TRUE)]
-      
+
       if (any(NVL(base, 0) != 0)) {
         urm <- as.vector(urm)[-base]
         ucm <- as.vector(ucm)[-base]
@@ -232,33 +250,35 @@ updateModelTermInputs<-function(dat){
       attr(inputs, "ParamsBeforeCov") <- 2 * length(uun)
       mf$terms[[t]]$inputs <- c(2 * length(uun), length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-      
+
     } else {
       # this is not one of the hardcoded terms, so stop
-      stop("EpiModel's fast_edgelist mode does not know how to update the term '",term$name,"' in the formation model formula")
+      stop("EpiModel's fast_edgelist mode does not know how to update the term '",
+           term$name,"' in the formation model formula")
     }
-    
+
   }
   # update combinded maxval
   mf$maxval[1] <- combindMaxDyads
-  
+
   # loop over dissolution model terms and update
-  for (t in seq_along(md$terms)){
+  for (t in seq_along(md$terms)) {
     term<-md$terms[[t]]
-    # ---- EDGES -----------------------------    
+    # ---- EDGES -----------------------------
     if (term$name=='edges'){
       maxdyads <- choose(n, 2)
       md$terms[[t]]$maxval <- maxdyads  # TODO: can we pull maxdyads from the term$maxval?
       combindMaxDyads <- maxdyads
     } else {
-      stop('fast_edgelist mode does not know how to update the term ',term$name,' in the dissolution model formula')
+      stop('fast_edgelist mode does not know how to update the term ',
+           term$name,' in the dissolution model formula')
     }
-    
+
   }
   md$maxval <- combindMaxDyads
-  
+
   # update MHproposal.form
-  
+
   # update MHproposal.dis
   # update the elements of the parameter list and return
   p <- list(model.form = mf, model.diss = md,
@@ -268,20 +288,24 @@ updateModelTermInputs<-function(dat){
 }
 
 #' @title Evaluate Ergm Model Formula Terms
-#' @description This is a work-around for evaluating model terms in the non-standard tergmLite sequence,
-#' as an alternative to ergm.getModel. Computes a list of the arguments to the terms in the formula
-#' with offsets removed, evaluated in the formula calling environment
-#' returns a list where the first element is the term name and subsequent 
-#' (named) elements are the argument values named by the argument names.
+#' @description This is a work-around for evaluating model terms in the non-standard
+#'              tergmLite sequence, as an alternative to ergm.getModel. Computes
+#'              a list of the arguments to the terms in the formula with offsets
+#'              removed, evaluated in the formula calling environment returns a
+#'              list where the first element is the term name and subsequent (named)
+#'              elements are the argument values named by the argument names.
+#'
 #' @param form an ergm model formula
-#' @param termIndex an integer index for the formula term in form to be evaluated 
+#' @param termIndex an integer index for the formula term in form to be evaluated
+#'
 #' @export
 #' @importFrom statnet.common term.list.formula
+#'
 get_formula_term_args_in_formula_env <-function(form,termIndex){
   # get the calling environment of the formula in case
   # there are substitutions
   formula.env<-environment(formula)
-  args<-statnet.common::term.list.formula(form[[2]])[[termIndex]] 
+  args<-statnet.common::term.list.formula(form[[2]])[[termIndex]]
   # remove the offset term if it exists
   if(args[1]=='offset()'){
     args <- args[[-1]]

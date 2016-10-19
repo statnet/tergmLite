@@ -10,20 +10,23 @@ updateModelTermInputs(dat)
 \item{dat}{EpiModel dat object tracking simulation state}
 }
 \description{
-function to appropriately update model params based on ergm model terms when using 'fast_edgelist' representations.
+Function to appropriately update model params based on ergm model
+             terms when using 'fast_edgelist' representations.
 }
 \details{
-Contains hard-coded implementations of some of the most commonly used ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc. 
+Contains hard-coded implementations of some of the most commonly used
+ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc.
+
 Implemented terms are:
-\itemize{ 
-  \item edges
-  \item nodematch
-  \item nodefactor
-  \item concurrent
-  \item degree
-  \item absdiff
-  \item nodecov
-  \item nodemix
-}  All other terms will return errors
+ \itemize{
+   \item edges
+   \item nodematch
+   \item nodefactor
+   \item concurrent
+   \item degree
+   \item absdiff
+   \item nodecov
+   \item nodemix
+ }  All other terms will return errors
 }
 
