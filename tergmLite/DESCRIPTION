@@ -1,15 +1,17 @@
 Package: tergmLite
 Title: A fast, simplified version of TERGM-based simulation for epidemic modeling
-Version: 0.1
+Version: 0.1.2
 Authors@R: person("Samuel M.", "Jenness",
-                  email = "sjenness@uw.edu", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+                  email = "samuel.m.jenness@emory.edu", role = c("aut", "cre"))
+Description: Provides faster, less robust methods for acessing some tergm functions, along with some edgelist based `ergm` term implementations.  
 Depends:
-    R (>= 3.2.0)
-License: What license is it under?
-LazyData: true
+    R (>= 3.2.0),
+    ergm,
+    tergm
+License: GPL-3
 Imports:
-    tergm,
+    statnet.common,
     Rcpp
-LinkingTo: Rcpp
+LinkingTo: Rcpp, ergm
+LazyData: true
 RoxygenNote: 5.0.1
