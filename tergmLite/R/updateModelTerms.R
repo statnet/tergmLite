@@ -1,3 +1,4 @@
+
 #' @title Alternate Methods for Computing Ergm Term Inputs
 #'
 #' @description Function to appropriately update model params based on ergm model
@@ -18,7 +19,9 @@
 #'    \item absdiff
 #'    \item nodecov
 #'    \item nodemix
-#'  }  All other terms will return errors
+#'  }  
+#'  All other terms will return errors.
+#'  
 #' @export
 #' @importFrom statnet.common NVL
 #'
@@ -52,7 +55,8 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodematch") {
-      # see ergm:::InitErgmTerm.nodematch
+      
+      # ergm:::InitErgmTerm.nodematch
       # need to get the formation formula to try to parse the params
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
@@ -85,7 +89,7 @@ updateModelTermInputs <- function(dat) {
 
     else if (term$name == "nodefactor") {
 
-      # see ergm:::InitErgmTerm.nodefactor
+      # ergm:::InitErgmTerm.nodefactor
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t) 
       # get the name of the attribute to be used for nodecov
@@ -95,7 +99,7 @@ updateModelTermInputs <- function(dat) {
       if (any(NVL(args$base, 0) != 0)) {
         u <- u[-args$base]
         if (length(u) == 0) {
-          stop(" nodefactor term should be deleted because it contributes no statistics")
+          stop("nodefactor term should be deleted because it contributes no statistics")
         }
       }
       nodecov <- match(nodecov, u, nomatch = length(u) + 1)
@@ -108,7 +112,8 @@ updateModelTermInputs <- function(dat) {
 
     else if (term$name == "concurrent") {
 
-      # concurrent doesn't actually accept any inputs
+      # concurrent doesn't actually accept any inputs // not true
+      # TODO: add this
       inputs <- NULL
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
@@ -177,8 +182,7 @@ updateModelTermInputs <- function(dat) {
       } else {
         mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                   length(inputs), inputs)
-        # belive it is also necessary to update the maxval for this statistic?
-        mf$terms[[t]]$maxval <- attr(dat$el,'n') # network size
+        mf$terms[[t]]$maxval <- attr(dat$el, "n") # network size
       }
 
 
@@ -200,7 +204,8 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodecov") {
-      # see ergm:::InitErgmTerm.nodecov
+      
+      # ergm:::InitErgmTerm.nodecov
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
@@ -219,7 +224,8 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodemix") {
-      # see ergm:::InitErgmTerm.nodemix
+      
+      # ergm:::InitErgmTerm.nodemix
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
@@ -239,6 +245,7 @@ updateModelTermInputs <- function(dat) {
       urm <- t(sapply(ui, rep, length(ui)))
       ucm <- sapply(ui, rep, length(ui))
       uun <- outer(u, u, paste, sep = ".")
+      
       # ASSUME IT IS UNDIRECTED
       uui <- uui[upper.tri(uui, diag = TRUE)]
       urm <- urm[upper.tri(urm, diag = TRUE)]
@@ -256,8 +263,7 @@ updateModelTermInputs <- function(dat) {
                                 length(inputs), inputs)
 
     } else {
-      # this is not one of the hardcoded terms, so stop
-      stop("EpiModel's fast_edgelist mode does not know how to update the term '",
+      stop("tergmLite does not know how to update the term '",
            term$name,"' in the formation model formula")
     }
 
@@ -269,13 +275,14 @@ updateModelTermInputs <- function(dat) {
   for (t in seq_along(md$terms)) {
     term <- md$terms[[t]]
 
-    if (term$name == 'edges') {
+    if (term$name == "edges") {
       maxdyads <- choose(n, 2)
-      md$terms[[t]]$maxval <- maxdyads  # TODO: can we pull maxdyads from the term$maxval?
+      # TODO: can we pull maxdyads from the term$maxval?
+      md$terms[[t]]$maxval <- maxdyads  
       combindMaxDyads <- maxdyads
     } else {
-      stop('fast_edgelist mode does not know how to update the term ',
-           term$name,' in the dissolution model formula')
+      stop("tergmLite does not know how to update the term ',
+            term$name,' in the dissolution model formula")
     }
 
   }
