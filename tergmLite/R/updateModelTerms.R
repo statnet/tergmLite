@@ -281,13 +281,27 @@ updateModelTermInputs <- function(dat) {
   }
   md$maxval <- combindMaxDyads
 
-  # update MHproposal.form
-
-  # update MHproposal.dis
+  ## Update MHproposal.form and ##MHproposal.diss
+  if (!is.null(mhf$arguments$constraints$bd$attribs[1])) {
+    mhf$arguments$constraints$bd$attribs <-
+               matrix(rep(mhf$arguments$constraints$bd$attribs[1], n), ncol = 1)
+    mhf$arguments$constraints$bd$maxout <-
+                matrix(rep(mhf$arguments$constraints$bd$maxout[1], n), ncol = 1)
+    mhf$arguments$constraints$bd$maxin <- matrix(rep(n - 1, n), ncol = 1)
+    mhf$arguments$constraints$bd$minout <-
+               mhf$arguments$constraints$bd$minin <- matrix(rep(0, n), ncol = 1)
+    
+    # MHproposal.diss
+    mhd$arguments$constraints$bd <- mhf$arguments$constraints$bd
+    
+  }
+  
   # update the elements of the parameter list and return
   p <- list(model.form = mf, model.diss = md,
             MHproposal.form = mhf, MHproposal.diss = mhd)
+  
   dat$p <- p
+  
   return(dat)
 }
 
