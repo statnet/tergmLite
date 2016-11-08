@@ -22,7 +22,8 @@
 #' @export
 #' @importFrom statnet.common NVL
 #'
-updateModelTermInputs<-function(dat){
+updateModelTermInputs <- function(dat) {
+  
   p <- dat$p
   mf <- p$model.form
   md <- p$model.diss
@@ -30,6 +31,7 @@ updateModelTermInputs<-function(dat){
   mhd <- p$MHproposal.diss
   n <- attributes(dat$el)$n
   combindMaxDyads <- 0
+  
   # we assume that model.form and model.diss have allready been set up in the appropriate structure
   # by ergm.getmodel using the network object, and this has also validated the terms
   # so for most terms we only need to setup the specific values of the input vectors
@@ -39,24 +41,27 @@ updateModelTermInputs<-function(dat){
   #  outlist$inputs <- c(ifelse(is.null(tmp), 0, tmp),
   # length(outlist$coef.names),
   # length(outlist$inputs), outlist$inputs)
-  for (t in seq_along(mf$terms)){
-    term<-mf$terms[[t]]
+  
+  for (t in seq_along(mf$terms)) {
+    term <- mf$terms[[t]]
 
-    if (term$name == 'edges') {
+    if (term$name == "edges") {
       maxdyads <- choose(n, 2)
       mf$terms[[t]]$maxval <- maxdyads  # TODO: can we pull maxdyads from the term$maxval?
       combindMaxDyads <- combindMaxDyads + maxdyads
     }
 
-    else if (term$name == 'nodematch') {
+    else if (term$name == "nodematch") {
       # see ergm:::InitErgmTerm.nodematch
       # need to get the formation formula to try to parse the params
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t)
       # get the name of the attribute to be used for nodecov
       attrname <- args[[1]]
-      diff<-args$diff
-      if(is.null(diff)) diff <- FALSE
+      diff <- args$diff
+      if (is.null(diff)) {
+        diff <- FALSE
+      }
       # collect the values for the attribute
       nodecov <- dat$attr[[attrname]]
       u <- sort(unique(nodecov))
@@ -68,7 +73,7 @@ updateModelTermInputs<-function(dat){
       dontmatch <- nodecov == (length(u) + 1)
       nodecov[dontmatch] <- length(u) + (1:sum(dontmatch))
       ui <- seq(along = u)
-      if (diff==TRUE) {
+      if (diff == TRUE) {
         inputs <- c(ui, nodecov)
       } else {
         inputs <- nodecov
@@ -78,11 +83,11 @@ updateModelTermInputs<-function(dat){
 
     }
 
-    else if (term$name == 'nodefactor') {
+    else if (term$name == "nodefactor") {
 
       # see ergm:::InitErgmTerm.nodefactor
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t) 
       # get the name of the attribute to be used for nodecov
       attrname <- args[[1]]      # collect the values for the attribute
       nodecov <- dat$attr[[attrname]]
@@ -101,7 +106,7 @@ updateModelTermInputs<-function(dat){
                                 length(inputs), inputs)
     }
 
-    else if (term$name == 'concurrent') {
+    else if (term$name == "concurrent") {
 
       # concurrent doesn't actually accept any inputs
       inputs <- NULL
@@ -110,11 +115,11 @@ updateModelTermInputs<-function(dat){
 
     }
 
-    else if (term$name == 'degree') {
+    else if (term$name == "degree") {
 
       # see ergm:::InitErgmTerm.degree
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t)
 
       d <- args[[1]]
       byarg <- args$byarg
@@ -173,17 +178,17 @@ updateModelTermInputs<-function(dat){
         mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                   length(inputs), inputs)
         # belive it is also necessary to update the maxval for this statistic?
-        mf$terms[[t]]$maxval<- attr(dat$el,'n') # network size
+        mf$terms[[t]]$maxval <- attr(dat$el,'n') # network size
       }
 
 
     }
 
-    else if (term$name == 'absdiff') {
+    else if (term$name == "absdiff") {
 
       # see ergm:::InitErgmTerm.absdiff
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
       # get the transformation function
       pow <- args$pow
@@ -194,17 +199,17 @@ updateModelTermInputs<-function(dat){
 
     }
 
-    else if (term$name == 'nodecov') {
+    else if (term$name == "nodecov") {
       # see ergm:::InitErgmTerm.nodecov
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
       # get the transformation function
       f <- args$transform
       nodecov <- dat$attr[[attrname]]
       # strange that the original version of the term doesn't require this
       #    logic to implement the default term..
-      if(!is.null(f)){
+      if (!is.null(f)) {
         inputs <- f(nodecov)
       } else {
         inputs <- nodecov
@@ -213,11 +218,10 @@ updateModelTermInputs<-function(dat){
                                 length(inputs), inputs)
     }
 
-    else if (term$name == 'nodemix') {
-      # ---- NODEMIX -------------------
+    else if (term$name == "nodemix") {
       # see ergm:::InitErgmTerm.nodemix
       form <- dat$nwparam[[1]]$formation
-      args<-get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
       nodecov <- dat$attr[[attrname]]
       base <- args$base
@@ -263,9 +267,9 @@ updateModelTermInputs<-function(dat){
 
   # loop over dissolution model terms and update
   for (t in seq_along(md$terms)) {
-    term<-md$terms[[t]]
-    # ---- EDGES -----------------------------
-    if (term$name=='edges'){
+    term <- md$terms[[t]]
+
+    if (term$name == 'edges') {
       maxdyads <- choose(n, 2)
       md$terms[[t]]$maxval <- maxdyads  # TODO: can we pull maxdyads from the term$maxval?
       combindMaxDyads <- maxdyads
@@ -283,7 +287,7 @@ updateModelTermInputs<-function(dat){
   # update the elements of the parameter list and return
   p <- list(model.form = mf, model.diss = md,
             MHproposal.form = mhf, MHproposal.diss = mhd)
-  dat$p <-p
+  dat$p <- p
   return(dat)
 }
 
@@ -301,18 +305,20 @@ updateModelTermInputs<-function(dat){
 #' @export
 #' @importFrom statnet.common term.list.formula
 #'
-get_formula_term_args_in_formula_env <-function(form,termIndex){
+get_formula_term_args_in_formula_env <- function(form, termIndex) {
+  
   # get the calling environment of the formula in case
   # there are substitutions
-  formula.env<-environment(formula)
-  args<-statnet.common::term.list.formula(form[[2]])[[termIndex]]
+  formula.env <- environment(formula)
+  args <- statnet.common::term.list.formula(form[[2]])[[termIndex]]
   # remove the offset term if it exists
-  if(args[1]=='offset()'){
+  if (args[1] == "offset()") {
     args <- args[[-1]]
   }
   # hack to convert from a call to a list when evaluated
-  args[[1]]<- as.name("list")
+  args[[1]] <- as.name("list")
   # evaluate in formula's calling environment
   outlist <- eval(args,formula.env)
+  
   return(outlist)
 }
