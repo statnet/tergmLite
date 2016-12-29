@@ -276,7 +276,16 @@ updateModelTermInputs <- function(dat) {
   }
   
   # update combinded maxval
-  mf$maxval[1] <- combindMaxDyads
+  for (j in seq_along(mf$terms)) {
+    if (j == 1) {
+      new.maxval <- rep(if (!is.null(mf$terms[[j]]$maxval)) mf$terms[[j]]$maxval else +Inf,
+                        length.out = length(mf$terms[[j]]$coef.names))
+    } else {
+      new.maxval <- c(new.maxval, rep(if (!is.null(mf$terms[[j]]$maxval)) mf$terms[[j]]$maxval else +Inf,
+                                      length.out = length(mf$terms[[j]]$coef.names)))
+    }
+  }
+  mf$maxval <- new.maxval
 
   # loop over dissolution model terms and update
   for (t in seq_along(md$terms)) {
