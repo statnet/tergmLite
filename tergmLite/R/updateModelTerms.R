@@ -19,9 +19,9 @@
 #'    \item absdiff
 #'    \item nodecov
 #'    \item nodemix
-#'  }  
+#'  }
 #'  All other terms will return errors.
-#'  
+#'
 #' @export
 #' @importFrom statnet.common NVL
 #'
