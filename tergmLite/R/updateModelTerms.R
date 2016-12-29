@@ -312,6 +312,8 @@ updateModelTermInputs <- function(dat) {
   return(dat)
 }
 
+
+
 #' @title Evaluate Ergm Model Formula Terms
 #' @description This is a work-around for evaluating model terms in the non-standard
 #'              tergmLite sequence, as an alternative to ergm.getModel. Computes
@@ -330,16 +332,38 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   
   # get the calling environment of the formula in case
   # there are substitutions
-  formula.env <- environment(formula)
+  formula.env <- environment(form)
   args <- statnet.common::term.list.formula(form[[2]])[[termIndex]]
+  
   # remove the offset term if it exists
   if (args[1] == "offset()") {
     args <- args[[-1]]
   }
+  
+  # term name
+  tname <- args[[1]]
+  
   # hack to convert from a call to a list when evaluated
   args[[1]] <- as.name("list")
+  
   # evaluate in formula's calling environment
-  outlist <- eval(args,formula.env)
+  outlist <- eval(args, formula.env)
+  
+  # Set default base to 1
+  if (tname == "nodefactor" & is.null(outlist$base)) {
+    outlist$base <- 1
+  }
+  
+  # Set default pow to 1
+  if (tname == "absdiff" & is.null(outlist$pow)) {
+    outlist$pow <- 1
+  }
+  
+  # set default fixed argument to FALSE
+  # also needs default keep argument, set to NULL
+  if (tname == "nodematch" & is.null(args$diff)) {
+    outlist$diff <- FALSE
+  }
   
   return(outlist)
 }

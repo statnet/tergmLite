@@ -27,7 +27,7 @@ Implemented terms are:
    \item absdiff
    \item nodecov
    \item nodemix
- }  
+ }
  All other terms will return errors.
 }
 
