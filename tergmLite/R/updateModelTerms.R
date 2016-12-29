@@ -189,18 +189,15 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "absdiff") {
-
       # see ergm:::InitErgmTerm.absdiff
       form <- dat$nwparam[[1]]$formation
-      args <- get_formula_term_args_in_formula_env(form,t)
+      args <- get_formula_term_args_in_formula_env(form, t)
       attrname <- args[[1]]
       # get the transformation function
-      pow <- ifelse(!is.null(args$pow), args$pow, 1)
+      pow <- args$pow
       inputs <- c(pow, dat$attr[[attrname]])
-      #TODO: check of pow passed in correctly
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-
     }
 
     else if (term$name == "nodecov") {
