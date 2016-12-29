@@ -121,11 +121,11 @@ updateModelTermInputs <- function(dat) {
 
     else if (term$name == "concurrent") {
 
-      # concurrent doesn't actually accept any inputs // not true
-      # TODO: add this
-      inputs <- NULL
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
+      # ergm:::InitErgmTerm.concurrent
+      # TODO: add by term for concurrent
+      #       currently works fine for homogenous
+      
+      mf$terms[[t]]$maxval <- n
 
     }
 
