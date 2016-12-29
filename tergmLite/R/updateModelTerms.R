@@ -26,7 +26,7 @@
 #' @importFrom statnet.common NVL
 #'
 updateModelTermInputs <- function(dat) {
-  
+
   p <- dat$p
   mf <- p$model.form
   md <- p$model.diss
@@ -34,7 +34,8 @@ updateModelTermInputs <- function(dat) {
   mhd <- p$MHproposal.diss
   n <- attributes(dat$el)$n
   combindMaxDyads <- 0
-  
+  maxdyads <- choose(n, 2)
+
   # we assume that model.form and model.diss have allready been set up in the appropriate structure
   # by ergm.getmodel using the network object, and this has also validated the terms
   # so for most terms we only need to setup the specific values of the input vectors
@@ -44,7 +45,7 @@ updateModelTermInputs <- function(dat) {
   #  outlist$inputs <- c(ifelse(is.null(tmp), 0, tmp),
   # length(outlist$coef.names),
   # length(outlist$inputs), outlist$inputs)
-  
+
   for (t in seq_along(mf$terms)) {
     term <- mf$terms[[t]]
 
@@ -55,7 +56,7 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodematch") {
-      
+
       # ergm:::InitErgmTerm.nodematch
       # need to get the formation formula to try to parse the params
       form <- dat$nwparam[[1]]$formation
@@ -201,7 +202,7 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodecov") {
-      
+
       # ergm:::InitErgmTerm.nodecov
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
@@ -221,7 +222,7 @@ updateModelTermInputs <- function(dat) {
     }
 
     else if (term$name == "nodemix") {
-      
+
       # ergm:::InitErgmTerm.nodemix
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
@@ -242,7 +243,7 @@ updateModelTermInputs <- function(dat) {
       urm <- t(sapply(ui, rep, length(ui)))
       ucm <- sapply(ui, rep, length(ui))
       uun <- outer(u, u, paste, sep = ".")
-      
+
       # ASSUME IT IS UNDIRECTED
       uui <- uui[upper.tri(uui, diag = TRUE)]
       urm <- urm[upper.tri(urm, diag = TRUE)]
@@ -265,13 +266,14 @@ updateModelTermInputs <- function(dat) {
     }
 
   }
+  
   # update combinded maxval
   mf$maxval[1] <- combindMaxDyads
 
   # loop over dissolution model terms and update
   for (t in seq_along(md$terms)) {
     term <- md$terms[[t]]
-
+    
     if (term$name == "edges") {
       maxdyads <- choose(n, 2)
       # TODO: can we pull maxdyads from the term$maxval?
@@ -303,9 +305,9 @@ updateModelTermInputs <- function(dat) {
   # update the elements of the parameter list and return
   p <- list(model.form = mf, model.diss = md,
             MHproposal.form = mhf, MHproposal.diss = mhd)
-  
+
   dat$p <- p
-  
+
   return(dat)
 }
 
