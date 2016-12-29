@@ -92,10 +92,18 @@ updateModelTermInputs <- function(dat) {
 
       # ergm:::InitErgmTerm.nodefactor
       form <- dat$nwparam[[1]]$formation
-      args <- get_formula_term_args_in_formula_env(form,t) 
+      args <- get_formula_term_args_in_formula_env(form, t) 
       # get the name of the attribute to be used for nodecov
-      attrname <- args[[1]]      # collect the values for the attribute
-      nodecov <- dat$attr[[attrname]]
+      
+      attrname <- args[[1]]
+      if (length(attrname) == 1) {
+        nodecov <- dat$attr[[attrname]]
+      } else {
+        nodecov <- do.call(paste, c(sapply(attrname,
+                                           function(oneattr) dat$attr[[oneattr]],
+                                           simplify = FALSE), sep = "."))
+      }
+      
       u <- sort(unique(nodecov))
       if (any(NVL(args$base, 0) != 0)) {
         u <- u[-args$base]
