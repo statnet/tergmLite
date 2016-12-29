@@ -283,31 +283,29 @@ updateModelTermInputs <- function(dat) {
     term <- md$terms[[t]]
     
     if (term$name == "edges") {
-      maxdyads <- choose(n, 2)
-      # TODO: can we pull maxdyads from the term$maxval?
-      md$terms[[t]]$maxval <- maxdyads  
-      combindMaxDyads <- maxdyads
-    } else {
-      stop("tergmLite does not know how to update the term ',
-            term$name,' in the dissolution model formula")
+      md$terms[[t]]$maxval <- maxdyads
     }
-
+    
+    else {
+      stop("tergmLite does not know how to update the term ',
+           term$name,' in the dissolution model formula")
+    }
+    
   }
-  md$maxval <- combindMaxDyads
+  # TODO: this assumes just an edges model, may need to update
+  md$maxval <- maxdyads
 
-  ## Update MHproposal.form and ##MHproposal.diss
-  if (!is.null(mhf$arguments$constraints$bd$attribs[1])) {
-    mhf$arguments$constraints$bd$attribs <-
-               matrix(rep(mhf$arguments$constraints$bd$attribs[1], n), ncol = 1)
-    mhf$arguments$constraints$bd$maxout <-
-                matrix(rep(mhf$arguments$constraints$bd$maxout[1], n), ncol = 1)
-    mhf$arguments$constraints$bd$maxin <- matrix(rep(n - 1, n), ncol = 1)
-    mhf$arguments$constraints$bd$minout <-
-               mhf$arguments$constraints$bd$minin <- matrix(rep(0, n), ncol = 1)
-    
-    # MHproposal.diss
-    mhd$arguments$constraints$bd <- mhf$arguments$constraints$bd
-    
+  ## Update MHproposal.form
+  hasBD <- !is.null(mhf$arguments$constraints$bd$attribs[1])
+  if (hasBD == TRUE) {
+    bd <- mhf$arguments$constraints$bd
+    bd$attribs <- matrix(rep(bd$attribs[1], n), ncol = 1)
+    bd$maxout <- matrix(rep(bd$maxout[1], n), ncol = 1)
+    bd$maxin <- matrix(rep(n - 1, n), ncol = 1)
+    bd$minout <- matrix(rep(0, n), ncol = 1)
+    bd$minin <- matrix(rep(0, n), ncol = 1)
+    mhf$arguments$constraints$bd <- bd
+    mhd$arguments$constraints$bd <- bd
   }
   
   # update the elements of the parameter list and return
