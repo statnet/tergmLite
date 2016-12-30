@@ -133,11 +133,39 @@ updateModelTermInputs <- function(dat, network = 1) {
     }
 
     else if (term$name == "concurrent") {
+
       # Reference: ergm:::InitErgmTerm.concurrent
-      # TODO: add by term for concurrent
-      
+
       # Homogenous form only updates maxval
       mf$terms[[t]]$maxval <- n
+
+    }
+
+    else if (term$name == "concurrent_by_attr") {
+
+      # Reference: ergm:::InitErgmTerm.concurrent
+
+      form <- dat$nwparam[[network]]$formation
+      args <- get_formula_term_args_in_formula_env(form, t)
+
+      # heterogeneous form updates input vector
+      byarg <- args$by
+      if (!is.null(byarg)) {
+        nodecov <- dat$attr[[byarg]]
+        u <- sort(unique(nodecov))
+        if (any(is.na(nodecov))) {
+          u <- c(u, NA)
+        }
+        nodecov <- match(nodecov, u)
+        lu <- length(u)
+        ui <- seq(along = u)
+        inputs <- c(ui, nodecov)
+        mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
+                                  length(inputs), inputs)
+      }
+
+      mf$terms[[t]]$maxval <- n
+
     }
 
     else if (term$name == "degree") {
