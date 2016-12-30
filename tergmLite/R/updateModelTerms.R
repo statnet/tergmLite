@@ -288,10 +288,6 @@ updateModelTermInputs <- function(dat, network = 1) {
       }
       nodecov <- match(nodecov, u, nomatch = length(u) + 1)
       ui <- seq(along = u)
-      # TODO: check this section -- ucount defined but not used
-      ucount <- sapply(ui, function(x) {
-        sum(nodecov == x, na.rm = TRUE)
-      })
       uui <- matrix(1:length(ui)^2, length(ui), length(ui))
       urm <- t(sapply(ui, rep, length(ui)))
       ucm <- sapply(ui, rep, length(ui))
