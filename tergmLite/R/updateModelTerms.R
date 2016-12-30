@@ -309,7 +309,42 @@ updateModelTermInputs <- function(dat, network = 1) {
       mf$terms[[t]]$inputs <- c(2 * length(uun), length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
 
-    } else {
+    }
+
+    else if (term$name == "absdiffnodemix") {
+
+      # Reference: EpiModelHIV::InitErgmTerm.absdiffnodemix
+
+      form <- dat$nwparam[[1]]$formation
+      args <- get_formula_term_args_in_formula_env(form, t)
+
+      nodecov <- dat$attr[[args[[1]]]]
+      nodecovby <- dat$attr[[args[[2]]]]
+
+      u <- sort(unique(nodecovby))
+      if (any(is.na(nodecovby))) {
+        u <- c(u, NA)
+      }
+      nodecovby <- match(nodecovby, u, nomatch = length(u) + 1)
+      ui <- seq(along = u)
+
+      uui <- matrix(1:length(ui) ^ 2, length(ui), length(ui))
+      urm <- t(sapply(ui, rep, length(ui)))
+      ucm <- sapply(ui, rep, length(ui))
+      uun <- outer(u, u, paste, sep = ".")
+      uui <- uui[upper.tri(uui, diag = TRUE)]
+      urm <- urm[upper.tri(urm, diag = TRUE)]
+      ucm <- ucm[upper.tri(ucm, diag = TRUE)]
+      uun <- uun[upper.tri(uun, diag = TRUE)]
+
+      inputs <- c(length(nodecov), length(urm), nodecov, nodecovby, urm, ucm)
+
+      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
+                                length(inputs), inputs)
+
+    }
+
+    else {
       stop("tergmLite does not know how to update the term '",
            term$name,"' in the formation model formula")
     }
