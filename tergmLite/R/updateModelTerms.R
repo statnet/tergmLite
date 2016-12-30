@@ -29,13 +29,13 @@
 updateModelTermInputs <- function(dat, network = 1) {
 
   p <- dat$p[[network]]
-  
+
   if ("model.diss" %in% names(p)) {
     dynamic <- TRUE
   } else {
     dynamic <- FALSE
   }
-  
+
   if (dynamic == TRUE) {
     mf <- p$model.form
     md <- p$model.diss
@@ -45,7 +45,7 @@ updateModelTermInputs <- function(dat, network = 1) {
     mf <- p$model.form
     mhf <- p$MHproposal
   }
-  
+
   n <- attributes(dat$el[[network]])$n
   maxdyads <- choose(n, 2)
 
@@ -54,26 +54,26 @@ updateModelTermInputs <- function(dat, network = 1) {
   #                     length(outlist$coef.names),
   #                     length(outlist$inputs), outlist$inputs)
 
-  
+
   ## 1. Formation Model ##
-  
+
   for (t in seq_along(mf$terms)) {
-    
+
     # pull term name
     term <- mf$terms[[t]]
 
     if (term$name == "edges") {
-      
+
       ## Reference: ergm:::InitErgmTerm.edges
-      
+
       # Only need to update maxval, no update to inputs
       mf$terms[[t]]$maxval <- maxdyads
     }
 
     else if (term$name == "nodematch") {
-      
+
       ## Reference: ergm:::InitErgmTerm.nodematch
-      
+
       # Get the formation formula to parse the params
       form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form, t)
@@ -98,18 +98,18 @@ updateModelTermInputs <- function(dat, network = 1) {
       }
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
-      
+
     }
 
     else if (term$name == "nodefactor") {
-      
+
       ## Reference: ergm:::InitErgmTerm.nodefactor
-      
+
       form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form, t)
-      
+
       attrname <- args[[1]]
-      
+
       # Handles interaction terms: nodefactor("attr1", "attr2")
       if (length(attrname) == 1) {
         nodecov <- dat$attr[[attrname]]
@@ -118,7 +118,7 @@ updateModelTermInputs <- function(dat, network = 1) {
                                            function(oneattr) dat$attr[[oneattr]],
                                            simplify = FALSE), sep = "."))
       }
-      
+
       u <- sort(unique(nodecov))
       if (any(statnet.common::NVL(args$base, 0) != 0)) {
         u <- u[-args$base]
@@ -127,13 +127,12 @@ updateModelTermInputs <- function(dat, network = 1) {
       ui <- seq(along = u)
       inputs <- c(ui, nodecov)
       attr(inputs, "ParamsBeforeCov") <- length(ui)
-      
+
       mf$terms[[t]]$inputs <- c(length(ui), length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
     }
 
     else if (term$name == "concurrent") {
-      
       # Reference: ergm:::InitErgmTerm.concurrent
       # TODO: add by term for concurrent
       
@@ -145,7 +144,7 @@ updateModelTermInputs <- function(dat, network = 1) {
 
       ## TODO: check this
       ## Reference ergm:::InitErgmTerm.degree
-      
+
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
 
@@ -212,9 +211,9 @@ updateModelTermInputs <- function(dat, network = 1) {
     }
 
     else if (term$name == "absdiff") {
-      
+
       # Reference: ergm:::InitErgmTerm.absdiff
-      
+
       form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form, t)
       attrname <- args[[1]]
@@ -228,7 +227,7 @@ updateModelTermInputs <- function(dat, network = 1) {
     else if (term$name == "nodecov") {
 
       ## Reference: ergm:::InitErgmTerm.nodecov
-      
+
       form <- dat$nwparam[[1]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
@@ -292,7 +291,7 @@ updateModelTermInputs <- function(dat, network = 1) {
     }
 
   }
-  
+
   # update combinded maxval
   for (j in seq_along(mf$terms)) {
     if (j == 1) {
@@ -306,31 +305,31 @@ updateModelTermInputs <- function(dat, network = 1) {
   }
   mf$maxval <- new.maxval
 
-  
+
   ## 2. Dissolution Model ##
-  
+
   # loop over dissolution model terms and update
   if (dynamic == TRUE) {
     for (t in seq_along(md$terms)) {
       term <- md$terms[[t]]
-      
+
       if (term$name == "edges") {
         md$terms[[t]]$maxval <- maxdyads
       }
-      
+
       else {
         stop("tergmLite does not know how to update the term ',
              term$name,' in the dissolution model formula")
       }
-      
+
       }
     # TODO: this assumes just an edges model, may need to update
     md$maxval <- maxdyads
   }
 
-  
+
   ## 3. MHproposal Lists (for constraints) ##
-  
+
   ## Update MHproposal.form
   hasBD <- !is.null(mhf$arguments$constraints$bd$attribs[1])
   if (hasBD == TRUE) {
@@ -343,15 +342,15 @@ updateModelTermInputs <- function(dat, network = 1) {
     mhf$arguments$constraints$bd <- bd
     mhd$arguments$constraints$bd <- bd
   }
-  
+
   # MHproposal.diss (currently matches mhf bd constraint)
   if (dynamic == TRUE) {
     mhd$arguments$constraints$bd <- mhf$arguments$constraints$bd
   }
-  
-  
-  ## 4. Update and return ## 
-  
+
+
+  ## 4. Update and return ##
+
   # update the elements of the parameter list and return
   if (dynamic == TRUE) {
     p <- list(model.form = mf, model.diss = md,
@@ -359,7 +358,7 @@ updateModelTermInputs <- function(dat, network = 1) {
   } else {
     p <- list(model.form = mf, MHproposal = mhf)
   }
-  
+
   dat$p[[network]] <- p
 
   return(dat)
@@ -382,41 +381,41 @@ updateModelTermInputs <- function(dat, network = 1) {
 #' @importFrom statnet.common term.list.formula
 #'
 get_formula_term_args_in_formula_env <- function(form, termIndex) {
-  
+
   # get the calling environment of the formula in case
   # there are substitutions
   formula.env <- environment(form)
   args <- statnet.common::term.list.formula(form[[2]])[[termIndex]]
-  
+
   # remove the offset term if it exists
   if (args[1] == "offset()") {
     args <- args[[-1]]
   }
-  
+
   # term name
   tname <- args[[1]]
-  
+
   # hack to convert from a call to a list when evaluated
   args[[1]] <- as.name("list")
-  
+
   # evaluate in formula's calling environment
   outlist <- eval(args, formula.env)
-  
+
   # Set default base to 1
   if (tname == "nodefactor" & is.null(outlist$base)) {
     outlist$base <- 1
   }
-  
+
   # Set default pow to 1
   if (tname == "absdiff" & is.null(outlist$pow)) {
     outlist$pow <- 1
   }
-  
+
   # set default fixed argument to FALSE
   # also needs default keep argument, set to NULL
   if (tname == "nodematch" & is.null(args$diff)) {
     outlist$diff <- FALSE
   }
-  
+
   return(outlist)
 }
