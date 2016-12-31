@@ -342,8 +342,8 @@ updateModelTermInputs <- function(dat, network = 1) {
     }
 
     else {
-      stop("tergmLite does not know how to update the term '",
-           term$name,"' in the formation model formula")
+      stop("tergmLite does not know how to update the term ",
+           term$name," in the formation model formula")
     }
 
   }
@@ -460,13 +460,23 @@ updateModelTermInputs <- function(dat, network = 1) {
       }
 
       else {
-        stop("tergmLite does not know how to update the term ',
-             term$name,' in the dissolution model formula")
+        stop("tergmLite does not know how to update the term ",
+             term$name, " in the dissolution model formula")
       }
 
+    }
+    for (j in seq_along(md$terms)) {
+      if (j == 1) {
+        new.maxval <- rep(if (!is.null(md$terms[[j]]$maxval)) md$terms[[j]]$maxval else +Inf,
+                          length.out = length(md$terms[[j]]$coef.names))
+      } else {
+        new.maxval <- c(new.maxval,
+                        rep(if (!is.null(md$terms[[j]]$maxval)) md$terms[[j]]$maxval else +Inf,
+                            length.out = length(md$terms[[j]]$coef.names)))
       }
-    # TODO: this assumes just an edges model, may need to update
-    md$maxval <- maxdyads
+    }
+    md$maxval <- new.maxval
+
   }
 
 
