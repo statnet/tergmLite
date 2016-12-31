@@ -292,13 +292,10 @@ updateModelTermInputs <- function(dat, network = 1) {
       urm <- t(sapply(ui, rep, length(ui)))
       ucm <- sapply(ui, rep, length(ui))
       uun <- outer(u, u, paste, sep = ".")
-
-      # ASSUME IT IS UNDIRECTED
       uui <- uui[upper.tri(uui, diag = TRUE)]
       urm <- urm[upper.tri(urm, diag = TRUE)]
       ucm <- ucm[upper.tri(ucm, diag = TRUE)]
       uun <- uun[upper.tri(uun, diag = TRUE)]
-
       if (any(NVL(base, 0) != 0)) {
         urm <- as.vector(urm)[-base]
         ucm <- as.vector(ucm)[-base]
@@ -374,6 +371,39 @@ updateModelTermInputs <- function(dat, network = 1) {
 
       if (term$name == "edges") {
         md$terms[[t]]$maxval <- maxdyads
+      }
+
+      else if (term$name == "nodemix") {
+
+        # ergm:::InitErgmTerm.nodemix
+        form <- dat$nwparam[[1]]$formation
+        args <- get_formula_term_args_in_formula_env(form,t)
+        attrname <- args[[1]]
+        nodecov <- dat$attr[[attrname]]
+        base <- args$base
+        u <- sort(unique(nodecov))
+        if (any(is.na(nodecov))) {
+          u <- c(u, NA)
+        }
+        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+        ui <- seq(along = u)
+        uui <- matrix(1:length(ui)^2, length(ui), length(ui))
+        urm <- t(sapply(ui, rep, length(ui)))
+        ucm <- sapply(ui, rep, length(ui))
+        uun <- outer(u, u, paste, sep = ".")
+        uui <- uui[upper.tri(uui, diag = TRUE)]
+        urm <- urm[upper.tri(urm, diag = TRUE)]
+        ucm <- ucm[upper.tri(ucm, diag = TRUE)]
+        uun <- uun[upper.tri(uun, diag = TRUE)]
+        if (any(NVL(base, 0) != 0)) {
+          urm <- as.vector(urm)[-base]
+          ucm <- as.vector(ucm)[-base]
+          uun <- as.vector(uun)[-base]
+        }
+        inputs <- c(urm, ucm, nodecov)
+        md$terms[[t]]$inputs <- c(2 * length(uun), length(md$terms[[t]]$coef.names),
+                                  length(inputs), inputs)
+
       }
 
       else {
