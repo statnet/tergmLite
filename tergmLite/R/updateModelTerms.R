@@ -376,8 +376,8 @@ updateModelTermInputs <- function(dat, network = 1) {
       else if (term$name == "nodemix") {
 
         # ergm:::InitErgmTerm.nodemix
-        form <- dat$nwparam[[1]]$formation
-        args <- get_formula_term_args_in_formula_env(form,t)
+        diss <- dat$nwparam[[network]]$coef.diss$dissolution
+        args <- get_formula_term_args_in_formula_env(diss, t)
         attrname <- args[[1]]
         nodecov <- dat$attr[[attrname]]
         base <- args$base
