@@ -399,6 +399,33 @@ updateModelTermInputs <- function(dat, network = 1) {
 
       }
 
+      else if (term$name == "nodefactor") {
+
+        ## Reference: ergm:::InitErgmTerm.nodefactor
+
+        diss <- dat$nwparam[[network]]$coef.diss$dissolution
+        args <- get_formula_term_args_in_formula_env(diss, t)
+        attrname <- args[[1]]
+        # Handles interaction terms: nodefactor("attr1", "attr2")
+        if (length(attrname) == 1) {
+          nodecov <- dat$attr[[attrname]]
+        } else {
+          nodecov <- do.call(paste, c(sapply(attrname,
+                                             function(oneattr) dat$attr[[oneattr]],
+                                             simplify = FALSE), sep = "."))
+        }
+
+        u <- sort(unique(nodecov))
+        if (any(statnet.common::NVL(args$base, 0) != 0)) {
+          u <- u[-args$base]
+        }
+        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+        ui <- seq(along = u)
+        inputs <- c(ui, nodecov)
+        md$terms[[t]]$inputs <- c(length(ui), length(md$terms[[t]]$coef.names),
+                                  length(inputs), inputs)
+      }
+
       else if (term$name == "nodemix") {
 
         # ergm:::InitErgmTerm.nodemix
