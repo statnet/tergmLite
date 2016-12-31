@@ -373,6 +373,32 @@ updateModelTermInputs <- function(dat, network = 1) {
         md$terms[[t]]$maxval <- maxdyads
       }
 
+      else if (term$name == "nodematch") {
+
+        ## Reference: ergm:::InitErgmTerm.nodematch
+
+        diss <- dat$nwparam[[network]]$coef.diss$dissolution
+        args <- get_formula_term_args_in_formula_env(diss, t)
+        diff <- args$diff
+        nodecov <- dat$attr[[attrname]]
+        u <- sort(unique(nodecov))
+        if (!is.null(args$keep)) {
+          u <- u[args$keep]
+        }
+        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+        dontmatch <- nodecov == (length(u) + 1)
+        nodecov[dontmatch] <- length(u) + (1:sum(dontmatch))
+        ui <- seq(along = u)
+        if (diff == TRUE) {
+          inputs <- c(ui, nodecov)
+        } else {
+          inputs <- nodecov
+        }
+        md$terms[[t]]$inputs <- c(0, length(md$terms[[t]]$coef.names),
+                                  length(inputs), inputs)
+
+      }
+
       else if (term$name == "nodemix") {
 
         # ergm:::InitErgmTerm.nodemix
