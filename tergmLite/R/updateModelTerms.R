@@ -173,7 +173,7 @@ updateModelTermInputs <- function(dat, network = 1) {
       ## TODO: check this
       ## Reference ergm:::InitErgmTerm.degree
 
-      form <- dat$nwparam[[1]]$formation
+      form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
 
       d <- args[[1]]
@@ -256,7 +256,7 @@ updateModelTermInputs <- function(dat, network = 1) {
 
       ## Reference: ergm:::InitErgmTerm.nodecov
 
-      form <- dat$nwparam[[1]]$formation
+      form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
       # get the transformation function
@@ -276,7 +276,7 @@ updateModelTermInputs <- function(dat, network = 1) {
     else if (term$name == "nodemix") {
 
       # ergm:::InitErgmTerm.nodemix
-      form <- dat$nwparam[[1]]$formation
+      form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form,t)
       attrname <- args[[1]]
       nodecov <- dat$attr[[attrname]]
@@ -312,7 +312,7 @@ updateModelTermInputs <- function(dat, network = 1) {
 
       # Reference: EpiModelHIV::InitErgmTerm.absdiffnodemix
 
-      form <- dat$nwparam[[1]]$formation
+      form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form, t)
 
       nodecov <- dat$attr[[args[[1]]]]
