@@ -4,10 +4,12 @@
 \alias{updateModelTermInputs}
 \title{Alternate Methods for Computing Ergm Term Inputs}
 \usage{
-updateModelTermInputs(dat)
+updateModelTermInputs(dat, network = 1)
 }
 \arguments{
 \item{dat}{EpiModel dat object tracking simulation state}
+
+\item{network}{Numberic number of network location for multi-network simulations.}
 }
 \description{
 Function to appropriately update model params based on ergm model
