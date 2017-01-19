@@ -4,7 +4,7 @@ stergm_prep <- function(nw, formation, dissolution,
                         coef.form, coef.diss, constraints,
                         control = tergm::control.simulate.network()) {
 
-  if (!is.network(nw)) {
+  if (inherits(nw, "network") == FALSE) {
     stop("A network object must be given")
   }
 
@@ -58,19 +58,19 @@ ergm_prep <- function(nw, formation, coef, constraints, control = control.simula
 #                           silent = FALSE,
 #                           role = "static",
 #                           ...) {
-# 
+#
 #   if ((dc <- data.class(formula)) != "formula") {
 #     stop(paste("Invalid formula of class ", dc), call. = FALSE)
 #   }
-# 
+#
 #   if (formula[[1]] != "~") {
 #     stop("Formula must be of the form 'network ~ model'.", call. = FALSE)
 #   }
-# 
+#
 #   if (length(formula) < 3) {
 #     stop(paste("No model specified for network ", formula[[2]]), call. = FALSE)
 #   }
-# 
+#
 #   v <- term.list.formula(formula[[3]])
 #   formula.env <- environment(formula)
 #   model <- structure(list(formula = formula,
@@ -80,13 +80,13 @@ ergm_prep <- function(nw, formation, coef, constraints, control = control.simula
 #                           networkstats.0 = NULL,
 #                           etamap = NULL),
 #                      class = "model.ergm")
-# 
+#
 #   termroot <- if (is.null(response)) {
 #     "InitErgm"
 #   } else {
 #     "InitWtErgm"
 #   }
-# 
+#
 #   for (i in 1:length(v)) {
 #     if (is.call(v[[i]])) {
 #       if (v[[i]][[1]] == "offset") {
@@ -115,7 +115,7 @@ ergm_prep <- function(nw, formation, coef, constraints, control = control.simula
 #       model$offset <- c(model$offset, FALSE)
 #       args = list()
 #     }
-# 
+#
 #     if (!newInitErgm) {
 #       v[[i]][[2]] <- nw
 #       names(v[[i]])[2] <- ""
@@ -164,10 +164,10 @@ ergm_prep <- function(nw, formation, coef, constraints, control = control.simula
 #       model <- updatemodel_ErgmTerm(model, outlist)
 #     }
 #   }
-# 
+#
 #   model$etamap <- ergm.etamap(model)
 #   ergm:::ergm.MCMC.packagenames(unlist(sapply(model$terms, "[[", "pkgname")))
-# 
+#
 #   class(model) <- "ergm.model"
 #   return(model)
 # }
@@ -186,6 +186,6 @@ ergm_prep <- function(nw, formation, coef, constraints, control = control.simula
 #     model$duration <- c(model$duration, if (!is.null(outlist$duration)) outlist$duration else FALSE)
 #     model$terms[[termnumber]] <- outlist
 #   }
-# 
+#
 #   return(model)
 # }
