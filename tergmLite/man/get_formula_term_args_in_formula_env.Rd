@@ -2,7 +2,7 @@
 % Please edit documentation in R/updateModelTerms.R
 \name{get_formula_term_args_in_formula_env}
 \alias{get_formula_term_args_in_formula_env}
-\title{Evaluate Ergm Model Formula Terms}
+\title{Evaluate ERGM Formula Terms}
 \usage{
 get_formula_term_args_in_formula_env(form, termIndex)
 }

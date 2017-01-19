@@ -1,16 +1,38 @@
 
-## functions to add and delete "vertices"
 
-# adding vertices just means changing n in the attributes of the edgelist
+#' Fast Version of network::add.vertices for Edgelist-formated Network
+#'
+#' @description This function performs a simple operation of updating the
+#'              edgelist attribute \code{n} that tracks the total network
+#'              size implicit in an edgelist representation of the network.
+#'
+#' @param el A two-column matrix of current edges (edgelist) with an attribute
+#'           variable \code{n} containing the total current network size
+#' @param nv A integer equal to the number of nodes to add to the network
+#'           size at the given time step
 #' @export
+#'
 add_vertices <- function(el, nv) {
   attributes(el)$n <- attributes(el)$n + nv
   return(el)
 }
 
 
-# deleting vertices
+
+#' Fast Version of network::delete.vertices for Edgelist-formated Network
+#'
+#' @description Given a current two-column matrix of edges and a vector of IDs
+#'              to delete from the matrix, this function first removes any rows
+#'              of the edgelist in which the IDs are present and then permutes
+#'              downward the index of IDs on the edgelist that were numerically
+#'              larger than the IDs deleted.
+#'
+#' @param el A two-column matrix of current edges (edgelist) with an attribute
+#'           variable \code{n} containing the total current network size
+#' @param vid A vector of IDs to delete from the edgelist
+#'
 #' @export
+#'
 delete_vertices <- function(el, vid) {
 
   new.el <- el

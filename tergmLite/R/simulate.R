@@ -1,6 +1,25 @@
 
+
+# STERGM --------------------------------------------------------------
+
+#' Fast Version of tergm::simulate.network for Edgelist-formatted Network
+#'
+#' @param p A list of network-related nodal covariates and related terms that
+#'          is produced with \code{\link{stergm_prep}}
+#' @param el A two-column matrix of current edges (edgelist) with an attribute
+#'           variable \code{n} containing the total current network size
+#' @param coef.form Vector of coefficients associated with the formation formula
+#' @param coef.diss Vector of coefficients associated with the dissolution formula
+#' @param save.changes Logical, if \code{TRUE}, saves a matrix of changed edges
+#'                     as an attribute of the output edgelist matrix
+#'
 #' @export
-simulate_network <- function(p, el, coef.form, coef.diss, save.changes = FALSE) {
+#'
+simulate_network <- function(p,
+                             el,
+                             coef.form,
+                             coef.diss,
+                             save.changes = FALSE) {
 
   control <- tergm::control.simulate.network()
   control$changes <- TRUE
@@ -23,16 +42,21 @@ simulate_network <- function(p, el, coef.form, coef.diss, save.changes = FALSE) 
   attributes(z)$bipartite <- attributes(el)$bipartite
   attributes(z)$loops <- attributes(el)$loops
   attributes(z)$inverted <- attributes(el)$inverted
-  class(z)<-c('edgelist',class(z))
+  class(z) < -c("edgelist", class(z))
 
   return(z)
 }
 
 
-#' @export
-stergm_getMCMCsample <- function(el, model.form, model.diss,
-                                 MHproposal.form, MHproposal.diss,
-                                 eta.form, eta.diss, control, save.changes) {
+stergm_getMCMCsample <- function(el,
+                                 model.form,
+                                 model.diss,
+                                 MHproposal.form,
+                                 MHproposal.diss,
+                                 eta.form,
+                                 eta.diss,
+                                 control,
+                                 save.changes) {
 
   verbose <- FALSE
   model.mon <- NULL
@@ -151,7 +175,9 @@ stergm_getMCMCsample <- function(el, model.form, model.diss,
 }
 
 
-ergm_Cprepare <- function(el, m, response = NULL) {
+ergm_Cprepare <- function(el,
+                          m,
+                          response = NULL) {
 
   n <- attributes(el)$n
 
@@ -229,7 +255,18 @@ ergm_Cprepare <- function(el, m, response = NULL) {
 
 
 
+# ERGM ----------------------------------------------------------------
+
+#' Fast Version of ergm::simulate.ergm for Edgelist-formatted Network
+#'
+#' @param p A list of network-related nodal covariates and related terms that
+#'          is produced with \code{\link{ergm_prep}}
+#' @param el A two-column matrix of current edges (edgelist) with an attribute
+#'           variable \code{n} containing the total current network size
+#' @param coef Vector of coefficients associated with the formation formula
+#'
 #' @export
+#'
 simulate_ergm <- function(p, el, coef) {
 
   control <- control.simulate.formula()
@@ -246,7 +283,6 @@ simulate_ergm <- function(p, el, coef) {
 }
 
 
-#' @export
 ergm_getMCMCsample <- function(el, model, MHproposal, eta0, control) {
 
   Clist <- ergm_Cprepare(el, model, response = NULL)

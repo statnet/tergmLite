@@ -1,33 +1,52 @@
 
+
+#' Converts Network Object, Formation and Dissolution Formulas, Formation and
+#' Dissolution Coefficients, and Control Settings to a Data-Thin List Format
+#' for STERGM Resimulation
+#'
+#' @param nw An object of class \code{network}
+#' @param formation Right-hand sided formation formula
+#' @param dissolution Right-hand sided dissolution formula
+#' @param coef.form Vector of coefficients associated with the formation formula
+#' @param coef.diss Vector of coefficients associated with the dissolution formula
+#' @param constraints Constraints for the formation model (only \code{bd})
+#'                    constraints currently supported.
+#' @param control Control settings passed to \code{tergm::control.simulate.network}
+#'
 #' @export
-stergm_prep <- function(nw, formation, dissolution,
-                        coef.form, coef.diss, constraints,
+#'
+stergm_prep <- function(nw,
+                        formation,
+                        dissolution,
+                        coef.form,
+                        coef.diss,
+                        constraints,
                         control = tergm::control.simulate.network()) {
 
   if (inherits(nw, "network") == FALSE) {
     stop("A network object must be given")
   }
 
-  formation <- ergm.update.formula(formation, nw ~ ., from.new = "nw")
-  dissolution <- ergm.update.formula(dissolution, nw ~ ., from.new = "nw")
+  formation <- ergm::ergm.update.formula(formation, nw ~ ., from.new = "nw")
+  dissolution <- ergm::ergm.update.formula(dissolution, nw ~ ., from.new = "nw")
 
-  model.form <- ergm.getmodel(formation, nw, role = "formation")
-  if (!missing(coef.form) && coef.length.model(model.form) != length(coef.form)) {
+  model.form <- ergm::ergm.getmodel(formation, nw, role = "formation")
+  if (!missing(coef.form) && ergm::coef.length.model(model.form) != length(coef.form)) {
     stop("coef.form has ", length(coef.form), " elements, while the model requires ",
-         coef.length.model(model.form), " parameters.")
+         ergm::coef.length.model(model.form), " parameters.")
   }
-  model.diss <- ergm.getmodel(dissolution, nw, role = "dissolution")
-  if (!missing(coef.diss) && coef.length.model(model.diss) != length(coef.diss)) {
+  model.diss <- ergm::ergm.getmodel(dissolution, nw, role = "dissolution")
+  if (!missing(coef.diss) && ergm::coef.length.model(model.diss) != length(coef.diss)) {
     stop("coef.diss has ", length(coef.diss), " elements, while the model requires ",
-         coef.length.model(model.diss), " parameters.")
+         ergm::coef.length.model(model.diss), " parameters.")
   }
 
-  MHproposal.form <- MHproposal(constraints, control$MCMC.prop.args.form,
-                                nw, weights = control$MCMC.prop.weights.form,
-                                class = "f")
-  MHproposal.diss <- MHproposal(constraints, control$MCMC.prop.args.diss,
-                                nw, weights = control$MCMC.prop.weights.diss,
-                                class = "d")
+  MHproposal.form <- ergm::MHproposal(constraints, control$MCMC.prop.args.form,
+                                      nw, weights = control$MCMC.prop.weights.form,
+                                      class = "f")
+  MHproposal.diss <- ergm::MHproposal(constraints, control$MCMC.prop.args.diss,
+                                      nw, weights = control$MCMC.prop.weights.diss,
+                                      class = "d")
 
   out <- list(model.form = model.form, model.diss = model.diss,
               MHproposal.form = MHproposal.form, MHproposal.diss = MHproposal.diss)
@@ -35,11 +54,27 @@ stergm_prep <- function(nw, formation, dissolution,
   return(out)
 }
 
-#' @export
-ergm_prep <- function(nw, formation, coef, constraints, control = control.simulate.ergm()) {
 
-  form <- ergm.update.formula(formation, nw ~ ., from.new = "nw")
-  m <- ergm.getmodel(form, nw, response = NULL, role = "static")
+#' Converts Network Object, Formation Formulas, Formation Coefficients, and
+#' Control Settings to a Data-Thin List Format for ERGM Resimulation
+#'
+#' @param nw An object of class \code{network}
+#' @param formation Right-hand sided formation formula
+#' @param coef Vector of coefficients associated with the formation formula
+#' @param constraints Constraints for the formation model (only \code{bd})
+#'                    constraints currently supported.
+#' @param control Control settings passed to \code{ergm::control.simulate.ergm}
+#'
+#' @export
+#'
+ergm_prep <- function(nw,
+                      formation,
+                      coef,
+                      constraints,
+                      control = ergm::control.simulate.ergm()) {
+
+  form <- ergm::ergm.update.formula(formation, nw ~ ., from.new = "nw")
+  m <- ergm::ergm.getmodel(form, nw, response = NULL, role = "static")
 
   MHproposal <- MHproposal(constraints, arguments = control$MCMC.prop.args,
                            nw = nw, weights = control$MCMC.prop.weights, class = "c",

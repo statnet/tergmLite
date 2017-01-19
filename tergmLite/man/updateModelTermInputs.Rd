@@ -2,7 +2,7 @@
 % Please edit documentation in R/updateModelTerms.R
 \name{updateModelTermInputs}
 \alias{updateModelTermInputs}
-\title{Alternate Methods for Computing Ergm Term Inputs}
+\title{Alternate Methods for Computing and Updating ERGM/STERGM Term Inputs}
 \usage{
 updateModelTermInputs(dat, network = 1)
 }
@@ -13,7 +13,7 @@ updateModelTermInputs(dat, network = 1)
 }
 \description{
 Function to appropriately update model params based on ergm model
-             terms when using 'fast_edgelist' representations.
+             terms when using Edgelist-formatted representations
 }
 \details{
 Contains hard-coded implementations of some of the most commonly used

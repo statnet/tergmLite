@@ -1,8 +1,8 @@
 
-#' @title Alternate Methods for Computing Ergm Term Inputs
+#' @title Alternate Methods for Computing and Updating ERGM/STERGM Term Inputs
 #'
 #' @description Function to appropriately update model params based on ergm model
-#'              terms when using 'fast_edgelist' representations.
+#'              terms when using Edgelist-formatted representations
 #'
 #' @param dat EpiModel dat object tracking simulation state
 #' @param network Numberic number of network location for multi-network simulations.
@@ -517,8 +517,7 @@ updateModelTermInputs <- function(dat, network = 1) {
 }
 
 
-
-#' @title Evaluate Ergm Model Formula Terms
+#' @title Evaluate ERGM Formula Terms
 #' @description This is a work-around for evaluating model terms in the non-standard
 #'              tergmLite sequence, as an alternative to ergm.getModel. Computes
 #'              a list of the arguments to the terms in the formula with offsets
