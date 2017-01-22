@@ -42,7 +42,7 @@ simulate_network <- function(p,
   attributes(z)$bipartite <- attributes(el)$bipartite
   attributes(z)$loops <- attributes(el)$loops
   attributes(z)$inverted <- attributes(el)$inverted
-  class(z) < -c("edgelist", class(z))
+  class(z) <- c("edgelist", class(z))
 
   return(z)
 }
