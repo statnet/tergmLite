@@ -26,7 +26,7 @@ have tremendous flexibility in the types of networks they represent but at the
 expense of object size. Continually reading and writing larger-than-necessary
 data objects has the effect of slowing the iterative dynamic simulations.
 
-<img src="https://raw.githubusercontent.com/statnet/tergmLite/master/tergmLite/inst/diagram.png">
+<img src="https://raw.githubusercontent.com/statnet/tergmLite/master/inst/diagram.png">
 
 The `tergmLite` package reduces that computational burden by representing
 networks less flexibly, but much more efficiently. For epidemic models, the only
