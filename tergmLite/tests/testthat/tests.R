@@ -34,7 +34,7 @@ test_that("concurrent_by", {
 
   est <- netest(nw = nw,
                 formation = ~edges + concurrent(by = "riskg"),
-                target.stats = c(50, 30, 20),
+                target.stats = c(50, 20, 10),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
   p <- stergm_prep(nw,
