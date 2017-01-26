@@ -7,7 +7,8 @@ Description: Provides faster, less robust methods for acessing some tergm functi
 Depends:
     R (>= 3.2.0),
     ergm,
-    tergm
+    tergm,
+    EpiModel
 License: GPL-3
 Imports:
     statnet.common,
@@ -15,3 +16,4 @@ Imports:
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: testthat
