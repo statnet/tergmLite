@@ -8,3 +8,5 @@
 *.so
 *.dll
 *.docx
+
+*.DS_Store
