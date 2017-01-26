@@ -1,8 +1,13 @@
-# Sample .travis.yml for R projects
 
 language: r
+sudo:false
+
 warnings_are_errors: true
-sudo: required
 
 before_install:
  - cd tergmLite
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
