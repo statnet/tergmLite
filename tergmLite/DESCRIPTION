@@ -1,9 +1,15 @@
 Package: tergmLite
-Title: A fast, simplified version of TERGM-based simulation for epidemic modeling
-Version: 0.1.2
+Version: 1.0.0
+Date: 2017-01-26
+Title: Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)
 Authors@R: person("Samuel M.", "Jenness",
                   email = "samuel.m.jenness@emory.edu", role = c("aut", "cre"))
-Description: Provides faster, less robust methods for acessing some tergm functions, along with some edgelist based `ergm` term implementations.  
+Description: Provides functions for the computationally efficient simulation and resimulation of 
+             dynamic networks estimated with the statistical framework of temporal exponential 
+             random graph models (TERGMs), implemented in the tergm package within the Statnet 
+             suite of R software. Networks are represented within an edgelist format only, with 
+             nodal attributes stored separately. Also includes efficient functions for the deletion 
+             and addition of nodes within that nework representation.
 Depends:
     R (>= 3.2.0),
     ergm,
