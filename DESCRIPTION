@@ -13,8 +13,7 @@ Description: Provides functions for the computationally efficient simulation and
 Depends:
     R (>= 3.2.0),
     ergm,
-    tergm,
-    EpiModel
+    tergm
 License: GPL-3
 Imports:
     statnet.common,

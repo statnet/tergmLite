@@ -45,7 +45,7 @@
 #'
 #' @useDynLib tergmLite
 #'
-#' @import ergm tergm EpiModel
+#' @import ergm tergm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
 #'
