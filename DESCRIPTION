@@ -18,6 +18,8 @@ License: GPL-3
 Imports:
     statnet.common,
     Rcpp
+Suggests:
+    EpiModel
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 5.0.1
