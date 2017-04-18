@@ -45,7 +45,7 @@
 #'
 #' @useDynLib tergmLite
 #'
-#' @import ergm tergm
+#' @import ergm tergm statnet.common
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
 #'
