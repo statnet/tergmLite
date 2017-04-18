@@ -59,3 +59,13 @@ test_that("concurrent_by", {
 
 })
 
+
+test_that("get_formula_term...", {
+
+  form <- ~edges + concurrent(by = "riskg")
+  args <- get_formula_term_args_in_formula_env(form, 2)
+  expect_is(args, "list")
+  expect_true(names(args) == "by")
+  expect_true(args[[1]] == "riskg")
+
+})
