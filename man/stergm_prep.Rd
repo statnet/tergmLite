@@ -30,4 +30,3 @@ Converts Network Object, Formation and Dissolution Formulas, Formation and
 Dissolution Coefficients, and Control Settings to a Data-Thin List Format
 for STERGM Resimulation
 }
-

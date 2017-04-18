@@ -24,4 +24,3 @@ constraints currently supported.}
 Converts Network Object, Formation Formulas, Formation Coefficients, and
 Control Settings to a Data-Thin List Format for ERGM Resimulation
 }
-

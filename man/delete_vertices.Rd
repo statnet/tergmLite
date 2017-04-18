@@ -19,4 +19,3 @@ Given a current two-column matrix of edges and a vector of IDs
              downward the index of IDs on the edgelist that were numerically
              larger than the IDs deleted.
 }
-

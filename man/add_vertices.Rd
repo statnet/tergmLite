@@ -18,4 +18,3 @@ This function performs a simple operation of updating the
              edgelist attribute \code{n} that tracks the total network
              size implicit in an edgelist representation of the network.
 }
-

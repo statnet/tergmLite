@@ -2,8 +2,8 @@
 % Please edit documentation in R/tergmLite-package.r
 \docType{package}
 \name{tergmLite-package}
-\alias{tergmLite}
 \alias{tergmLite-package}
+\alias{tergmLite}
 \title{Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)}
 \description{
 \tabular{ll}{
@@ -46,4 +46,3 @@ time is sped up by a factor of 25-50 fold, depending on the specific research
 application.
 }
 \keyword{package}
-

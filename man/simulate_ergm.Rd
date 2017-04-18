@@ -18,4 +18,3 @@ variable \code{n} containing the total current network size}
 \description{
 Fast Version of ergm::simulate.ergm for Edgelist-formatted Network
 }
-

@@ -19,4 +19,3 @@ This is a work-around for evaluating model terms in the non-standard
              list where the first element is the term name and subsequent (named)
              elements are the argument values named by the argument names.
 }
-

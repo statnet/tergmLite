@@ -23,4 +23,3 @@ as an attribute of the output edgelist matrix}
 \description{
 Fast Version of tergm::simulate.network for Edgelist-formatted Network
 }
-
