@@ -1,12 +1,13 @@
 
 test_that("concurrent", {
 
+  library("EpiModel")
   nw <- network.initialize(100, directed = FALSE)
 
-  est <- EpiModel::netest(nw = nw,
+  est <- netest(nw = nw,
                 formation = ~edges + concurrent,
                 target.stats = c(50, 25),
-                coef.diss = EpiModel::dissolution_coefs(~offset(edges), duration = 100))
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
   p <- stergm_prep(nw,
                    est$formation,
@@ -29,13 +30,14 @@ test_that("concurrent", {
 
 test_that("concurrent_by", {
 
+  library("EpiModel")
   nw <- network.initialize(100, directed = FALSE)
   nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
-  est <- EpiModel::netest(nw = nw,
+  est <- netest(nw = nw,
                 formation = ~edges + concurrent(by = "riskg"),
                 target.stats = c(50, 20, 10),
-                coef.diss = EpiModel::dissolution_coefs(~offset(edges), duration = 100))
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
   p <- stergm_prep(nw,
                    est$formation,
