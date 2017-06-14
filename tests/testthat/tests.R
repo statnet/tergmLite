@@ -68,4 +68,22 @@ test_that("get_formula_term...", {
   expect_true(names(args) == "by")
   expect_true(args[[1]] == "riskg")
 
+  # absdiff
+  form <- ~edges + absdiff("riskg", 2)
+  args <- get_formula_term_args_in_formula_env(form, 2)
+  expect_true(args[[1]] == "riskg")
+  expect_true(names(args)[2] == "pow")
+
+  form <- ~edges + absdiff("riskg", pow = 2)
+  args <- get_formula_term_args_in_formula_env(form, 2)
+  expect_true(args[[1]] == "riskg")
+  expect_true(names(args)[2] == "pow")
+
+  form <- ~edges + absdiff("riskg")
+  args <- get_formula_term_args_in_formula_env(form, 2)
+  expect_true(args[[1]] == "riskg")
+  expect_true(names(args)[2] == "pow")
+
 })
+
+

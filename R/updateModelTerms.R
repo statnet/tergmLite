@@ -558,8 +558,11 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   }
 
   # Set default pow to 1
-  if (tname == "absdiff" & is.null(outlist$pow)) {
+  if (tname == "absdiff" & length(outlist) == 1) {
     outlist$pow <- 1
+  }
+  if (tname == "absdiff" & length(outlist) == 2 & is.null(names(outlist)[2])) {
+    names(outlist)[2] <- "pow"
   }
 
   # set default fixed argument to FALSE
