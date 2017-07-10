@@ -18,6 +18,7 @@
 #'    \item concurrent
 #'    \item degree
 #'    \item absdiff
+#'    \item absdiffby
 #'    \item nodecov
 #'    \item nodemix
 #'  }
@@ -248,6 +249,30 @@ updateModelTermInputs <- function(dat, network = 1) {
       # Transformation function
       pow <- args$pow
       inputs <- c(pow, dat$attr[[attrname]])
+      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
+                                length(inputs), inputs)
+    }
+    
+    else if (term$name == "absdiffby") {
+      form <- dat$nwparam[[network]]$formation
+      args <- get_formula_term_args_in_formula_env(form, t)
+      attrname <- args[[1]]
+      byname <- args[[2]]
+      offset <- args[[3]]
+      values <- args[[4]]
+      if(length(values) != 2) {
+        stop(paste("\"by\" nodal attribute must be binary, and therefore should have 2 unique values. \nVector of values passed was of length ", length(values), sep = ""))
+      }
+      if(!all(values %in% unique(dat$attr[[byname]]))) {
+        stop(paste("Values of binary nodal attribute do not match those in formula term argument: \nValues in formula term argument:", 
+                   values[1], values[2], "\nValues of nodal attribute:", unique(dat$attr[[byname]])[1], unique(dat$attr[[byname]])[2], sep = " "))
+      }
+      if(!all(values == c(0, 1))) {
+        nodeby <- 1 * (dat$attr[[byname]] == values[2])
+      } else {
+        nodeby <- dat$attr[[byname]]
+      }
+      inputs <- c(offset, dat$attr[[attrname]], nodeby)
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
     }
@@ -553,8 +578,11 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   outlist <- eval(args, formula.env)
 
   # Set default base to 1
-  if (tname == "nodefactor" & is.null(outlist$base)) {
+  if (tname == "nodefactor" & length(outlist) == 1) {
     outlist$base <- 1
+  }
+  if (tname == "nodefactor" & length(outlist) == 2 & is.null(names(outlist)[2])) {
+    names(outlist)[2] <- "base"
   }
 
   # Set default pow to 1
@@ -564,11 +592,22 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   if (tname == "absdiff" & length(outlist) == 2 & is.null(names(outlist)[2])) {
     names(outlist)[2] <- "pow"
   }
+  
+  # Set default values in absdiffby to 0, 1
+  if (tname == "absdiffby" & length(outlist) == 3) {
+    outlist$values <- c(0, 1)
+  }
+  if (tname == "absdiffby" & length(outlist) == 4 & is.null(names(outlist)[4])) {
+    names(outlist)[4] <- "values"
+  }
 
   # set default fixed argument to FALSE
   # also needs default keep argument, set to NULL
-  if (tname == "nodematch" & is.null(args$diff)) {
+  if (tname == "nodematch" & length(outlist) == 1) {
     outlist$diff <- FALSE
+  }
+  if (tname == "nodematch" & length(outlist) == 2 & is.null(names(outlist)[2])) {
+    names(outlist)[2] <- "diff"
   }
 
   return(outlist)
