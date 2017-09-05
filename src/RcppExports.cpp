@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // shiftVec
 NumericVector shiftVec(NumericVector elv, NumericVector vid);
-RcppExport SEXP tergmLite_shiftVec(SEXP elvSEXP, SEXP vidSEXP) {
+RcppExport SEXP _tergmLite_shiftVec(SEXP elvSEXP, SEXP vidSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"tergmLite_shiftVec", (DL_FUNC) &tergmLite_shiftVec, 2},
+    {"_tergmLite_shiftVec", (DL_FUNC) &_tergmLite_shiftVec, 2},
     {NULL, NULL, 0}
 };
 
