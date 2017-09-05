@@ -27,6 +27,7 @@ Implemented terms are:
    \item concurrent
    \item degree
    \item absdiff
+   \item absdiffby
    \item nodecov
    \item nodemix
  }
