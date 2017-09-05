@@ -21,7 +21,7 @@ simulate_network <- function(p,
                              coef.diss,
                              save.changes = FALSE) {
 
-  control <- tergm::control.simulate.network()
+  control <- control.simulate.network()
   control$changes <- TRUE
 
   eta.form <- ergm.eta(coef.form, p$model.form$etamap)

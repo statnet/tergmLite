@@ -21,7 +21,7 @@ stergm_prep <- function(nw,
                         coef.form,
                         coef.diss,
                         constraints,
-                        control = tergm::control.simulate.network()) {
+                        control = control.simulate.network()) {
 
   if (inherits(nw, "network") == FALSE) {
     stop("A network object must be given")
