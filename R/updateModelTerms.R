@@ -252,7 +252,7 @@ updateModelTermInputs <- function(dat, network = 1) {
       mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
                                 length(inputs), inputs)
     }
-    
+
     else if (term$name == "absdiffby") {
       form <- dat$nwparam[[network]]$formation
       args <- get_formula_term_args_in_formula_env(form, t)
@@ -261,11 +261,14 @@ updateModelTermInputs <- function(dat, network = 1) {
       offset <- args[[3]]
       values <- args[[4]]
       if(length(values) != 2) {
-        stop(paste("\"by\" nodal attribute must be binary, and therefore should have 2 unique values. \nVector of values passed was of length ", length(values), sep = ""))
+        stop(paste("\"by\" nodal attribute must be binary, and therefore should have 2 unique values.
+                   \nVector of values passed was of length ", length(values), sep = ""))
       }
       if(!all(values %in% unique(dat$attr[[byname]]))) {
-        stop(paste("Values of binary nodal attribute do not match those in formula term argument: \nValues in formula term argument:", 
-                   values[1], values[2], "\nValues of nodal attribute:", unique(dat$attr[[byname]])[1], unique(dat$attr[[byname]])[2], sep = " "))
+        stop(paste("Values of binary nodal attribute do not match those in formula term argument:
+                   \nValues in formula term argument:",
+                   values[1], values[2], "\nValues of nodal attribute:", unique(dat$attr[[byname]])[1],
+                   unique(dat$attr[[byname]])[2], sep = " "))
       }
       if(!all(values == c(0, 1))) {
         nodeby <- 1 * (dat$attr[[byname]] == values[2])
@@ -592,7 +595,7 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   if (tname == "absdiff" & length(outlist) == 2 & is.null(names(outlist)[2])) {
     names(outlist)[2] <- "pow"
   }
-  
+
   # Set default values in absdiffby to 0, 1
   if (tname == "absdiffby" & length(outlist) == 3) {
     outlist$values <- c(0, 1)
