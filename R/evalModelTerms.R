@@ -67,5 +67,21 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
     names(outlist)[2] <- "diff"
   }
 
+  if (tname == "degrange" & length(outlist) == 1 & names(outlist) == "from") {
+    outlist$to <- Inf
+  }
+
+  if (tname == "degrange") {
+    if (!("from" %in% names(outlist))) {
+      outlist$from <- 0
+    }
+    if (!("to" %in% names(outlist))) {
+      outlist$to <- Inf
+    }
+    if (!("homophily" %in% names(outlist))) {
+      outlist$homophily <- FALSE
+    }
+  }
+
   return(outlist)
 }

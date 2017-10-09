@@ -59,7 +59,7 @@ updateModelTermInputs <- function(dat, network = 1) {
     supported.terms <- c("edges", "nodematch", "nodefactor",
                          "concurrent", "concurrent_by_attr", "degree",
                          "absdiff", "absdiffby", "nodecov", "nodemix",
-                         "absdiffnodemix")
+                         "absdiffnodemix", "degrange")
     if (!(term$name %in% supported.terms)) {
       stop("tergmLite does not know how to update the term ",
            term$name," in the formation model formula")
@@ -288,7 +288,7 @@ updateInputs_degree <- function(dat, network, term, t) {
                                                tmp[i])
       emptynwstats[du[1, ] == 0] <- tmp
     }
-  }  else {
+  } else {
     if (any(d == 0)) {
       emptynwstats <- rep(0, length(d))
       emptynwstats[d == 0] <- attr(dat$el,'n') # network size
@@ -316,7 +316,7 @@ updateInputs_degree <- function(dat, network, term, t) {
 
   } else {
     term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
-    term$maxval <- attr(dat$el, "n")
+    term$maxval <- attr(dat$el[[network]], "n")
   }
 
   return(term)
@@ -445,6 +445,98 @@ updateInputs_absdiffnodemix <- function(dat, network, term, t) {
   inputs <- c(length(nodecov), length(urm), nodecov, nodecovby, urm, ucm)
 
   term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_degrange <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  n <- attributes(dat$el[[network]])$n
+
+  from <- args$from
+  to <- args$to
+  byarg <- args$by
+  homophily <- args$homophily
+  to <- ifelse(to == Inf, n + 1, to)
+  if (length(to) == 1 && length(from) > 1) {
+    to <- rep(to, length(from))
+  } else if (length(from) == 1 && length(to) > 1) {
+    from <- rep(from, length(to))
+  } else if (length(from) != length(to)) {
+    stop("The arguments of term degrange must have arguments either of the same
+         length, or one of them must have length 1.")
+  } else if (any(from >= to)) {
+    stop("Term degrange must have from<to.")
+  }
+
+  emptynwstats <- NULL
+  if (!is.null(byarg)) {
+    nodecov <- get.node.attr(nw, byarg, "degrange")
+    u <- sort(unique(nodecov))
+    if (any(is.na(nodecov))) {
+      u <- c(u, NA)
+    }
+    nodecov <- match(nodecov, u)
+    if (length(u) == 1)
+      stop("Attribute given to degrange() has only one value",
+           call. = FALSE)
+  }
+  if (!is.null(byarg) && !homophily) {
+    lu <- length(u)
+    du <- rbind(rep(from, lu), rep(to, lu), rep(1:lu, rep(length(from), lu)))
+    if (any(du[1, ] == 0)) {
+      emptynwstats <- rep(0, ncol(du))
+      tmp <- du[3, du[1, ] == 0]
+      for (i in 1:length(tmp)) tmp[i] <- sum(nodecov == tmp[i])
+      emptynwstats[du[1, ] == 0] <- tmp
+    }
+  } else {
+    if (any(from == 0)) {
+      emptynwstats <- rep(0, length(from))
+      emptynwstats[from == 0] <- n
+    }
+  }
+  if (is.null(byarg)) {
+    if (length(from) == 0) {
+      return(NULL)
+    }
+    coef.names <- ifelse(to >= n + 1,
+                         paste("deg", from, "+", sep = ""),
+                         paste("deg", from, "to", to, sep = ""))
+    name <- "degrange"
+    inputs <- c(rbind(from, to))
+  } else if (homophily) {
+    if (length(from) == 0) {
+      return(NULL)
+    }
+    coef.names <- ifelse(to >= n + 1,
+                         paste("deg", from, "+", ".homophily.", byarg, sep = ""),
+                         paste("deg", from, "to", to, ".homophily.", byarg, sep = ""))
+    name <- "degrange_w_homophily"
+    inputs <- c(rbind(from, to), nodecov)
+  } else {
+    if (ncol(du) == 0) {
+      return(NULL)
+    }
+    coef.names <- ifelse(du[2, ] >= n + 1,
+                         paste("deg", du[1, ], "+.", byarg, u[du[3, ]], sep = ""),
+                         paste("deg", du[1, ], "to", du[2, ], ".", byarg,
+                               u[du[3, ]], sep = ""))
+    name <- "degrange_by_attr"
+    inputs <- c(as.vector(du), nodecov)
+  }
+
+  if (!is.null(emptynwstats)) {
+    term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+    term$emptynwstats <- emptynwstats
+
+  } else {
+    term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+    term$maxval <- attr(dat$el[[network]], "n")
+  }
 
   return(term)
 }
