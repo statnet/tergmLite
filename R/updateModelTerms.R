@@ -48,332 +48,25 @@ updateModelTermInputs <- function(dat, network = 1) {
   }
 
   n <- attributes(dat$el[[network]])$n
-  maxdyads <- choose(n, 2)
 
-  # All input vectors are padded out as the would be by updatemodel.ErgmTerm
-  # outlist$inputs <- c(ifelse(is.null(tmp), 0, tmp),
-  #                     length(outlist$coef.names),
-  #                     length(outlist$inputs), outlist$inputs)
-
-
-  ## 1. Formation Model ##
+  ## 1. Formation Model
 
   for (t in seq_along(mf$terms)) {
 
     # pull term name
     term <- mf$terms[[t]]
 
-    if (term$name == "edges") {
-
-      ## Reference: ergm:::InitErgmTerm.edges
-
-      # Only need to update maxval, no update to inputs
-      mf$terms[[t]]$maxval <- maxdyads
-    }
-
-    else if (term$name == "nodematch") {
-
-      ## Reference: ergm:::InitErgmTerm.nodematch
-
-      # Get the formation formula to parse the params
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-      # get the name of the attribute to be used for nodecov
-      attrname <- args[[1]]
-      diff <- args$diff
-      # collect the values for the attribute
-      nodecov <- dat$attr[[attrname]]
-      u <- sort(unique(nodecov))
-      # optionally remove values not indicated by "keep:
-      if (!is.null(args$keep)) {
-        u <- u[args$keep]
-      }
-      nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-      dontmatch <- nodecov == (length(u) + 1)
-      nodecov[dontmatch] <- length(u) + (1:sum(dontmatch))
-      ui <- seq(along = u)
-      if (diff == TRUE) {
-        inputs <- c(ui, nodecov)
-      } else {
-        inputs <- nodecov
-      }
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-
-    }
-
-    else if (term$name == "nodefactor") {
-
-      ## Reference: ergm:::InitErgmTerm.nodefactor
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-
-      attrname <- args[[1]]
-
-      # Handles interaction terms: nodefactor("attr1", "attr2")
-      if (length(attrname) == 1) {
-        nodecov <- dat$attr[[attrname]]
-      } else {
-        nodecov <- do.call(paste, c(sapply(attrname,
-                                           function(oneattr) dat$attr[[oneattr]],
-                                           simplify = FALSE), sep = "."))
-      }
-
-      u <- sort(unique(nodecov))
-      if (any(statnet.common::NVL(args$base, 0) != 0)) {
-        u <- u[-args$base]
-      }
-      nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-      ui <- seq(along = u)
-      inputs <- c(ui, nodecov)
-      attr(inputs, "ParamsBeforeCov") <- length(ui)
-
-      mf$terms[[t]]$inputs <- c(length(ui), length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-    }
-
-    else if (term$name == "concurrent") {
-
-      # Reference: ergm:::InitErgmTerm.concurrent
-
-      # Homogenous form only updates maxval
-      mf$terms[[t]]$maxval <- n
-
-    }
-
-    else if (term$name == "concurrent_by_attr") {
-
-      # Reference: ergm:::InitErgmTerm.concurrent
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-
-      # heterogeneous form updates input vector
-      byarg <- args$by
-      if (!is.null(byarg)) {
-        nodecov <- dat$attr[[byarg]]
-        u <- sort(unique(nodecov))
-        if (any(is.na(nodecov))) {
-          u <- c(u, NA)
-        }
-        nodecov <- match(nodecov, u)
-        lu <- length(u)
-        ui <- seq(along = u)
-        inputs <- c(ui, nodecov)
-        mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-      }
-
-      mf$terms[[t]]$maxval <- n
-
-    }
-
-    else if (term$name == "degree") {
-
-      ## TODO: check this
-      ## Reference ergm:::InitErgmTerm.degree
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form,t)
-
-      d <- args[[1]]
-      byarg <- args$byarg
-      homophily <- args$homophily
-      emptynwstats <- NULL
-      if (!is.null(byarg)) {
-        nodecov <- dat$attr[[byarg]]
-        u <- sort(unique(nodecov))
-        if (any(is.na(nodecov))) {
-          u <- c(u, NA)
-        }
-        nodecov <- match(nodecov, u)
-        if (length(u) == 1) {
-          stop("Attribute given to degree() has only one value",
-               call. = FALSE)
-        }
-      }
-      if (!is.null(byarg) && !homophily) {
-        lu <- length(u)
-        du <- rbind(rep(d, lu), rep(1:lu, rep(length(d), lu)))
-        if (any(du[1, ] == 0)) {
-          emptynwstats <- rep(0, ncol(du))
-          tmp <- du[2, du[1, ] == 0]
-          for (i in 1:length(tmp)) tmp[i] <- sum(nodecov ==
-                                                   tmp[i])
-          emptynwstats[du[1, ] == 0] <- tmp
-        }
-      }  else {
-        if (any(d == 0)) {
-          emptynwstats <- rep(0, length(d))
-          emptynwstats[d == 0] <- attr(dat$el,'n') # network size
-        }
-      }
-      if (is.null(byarg)) {
-        if (length(d) == 0) {
-          return(NULL)
-        }
-        inputs <- c(d)
-      } else if (homophily) {
-        if (length(d) == 0) {
-          return(NULL)
-        }
-        inputs <- c(d, nodecov)
-      } else {
-        if (ncol(du) == 0) {
-          return(NULL)
-        }
-        inputs <- c(as.vector(du), nodecov)
-      }
-      if (!is.null(emptynwstats)) {
-        mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-        mf$terms[[t]]$emptynwstats <- emptynwstats
-
-      } else {
-        mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-        mf$terms[[t]]$maxval <- attr(dat$el, "n") # network size
-      }
-
-
-    }
-
-    else if (term$name == "absdiff") {
-
-      # Reference: ergm:::InitErgmTerm.absdiff
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-      attrname <- args[[1]]
-      # Transformation function
-      pow <- args$pow
-      inputs <- c(pow, dat$attr[[attrname]])
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-    }
-
-    else if (term$name == "absdiffby") {
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-      attrname <- args[[1]]
-      byname <- args[[2]]
-      offset <- args[[3]]
-      values <- args[[4]]
-      if(length(values) != 2) {
-        stop(paste("\"by\" nodal attribute must be binary, and therefore should have 2 unique values.
-                   \nVector of values passed was of length ", length(values), sep = ""))
-      }
-      if(!all(values %in% unique(dat$attr[[byname]]))) {
-        stop(paste("Values of binary nodal attribute do not match those in formula term argument:
-                   \nValues in formula term argument:",
-                   values[1], values[2], "\nValues of nodal attribute:", unique(dat$attr[[byname]])[1],
-                   unique(dat$attr[[byname]])[2], sep = " "))
-      }
-      if(!all(values == c(0, 1))) {
-        nodeby <- 1 * (dat$attr[[byname]] == values[2])
-      } else {
-        nodeby <- dat$attr[[byname]]
-      }
-      inputs <- c(offset, dat$attr[[attrname]], nodeby)
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-    }
-
-    else if (term$name == "nodecov") {
-
-      ## Reference: ergm:::InitErgmTerm.nodecov
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form,t)
-      attrname <- args[[1]]
-      # get the transformation function
-      f <- args$transform
-      nodecov <- dat$attr[[attrname]]
-      # strange that the original version of the term doesn't require this
-      #    logic to implement the default term..
-      if (!is.null(f)) {
-        inputs <- f(nodecov)
-      } else {
-        inputs <- nodecov
-      }
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-    }
-
-    else if (term$name == "nodemix") {
-
-      # ergm:::InitErgmTerm.nodemix
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form,t)
-      attrname <- args[[1]]
-      nodecov <- dat$attr[[attrname]]
-      base <- args$base
-      # ASSUMES NETWORK IS NOT BIPARTITE
-      u <- sort(unique(nodecov))
-      if (any(is.na(nodecov))) {
-        u <- c(u, NA)
-      }
-      nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-      ui <- seq(along = u)
-      uui <- matrix(1:length(ui)^2, length(ui), length(ui))
-      urm <- t(sapply(ui, rep, length(ui)))
-      ucm <- sapply(ui, rep, length(ui))
-      uun <- outer(u, u, paste, sep = ".")
-      uui <- uui[upper.tri(uui, diag = TRUE)]
-      urm <- urm[upper.tri(urm, diag = TRUE)]
-      ucm <- ucm[upper.tri(ucm, diag = TRUE)]
-      uun <- uun[upper.tri(uun, diag = TRUE)]
-      if (any(NVL(base, 0) != 0)) {
-        urm <- as.vector(urm)[-base]
-        ucm <- as.vector(ucm)[-base]
-        uun <- as.vector(uun)[-base]
-      }
-      inputs <- c(urm, ucm, nodecov)
-      attr(inputs, "ParamsBeforeCov") <- 2 * length(uun)
-      mf$terms[[t]]$inputs <- c(2 * length(uun), length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-
-    }
-
-    else if (term$name == "absdiffnodemix") {
-
-      # Reference: EpiModelHIV::InitErgmTerm.absdiffnodemix
-
-      form <- dat$nwparam[[network]]$formation
-      args <- get_formula_term_args_in_formula_env(form, t)
-
-      nodecov <- dat$attr[[args[[1]]]]
-      nodecovby <- dat$attr[[args[[2]]]]
-
-      u <- sort(unique(nodecovby))
-      if (any(is.na(nodecovby))) {
-        u <- c(u, NA)
-      }
-      nodecovby <- match(nodecovby, u, nomatch = length(u) + 1)
-      ui <- seq(along = u)
-
-      uui <- matrix(1:length(ui) ^ 2, length(ui), length(ui))
-      urm <- t(sapply(ui, rep, length(ui)))
-      ucm <- sapply(ui, rep, length(ui))
-      uun <- outer(u, u, paste, sep = ".")
-      uui <- uui[upper.tri(uui, diag = TRUE)]
-      urm <- urm[upper.tri(urm, diag = TRUE)]
-      ucm <- ucm[upper.tri(ucm, diag = TRUE)]
-      uun <- uun[upper.tri(uun, diag = TRUE)]
-
-      inputs <- c(length(nodecov), length(urm), nodecov, nodecovby, urm, ucm)
-
-      mf$terms[[t]]$inputs <- c(0, length(mf$terms[[t]]$coef.names),
-                                length(inputs), inputs)
-
-    }
-
-    else {
+    supported.terms <- c("edges", "nodematch", "nodefactor",
+                         "concurrent", "concurrent_by_attr", "degree",
+                         "absdiff", "absdiffby", "nodecov", "nodemix",
+                         "absdiffnodemix")
+    if (!(term$name %in% supported.terms)) {
       stop("tergmLite does not know how to update the term ",
            term$name," in the formation model formula")
     }
 
+    func <- paste("updateInputs", term$name, sep = "_")
+    mf$terms[[t]] <- do.call(func, list(dat = dat, network = network, term = term, t = t))
   }
 
   # update combinded maxval
@@ -390,108 +83,22 @@ updateModelTermInputs <- function(dat, network = 1) {
   mf$maxval <- new.maxval
 
 
-  ## 2. Dissolution Model ##
+  ## 2. Dissolution Model
 
   # loop over dissolution model terms and update
   if (dynamic == TRUE) {
     for (t in seq_along(md$terms)) {
+
       term <- md$terms[[t]]
 
-      if (term$name == "edges") {
-        md$terms[[t]]$maxval <- maxdyads
-      }
-
-      else if (term$name == "nodematch") {
-
-        ## Reference: ergm:::InitErgmTerm.nodematch
-
-        diss <- dat$nwparam[[network]]$coef.diss$dissolution
-        args <- get_formula_term_args_in_formula_env(diss, t)
-        diff <- args$diff
-        nodecov <- dat$attr[[attrname]]
-        u <- sort(unique(nodecov))
-        if (!is.null(args$keep)) {
-          u <- u[args$keep]
-        }
-        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-        dontmatch <- nodecov == (length(u) + 1)
-        nodecov[dontmatch] <- length(u) + (1:sum(dontmatch))
-        ui <- seq(along = u)
-        if (diff == TRUE) {
-          inputs <- c(ui, nodecov)
-        } else {
-          inputs <- nodecov
-        }
-        md$terms[[t]]$inputs <- c(0, length(md$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-
-      }
-
-      else if (term$name == "nodefactor") {
-
-        ## Reference: ergm:::InitErgmTerm.nodefactor
-
-        diss <- dat$nwparam[[network]]$coef.diss$dissolution
-        args <- get_formula_term_args_in_formula_env(diss, t)
-        attrname <- args[[1]]
-        # Handles interaction terms: nodefactor("attr1", "attr2")
-        if (length(attrname) == 1) {
-          nodecov <- dat$attr[[attrname]]
-        } else {
-          nodecov <- do.call(paste, c(sapply(attrname,
-                                             function(oneattr) dat$attr[[oneattr]],
-                                             simplify = FALSE), sep = "."))
-        }
-
-        u <- sort(unique(nodecov))
-        if (any(statnet.common::NVL(args$base, 0) != 0)) {
-          u <- u[-args$base]
-        }
-        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-        ui <- seq(along = u)
-        inputs <- c(ui, nodecov)
-        md$terms[[t]]$inputs <- c(length(ui), length(md$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-      }
-
-      else if (term$name == "nodemix") {
-
-        # ergm:::InitErgmTerm.nodemix
-        diss <- dat$nwparam[[network]]$coef.diss$dissolution
-        args <- get_formula_term_args_in_formula_env(diss, t)
-        attrname <- args[[1]]
-        nodecov <- dat$attr[[attrname]]
-        base <- args$base
-        u <- sort(unique(nodecov))
-        if (any(is.na(nodecov))) {
-          u <- c(u, NA)
-        }
-        nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-        ui <- seq(along = u)
-        uui <- matrix(1:length(ui)^2, length(ui), length(ui))
-        urm <- t(sapply(ui, rep, length(ui)))
-        ucm <- sapply(ui, rep, length(ui))
-        uun <- outer(u, u, paste, sep = ".")
-        uui <- uui[upper.tri(uui, diag = TRUE)]
-        urm <- urm[upper.tri(urm, diag = TRUE)]
-        ucm <- ucm[upper.tri(ucm, diag = TRUE)]
-        uun <- uun[upper.tri(uun, diag = TRUE)]
-        if (any(NVL(base, 0) != 0)) {
-          urm <- as.vector(urm)[-base]
-          ucm <- as.vector(ucm)[-base]
-          uun <- as.vector(uun)[-base]
-        }
-        inputs <- c(urm, ucm, nodecov)
-        md$terms[[t]]$inputs <- c(2 * length(uun), length(md$terms[[t]]$coef.names),
-                                  length(inputs), inputs)
-
-      }
-
-      else {
+      supported.terms <- c("edges", "nodematch", "nodefactor", "nodemix")
+      if (!(term$name %in% supported.terms)) {
         stop("tergmLite does not know how to update the term ",
-             term$name, " in the dissolution model formula")
+             term$name," in the formation model formula")
       }
 
+      func <- paste("updateInputs", term$name, sep = "_")
+      md$terms[[t]] <- do.call(func, list(dat = dat, network = network, term = term, t = t))
     }
     for (j in seq_along(md$terms)) {
       if (j == 1) {
@@ -508,7 +115,7 @@ updateModelTermInputs <- function(dat, network = 1) {
   }
 
 
-  ## 3. MHproposal Lists (for constraints) ##
+  ## 3. MHproposal Lists (constraints)
 
   ## Update MHproposal.form
   hasBD <- !is.null(mhf$arguments$constraints$bd$attribs[1])
@@ -529,7 +136,7 @@ updateModelTermInputs <- function(dat, network = 1) {
   }
 
 
-  ## 4. Update and return ##
+  ## 4. Update and return
 
   # update the elements of the parameter list and return
   if (dynamic == TRUE) {
@@ -542,4 +149,302 @@ updateModelTermInputs <- function(dat, network = 1) {
   dat$p[[network]] <- p
 
   return(dat)
+}
+
+
+updateInputs_edges <- function(dat, network, term, t) {
+
+  # Only need to update maxval, no update to inputs
+  n <- attributes(dat$el[[network]])$n
+  maxdyads <- choose(n, 2)
+
+  term$maxval <- maxdyads
+
+  return(term)
+}
+
+updateInputs_nodematch <- function(dat, network, term, t) {
+
+  # Get the formation formula to parse the params
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+  # get the name of the attribute to be used for nodecov
+  attrname <- args[[1]]
+  diff <- args$diff
+  # collect the values for the attribute
+  nodecov <- dat$attr[[attrname]]
+  u <- sort(unique(nodecov))
+  # optionally remove values not indicated by "keep:
+  if (!is.null(args$keep)) {
+    u <- u[args$keep]
+  }
+  nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+  dontmatch <- nodecov == (length(u) + 1)
+  nodecov[dontmatch] <- length(u) + (1:sum(dontmatch))
+  ui <- seq(along = u)
+  if (diff == TRUE) {
+    inputs <- c(ui, nodecov)
+  } else {
+    inputs <- nodecov
+  }
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_nodefactor <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  attrname <- args[[1]]
+
+  # Handles interaction terms: nodefactor("attr1", "attr2")
+  if (length(attrname) == 1) {
+    nodecov <- dat$attr[[attrname]]
+  } else {
+    nodecov <- do.call(paste, c(sapply(attrname,
+                                       function(oneattr) dat$attr[[oneattr]],
+                                       simplify = FALSE), sep = "."))
+  }
+
+  u <- sort(unique(nodecov))
+  if (any(statnet.common::NVL(args$base, 0) != 0)) {
+    u <- u[-args$base]
+  }
+  nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+  ui <- seq(along = u)
+  inputs <- c(ui, nodecov)
+  attr(inputs, "ParamsBeforeCov") <- length(ui)
+
+  term$inputs <- c(length(ui), length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_concurrent <- function(dat, network, term, t) {
+
+  # Homogenous form only updates maxval
+  n <- attributes(dat$el[[network]])$n
+  term$maxval <- n
+
+  return(term)
+}
+
+updateInputs_concurrent_by_attr <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  n <- attributes(dat$el[[network]])$n
+
+  # heterogeneous form updates input vector
+  byarg <- args$by
+  if (!is.null(byarg)) {
+    nodecov <- dat$attr[[byarg]]
+    u <- sort(unique(nodecov))
+    if (any(is.na(nodecov))) {
+      u <- c(u, NA)
+    }
+    nodecov <- match(nodecov, u)
+    ui <- seq(along = u)
+    inputs <- c(ui, nodecov)
+    term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+  }
+
+  term$maxval <- n
+
+  return(term)
+}
+
+updateInputs_degree <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  d <- args[[1]]
+  byarg <- args$byarg
+  homophily <- args$homophily
+  emptynwstats <- NULL
+  if (!is.null(byarg)) {
+    nodecov <- dat$attr[[byarg]]
+    u <- sort(unique(nodecov))
+    if (any(is.na(nodecov))) {
+      u <- c(u, NA)
+    }
+    nodecov <- match(nodecov, u)
+    if (length(u) == 1) {
+      stop("Attribute given to degree() has only one value",
+           call. = FALSE)
+    }
+  }
+  if (!is.null(byarg) && !homophily) {
+    lu <- length(u)
+    du <- rbind(rep(d, lu), rep(1:lu, rep(length(d), lu)))
+    if (any(du[1, ] == 0)) {
+      emptynwstats <- rep(0, ncol(du))
+      tmp <- du[2, du[1, ] == 0]
+      for (i in 1:length(tmp)) tmp[i] <- sum(nodecov ==
+                                               tmp[i])
+      emptynwstats[du[1, ] == 0] <- tmp
+    }
+  }  else {
+    if (any(d == 0)) {
+      emptynwstats <- rep(0, length(d))
+      emptynwstats[d == 0] <- attr(dat$el,'n') # network size
+    }
+  }
+  if (is.null(byarg)) {
+    if (length(d) == 0) {
+      return(NULL)
+    }
+    inputs <- c(d)
+  } else if (homophily) {
+    if (length(d) == 0) {
+      return(NULL)
+    }
+    inputs <- c(d, nodecov)
+  } else {
+    if (ncol(du) == 0) {
+      return(NULL)
+    }
+    inputs <- c(as.vector(du), nodecov)
+  }
+  if (!is.null(emptynwstats)) {
+    term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+    term$emptynwstats <- emptynwstats
+
+  } else {
+    term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+    term$maxval <- attr(dat$el, "n")
+  }
+
+  return(term)
+}
+
+updateInputs_absdiff <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  attrname <- args[[1]]
+  pow <- args$pow
+
+  inputs <- c(pow, dat$attr[[attrname]])
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_absdiffby <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+  attrname <- args[[1]]
+  byname <- args[[2]]
+  offset <- args[[3]]
+  values <- args[[4]]
+  if (length(values) != 2) {
+    stop(paste("\"by\" nodal attribute must be binary, and therefore should have 2 unique values.
+               \nVector of values passed was of length ", length(values), sep = ""))
+  }
+  if (!all(values %in% unique(dat$attr[[byname]]))) {
+    stop(paste("Values of binary nodal attribute do not match those in formula term argument:
+               \nValues in formula term argument:",
+               values[1], values[2], "\nValues of nodal attribute:", unique(dat$attr[[byname]])[1],
+               unique(dat$attr[[byname]])[2], sep = " "))
+  }
+  if (!all(values == c(0, 1))) {
+    nodeby <- 1 * (dat$attr[[byname]] == values[2])
+  } else {
+    nodeby <- dat$attr[[byname]]
+  }
+  inputs <- c(offset, dat$attr[[attrname]], nodeby)
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_nodecov <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+  attrname <- args[[1]]
+
+  f <- args$transform
+  nodecov <- dat$attr[[attrname]]
+
+  if (!is.null(f)) {
+    inputs <- f(nodecov)
+  } else {
+    inputs <- nodecov
+  }
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_nodemix <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form,t)
+  attrname <- args[[1]]
+  nodecov <- dat$attr[[attrname]]
+  base <- args$base
+
+  u <- sort(unique(nodecov))
+  if (any(is.na(nodecov))) {
+    u <- c(u, NA)
+  }
+  nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+  ui <- seq(along = u)
+  uui <- matrix(1:length(ui)^2, length(ui), length(ui))
+  urm <- t(sapply(ui, rep, length(ui)))
+  ucm <- sapply(ui, rep, length(ui))
+  uun <- outer(u, u, paste, sep = ".")
+  uui <- uui[upper.tri(uui, diag = TRUE)]
+  urm <- urm[upper.tri(urm, diag = TRUE)]
+  ucm <- ucm[upper.tri(ucm, diag = TRUE)]
+  uun <- uun[upper.tri(uun, diag = TRUE)]
+  if (any(NVL(base, 0) != 0)) {
+    urm <- as.vector(urm)[-base]
+    ucm <- as.vector(ucm)[-base]
+    uun <- as.vector(uun)[-base]
+  }
+  inputs <- c(urm, ucm, nodecov)
+  attr(inputs, "ParamsBeforeCov") <- 2 * length(uun)
+  term$inputs <- c(2 * length(uun), length(term$coef.names), length(inputs), inputs)
+
+  return(term)
+}
+
+updateInputs_absdiffnodemix <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  nodecov <- dat$attr[[args[[1]]]]
+  nodecovby <- dat$attr[[args[[2]]]]
+
+  u <- sort(unique(nodecovby))
+  if (any(is.na(nodecovby))) {
+    u <- c(u, NA)
+  }
+  nodecovby <- match(nodecovby, u, nomatch = length(u) + 1)
+  ui <- seq(along = u)
+
+  uui <- matrix(1:length(ui) ^ 2, length(ui), length(ui))
+  urm <- t(sapply(ui, rep, length(ui)))
+  ucm <- sapply(ui, rep, length(ui))
+  uun <- outer(u, u, paste, sep = ".")
+  uui <- uui[upper.tri(uui, diag = TRUE)]
+  urm <- urm[upper.tri(urm, diag = TRUE)]
+  ucm <- ucm[upper.tri(ucm, diag = TRUE)]
+  uun <- uun[upper.tri(uun, diag = TRUE)]
+
+  inputs <- c(length(nodecov), length(urm), nodecov, nodecovby, urm, ucm)
+
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+
+  return(term)
 }

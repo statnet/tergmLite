@@ -60,6 +60,7 @@ test_that("concurrent_by", {
 })
 
 
+
 test_that("get_formula_term...", {
 
   form <- ~edges + concurrent(by = "riskg")
@@ -83,7 +84,7 @@ test_that("get_formula_term...", {
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "pow")
-  
+
   # absdiffby
   form <- ~edges + absdiffby("riskg", "by", "offset", values = c(0, 1))
   args <- get_formula_term_args_in_formula_env(form, 2)
@@ -91,48 +92,48 @@ test_that("get_formula_term...", {
   expect_true(args[[2]] == "by")
   expect_true(args[[3]] == "offset")
   expect_true(names(args)[4] == "values")
-  
+
   form <- ~edges + absdiffby("riskg", "by", "offset", c(0, 1))
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(args[[2]] == "by")
   expect_true(args[[3]] == "offset")
   expect_true(names(args)[4] == "values")
-  
+
   form <- ~edges + absdiffby("riskg", "by", "offset")
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(args[[2]] == "by")
   expect_true(args[[3]] == "offset")
   expect_true(names(args)[4] == "values")
-  
+
   # nodefactor
   form <- ~edges + nodefactor("riskg", base = 1)
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "base")
-  
+
   form <- ~edges + nodefactor("riskg", 1)
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "base")
-  
+
   form <- ~edges + nodefactor("riskg")
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "base")
-  
+
   # nodematch
   form <- ~edges + nodematch("riskg", diff = F)
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "diff")
-  
+
   form <- ~edges + nodematch("riskg", F)
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
   expect_true(names(args)[2] == "diff")
-  
+
   form <- ~edges + nodematch("riskg")
   args <- get_formula_term_args_in_formula_env(form, 2)
   expect_true(args[[1]] == "riskg")
