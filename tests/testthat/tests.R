@@ -86,6 +86,31 @@ test_that("degrange", {
 
   expect_identical(dat$p[[1]], p)
 
+
+  ## from + to args
+
+  est <- netest(nw = nw,
+                formation = ~edges + degrange(from = 4, to = 6),
+                target.stats = c(50, 0),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  p <- stergm_prep(nw,
+                   est$formation,
+                   est$coef.diss$dissolution,
+                   est$coef.form,
+                   est$coef.diss$coef.adj,
+                   est$constraints)
+
+  dat <- list()
+  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
+  dat$p[[1]] <- p
+  dat$el[[1]] <- as.edgelist(simulate(est$fit))
+  dat$nwparam[[1]] <- est
+
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p[[1]], p)
+
 })
 
 test_that("get_formula_term...", {
