@@ -11,14 +11,15 @@ Description: Provides functions for the computationally efficient simulation and
              nodal attributes stored separately. Also includes efficient functions for the deletion 
              and addition of nodes within that nework representation.
 Depends:
-    R (>= 3.2.0),
-    ergm,
-    tergm
+    R (>= 3.2.0)
 License: GPL-3
 Imports:
+    ergm,
     statnet.common,
-    Rcpp
+    Rcpp,
+    tergm
 Suggests: testthat, EpiModel
-LinkingTo: Rcpp, ergm
+LinkingTo: Rcpp, ergm, tergm
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+Encoding: UTF-8

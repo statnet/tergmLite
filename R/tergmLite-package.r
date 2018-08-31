@@ -45,9 +45,10 @@
 #'
 #' @useDynLib tergmLite
 #'
-#' @import ergm tergm statnet.common
+#' @import ergm tergm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
+#' @importFrom statnet.common term.list.formula NVL
 #'
 #' @docType package
 #' @keywords package
