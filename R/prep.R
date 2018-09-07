@@ -27,24 +27,24 @@ stergm_prep <- function(nw,
     stop("A network object must be given")
   }
 
-  formation <- ergm::ergm.update.formula(formation, nw ~ ., from.new = "nw")
-  dissolution <- ergm::ergm.update.formula(dissolution, nw ~ ., from.new = "nw")
+  formation <- statnet.common::nonsimp_update.formula(formation, nw ~ ., from.new = "nw")
+  dissolution <- statnet.common::nonsimp_update.formula(dissolution, nw ~ ., from.new = "nw")
 
-  model.form <- ergm::ergm.getmodel(formation, nw, role = "formation")
-  if (!missing(coef.form) && ergm::coef.length.model(model.form) != length(coef.form)) {
+  model.form <- ergm::ergm_model(formation, nw, role = "formation")
+  if (!missing(coef.form) && ergm::nparam(model.form) != length(coef.form)) {
     stop("coef.form has ", length(coef.form), " elements, while the model requires ",
-         ergm::coef.length.model(model.form), " parameters.")
+         ergm::nparam(model.form), " parameters.")
   }
-  model.diss <- ergm::ergm.getmodel(dissolution, nw, role = "dissolution")
-  if (!missing(coef.diss) && ergm::coef.length.model(model.diss) != length(coef.diss)) {
+  model.diss <- ergm::ergm_model(dissolution, nw, role = "dissolution")
+  if (!missing(coef.diss) && ergm::nparam(model.diss) != length(coef.diss)) {
     stop("coef.diss has ", length(coef.diss), " elements, while the model requires ",
-         ergm::coef.length.model(model.diss), " parameters.")
+         ergm::nparam(model.diss), " parameters.")
   }
 
-  MHproposal.form <- ergm::MHproposal(constraints, control$MCMC.prop.args.form,
+  MHproposal.form <- ergm::ergm_proposal(constraints, control$MCMC.prop.args.form,
                                       nw, weights = control$MCMC.prop.weights.form,
                                       class = "f")
-  MHproposal.diss <- ergm::MHproposal(constraints, control$MCMC.prop.args.diss,
+  MHproposal.diss <- ergm::ergm_proposal(constraints, control$MCMC.prop.args.diss,
                                       nw, weights = control$MCMC.prop.weights.diss,
                                       class = "d")
 
@@ -73,10 +73,10 @@ ergm_prep <- function(nw,
                       constraints,
                       control = ergm::control.simulate.ergm()) {
 
-  form <- ergm::ergm.update.formula(formation, nw ~ ., from.new = "nw")
-  m <- ergm::ergm.getmodel(form, nw, response = NULL, role = "static")
+  form <- statnet.common::nonsimp_update.formula(formation, nw ~ ., from.new = "nw")
+  m <- ergm::ergm_model(form, nw, response = NULL, role = "static")
 
-  MHproposal <- MHproposal(constraints, arguments = control$MCMC.prop.args,
+  MHproposal <- ergm_proposal(constraints, arguments = control$MCMC.prop.args,
                            nw = nw, weights = control$MCMC.prop.weights, class = "c",
                            reference = ~Bernoulli, response = NULL)
 
