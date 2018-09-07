@@ -19,7 +19,7 @@ Imports:
     Rcpp,
     tergm (>= 3.5.2)
 Suggests: testthat, EpiModel
-LinkingTo: Rcpp, ergm, tergm
+LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 6.1.0
 Encoding: UTF-8
