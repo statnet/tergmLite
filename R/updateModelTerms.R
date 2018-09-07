@@ -474,16 +474,18 @@ updateInputs_degrange <- function(dat, network, term, t) {
 
   emptynwstats <- NULL
   if (!is.null(byarg)) {
-    nodecov <- get.node.attr(nw, byarg, "degrange")
+    nodecov <- dat$attr[[byarg]]
     u <- sort(unique(nodecov))
     if (any(is.na(nodecov))) {
       u <- c(u, NA)
     }
     nodecov <- match(nodecov, u)
-    if (length(u) == 1)
+    if (length(u) == 1) {
       stop("Attribute given to degrange() has only one value",
            call. = FALSE)
+    }
   }
+
   if (!is.null(byarg) && !homophily) {
     lu <- length(u)
     du <- rbind(rep(from, lu), rep(to, lu), rep(1:lu, rep(length(from), lu)))
