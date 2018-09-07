@@ -289,9 +289,9 @@ ergm_getMCMCsample <- function(el, model, MHproposal, eta0, control) {
   control.parallel <- control
   control.parallel$MCMC.samplesize <- 1
 
-  z <- ergm.mcmcslave(Clist = Clist, prev.run = NULL,
+  z <- ergm_MCMC_slave(Clist = Clist, prev.run = NULL,
                       burnin = NULL, samplesize = NULL, interval = NULL,
-                      maxedges = NULL, MHproposal = MHproposal, eta0 = eta0,
+                      maxedges = NULL, proposal = MHproposal, eta = eta0,
                       control = control.parallel, verbose = FALSE)
 
   nedges <- z$newnwtails[1]

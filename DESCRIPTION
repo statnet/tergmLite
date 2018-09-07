@@ -1,6 +1,6 @@
 Package: tergmLite
-Version: 1.0.0
-Date: 2017-01-26
+Version: 1.1.0
+Date: 2018-09-07
 Title: Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)
 Authors@R: person("Samuel M.", "Jenness",
                   email = "samuel.m.jenness@emory.edu", role = c("aut", "cre"))
@@ -14,12 +14,12 @@ Depends:
     R (>= 3.2.0)
 License: GPL-3
 Imports:
-    ergm,
-    statnet.common,
+    ergm (>= 3.9.4),
+    statnet.common (>= 4.1.4),
     Rcpp,
-    tergm
+    tergm (>= 3.5.2)
 Suggests: testthat, EpiModel
-LinkingTo: Rcpp, ergm, tergm
+LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 6.1.0
 Encoding: UTF-8
