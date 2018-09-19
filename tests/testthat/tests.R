@@ -192,5 +192,3 @@ test_that("get_formula_term...", {
   expect_true(names(args)[2] == "diff")
 
 })
-
-

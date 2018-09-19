@@ -18,7 +18,7 @@ get_formula_term_args_in_formula_env <- function(form, termIndex) {
   # get the calling environment of the formula in case
   # there are substitutions
   formula.env <- environment(form)
-  args <- statnet.common::term.list.formula(form[[2]])[[termIndex]]
+  args <- statnet.common::list_rhs.formula(form)[[termIndex]]
 
   # remove the offset term if it exists
   if (args[1] == "offset()") {
