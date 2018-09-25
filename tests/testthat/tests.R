@@ -113,6 +113,83 @@ test_that("degrange", {
 
 })
 
+test_that("nodefactor single", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  riskg <- rep(1:4, each = 25)
+  nw <- set.vertex.attribute(nw, "riskg", riskg)
+
+  est <- netest(nw = nw,
+                formation = ~edges + nodefactor("riskg"),
+                target.stats = c(50, 25, 25, 25),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  p <- stergm_prep(nw,
+                   est$formation,
+                   est$coef.diss$dissolution,
+                   est$coef.form,
+                   est$coef.diss$coef.adj,
+                   est$constraints)
+
+  dat <- list()
+  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
+  dat$p[[1]] <- p
+  dat$el[[1]] <- as.edgelist(simulate(est$fit))
+  dat$nwparam[[1]] <- est
+  dat$attr <- list()
+  dat$attr$riskg <- riskg
+
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p[[1]], p)
+
+  # p$model.form
+  # p$model.form$terms[[2]]
+  # dat$p[[1]]$model.form$terms[[2]]
+  #
+  # length(p$model.form$terms[[2]]$inputs)
+  # length(dat$p[[1]]$model.form$terms[[2]]$inputs)
+
+})
+
+test_that("nodefactor interaction", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  riskg <- sample(rep(1:2, each = 50))
+  race <- sample(rep(0:1, each = 50))
+  nw <- set.vertex.attribute(nw, "riskg", riskg)
+  nw <- set.vertex.attribute(nw, "race", race)
+
+  est <- netest(nw = nw,
+                formation = ~edges + nodefactor(c("riskg", "race")),
+                target.stats = c(50, 25, 25, 25),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  p <- stergm_prep(nw,
+                   est$formation,
+                   est$coef.diss$dissolution,
+                   est$coef.form,
+                   est$coef.diss$coef.adj,
+                   est$constraints)
+
+  dat <- list()
+  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
+  dat$p[[1]] <- p
+  dat$el[[1]] <- as.edgelist(simulate(est$fit))
+  dat$nwparam[[1]] <- est
+  dat$attr <- list()
+  dat$attr$riskg <- riskg
+  dat$attr$race <- race
+
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p[[1]], p)
+
+})
+
+
 test_that("get_formula_term...", {
 
   form <- ~edges + concurrent(by = "riskg")

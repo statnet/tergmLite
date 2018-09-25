@@ -212,12 +212,15 @@ updateInputs_nodefactor <- function(dat, network, term, t) {
   if (any(statnet.common::NVL(args$base, 0) != 0)) {
     u <- u[-args$base]
   }
-  nodecov <- match(nodecov, u, nomatch = length(u) + 1)
-  ui <- seq(along = u)
-  inputs <- c(ui, nodecov)
-  attr(inputs, "ParamsBeforeCov") <- length(ui)
+  # nodecov <- match(nodecov, u, nomatch = length(u) + 1)
+  nodepos <- match(nodecov, u, nomatch = 0) - 1
 
-  term$inputs <- c(length(ui), length(term$coef.names), length(inputs), inputs)
+  # inputs <- c(ui, nodecov)
+  inputs <- nodepos
+
+  # attr(inputs, "ParamsBeforeCov") <- length(ui)
+
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
 
   return(term)
 }
