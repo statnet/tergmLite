@@ -127,7 +127,6 @@ updateModelTermInputs <- function(dat, network = 1) {
     bd$minout <- matrix(rep(0, n), ncol = 1)
     bd$minin <- matrix(rep(0, n), ncol = 1)
     mhf$arguments$constraints$bd <- bd
-    mhd$arguments$constraints$bd <- bd
   }
 
   # MHproposal.diss (currently matches mhf bd constraint)
