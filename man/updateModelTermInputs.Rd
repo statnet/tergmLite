@@ -24,12 +24,14 @@ Implemented terms are:
    \item edges
    \item nodematch
    \item nodefactor
-   \item concurrent
+   \item concurrent (including heterogenous by attribute)
    \item degree
+   \item degrange
    \item absdiff
-   \item absdiffby
+   \item absdiffby (in the EpiModelHIV package)
    \item nodecov
    \item nodemix
+   \item absdiffnodemix (in the EpiModelHIV package)
  }
  All other terms will return errors.
 }
