@@ -123,11 +123,11 @@ test_that("degree_by_attr", {
 
   library("EpiModel")
   nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+  nw <- set.vertex.attribute(nw, "riskg", sample(rep(0:1, each = 50)))
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1, by = "riskg"),
-                target.stats = c(50, 20, 10),
+                target.stats = c(50, 15, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
   p <- stergm_prep(nw,
