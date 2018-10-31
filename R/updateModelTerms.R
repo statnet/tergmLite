@@ -16,7 +16,7 @@
 #'    \item nodematch
 #'    \item nodefactor
 #'    \item concurrent (including heterogenous by attribute)
-#'    \item degree
+#'    \item degree (including heterogenous by attribute)
 #'    \item degrange
 #'    \item absdiff
 #'    \item absdiffby (in the EpiModelHIV package)
@@ -59,7 +59,8 @@ updateModelTermInputs <- function(dat, network = 1) {
     term <- mf$terms[[t]]
 
     supported.terms <- c("edges", "nodematch", "nodefactor",
-                         "concurrent", "concurrent_by_attr", "degree",
+                         "concurrent", "concurrent_by_attr",
+                         "degree", "degree_by_attr",
                          "absdiff", "absdiffby", "nodecov", "nodemix",
                          "absdiffnodemix", "degrange")
     if (!(term$name %in% supported.terms)) {
@@ -268,7 +269,44 @@ updateInputs_degree <- function(dat, network, term, t) {
 
   d <- args[[1]]
   byarg <- args$byarg
+  if (!is.null(byarg)) {
+    stop("wrong tergmLite term used")
+  }
   homophily <- args$homophily
+  if (!is.null(homophily)) {
+    stop("degree homophily argument not supported in tergmLite")
+  }
+  emptynwstats <- NULL
+
+  if (any(d == 0)) {
+    emptynwstats <- rep(0, length(d))
+    emptynwstats[d == 0] <- attr(dat$el,'n') # network size
+  }
+
+  if (length(d) == 0) {
+    return(NULL)
+  }
+  inputs <- c(d)
+
+  term$inputs <- c(0, length(term$coef.names), length(inputs), inputs)
+  term$maxval <- attr(dat$el[[network]], "n")
+
+  return(term)
+}
+
+updateInputs_degree_by_attr <- function(dat, network, term, t) {
+
+  form <- dat$nwparam[[network]]$formation
+  args <- get_formula_term_args_in_formula_env(form, t)
+
+  d <- args[[1]]
+  byarg <- args$by
+  homophily <- args$homophily
+  if (is.null(homophily)) {
+    homophily <- FALSE
+  } else {
+    stop("homophily = TRUE not supported in tergmLite")
+  }
   emptynwstats <- NULL
   if (!is.null(byarg)) {
     nodecov <- dat$attr[[byarg]]
@@ -292,22 +330,12 @@ updateInputs_degree <- function(dat, network, term, t) {
                                                tmp[i])
       emptynwstats[du[1, ] == 0] <- tmp
     }
-  } else {
-    if (any(d == 0)) {
-      emptynwstats <- rep(0, length(d))
-      emptynwstats[d == 0] <- attr(dat$el,'n') # network size
-    }
   }
   if (is.null(byarg)) {
     if (length(d) == 0) {
       return(NULL)
     }
     inputs <- c(d)
-  } else if (homophily) {
-    if (length(d) == 0) {
-      return(NULL)
-    }
-    inputs <- c(d, nodecov)
   } else {
     if (ncol(du) == 0) {
       return(NULL)

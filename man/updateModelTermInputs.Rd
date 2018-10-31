@@ -25,7 +25,7 @@ Implemented terms are:
    \item nodematch
    \item nodefactor
    \item concurrent (including heterogenous by attribute)
-   \item degree
+   \item degree (including heterogenous by attribute)
    \item degrange
    \item absdiff
    \item absdiffby (in the EpiModelHIV package)
