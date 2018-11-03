@@ -47,7 +47,6 @@ simulate_network <- function(p,
   return(z)
 }
 
-
 stergm_getMCMCsample <- function(el,
                                  model.form,
                                  model.diss,
@@ -58,98 +57,19 @@ stergm_getMCMCsample <- function(el,
                                  control,
                                  save.changes) {
 
-  verbose <- FALSE
-  model.mon <- NULL
-
   Clist.form <- ergm_Cprepare(el = el, m = model.form)
   Clist.diss <- ergm_Cprepare(el = el, m = model.diss)
-
   Clist.mon <- NULL
-  collect.form <- control$collect.form
-  collect.diss <- control$collect.diss
 
-  maxedges <- control$MCMC.init.maxedges
-  maxchanges <- control$MCMC.init.maxchanges
+  control.parallel <- control
+  control.parallel$MCMC.samplesize <- 1
 
-  repeat {
-    z <- .C("MCMCDyn_wrapper",
-            as.integer(Clist.form$tails),
-            as.integer(Clist.form$heads),
-            time = if (is.null(Clist.form$time)) as.integer(0)
-                       else as.integer(Clist.form$time),
-            lasttoggle = as.integer(NVL(Clist.form$lasttoggle,
-                                        Clist.diss$lasttoggle, Clist.mon$lasttoggle, 0)),
-            as.integer(Clist.form$nedges),
-            as.integer(Clist.form$n),
-            as.integer(Clist.form$dir),
-            as.integer(Clist.form$bipartite),
-            as.integer(Clist.form$nterms),
-            as.character(Clist.form$fnamestring),
-            as.character(Clist.form$snamestring),
-            as.character(MHproposal.form$name),
-            as.character(MHproposal.form$pkgname),
-            as.double(Clist.form$inputs),
-            as.double(deinf(eta.form)),
-            as.integer(Clist.diss$nterms),
-            as.character(Clist.diss$fnamestring),
-            as.character(Clist.diss$snamestring),
-            as.character(MHproposal.diss$name),
-            as.character(MHproposal.diss$pkgname),
-            as.double(Clist.diss$inputs),
-            as.double(deinf(eta.diss)),
-            if (!is.null(model.mon)) as.integer(Clist.mon$nterms) else as.integer(0),
-            if (!is.null(model.mon)) as.character(Clist.mon$fnamestring) else character(0),
-            if (!is.null(model.mon)) as.character(Clist.mon$snamestring) else character(0),
-            if (!is.null(model.mon)) as.double(Clist.mon$inputs) else double(0),
-            as.integer(MHproposal.form$arguments$constraints$bd$attribs),
-            as.integer(MHproposal.form$arguments$constraints$bd$maxout),
-            as.integer(MHproposal.form$arguments$constraints$bd$maxin),
-            as.integer(MHproposal.form$arguments$constraints$bd$minout),
-            as.integer(MHproposal.form$arguments$constraints$bd$minin),
-            as.integer(MHproposal.form$arguments$constraints$bd$condAllDegExact),
-            as.integer(length(MHproposal.form$arguments$constraints$bd$attribs)),
-            as.integer(control$time.samplesize),
-            as.integer(control$MCMC.burnin.min),
-            as.integer(control$MCMC.burnin.max),
-            as.double(control$MCMC.burnin.pval),
-            as.double(control$MCMC.burnin.add),
-            as.integer(control$time.burnin),
-            as.integer(control$time.interval),
-            collect.form = as.integer(collect.form),
-            s.form = if (collect.form) double(Clist.form$nstats *
-                                                (control$time.samplesize + 1))
-                       else double(0),
-            collect.diss = as.integer(collect.diss),
-            s.diss = if (collect.diss) double(Clist.diss$nstats *
-                                                (control$time.samplesize + 1))
-                       else double(0),
-            s.mon = if (!is.null(model.mon)) double(Clist.mon$nstats *
-                                                      (control$time.samplesize + 1))
-                       else double(0),
-            as.integer(maxedges),
-            newnwtails = integer(maxchanges),
-            newnwheads = integer(maxchanges),
-            as.integer(maxchanges),
-            as.integer(control$changes),
-            diffnwtime = if (control$changes) integer(maxchanges) else integer(0),
-            diffnwtails = if (control$changes) integer(maxchanges) else integer(0),
-            diffnwheads = if (control$changes) integer(maxchanges) else integer(0),
-            diffnwdirs = if (control$changes) integer(maxchanges) else integer(0),
-            as.integer(verbose),
-            status = integer(1),
-            PACKAGE = "tergm")
-    if (z$status == 0) {
-      break
-    }
-    if (z$status == 1) {
-      maxedges <- 5 * maxedges
-      message("Too many edges encountered. Increasing capacity to ", maxedges)
-    }
-    if (z$status == 3) {
-      maxchanges <- 5 * maxchanges
-      message("Too many changes elapsed. Increasing capacity to ", maxchanges)
-    }
-  }
+  z <- stergm_MCMC_slave(Clist.form = Clist.form, Clist.diss = Clist.diss,
+                         Clist.mon = Clist.mon,
+                         proposal.form = MHproposal.form,
+                         proposal.diss = MHproposal.diss,
+                         eta.form = eta.form, eta.diss = eta.diss,
+                         control = control.parallel, verbose = FALSE)
 
   nedges <- z$newnwtails[1]
   out <- if (nedges > 0) {
