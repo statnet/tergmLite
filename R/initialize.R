@@ -83,3 +83,64 @@ ergm_prep <- function(nw,
   out <- list(model.form = m, MHproposal = MHproposal)
   return(out)
 }
+
+
+#' @title Initializes EpiModel netsim Object for tergmLite Simulation
+#'
+#' @param dat A list object containing a \code{networkDynamic} object and other
+#'        initialization information passed from \code{\link{netsim}}.
+#'
+#' @export
+#'
+#' @examples
+#' nw <- network.initialize(n = 100, directed = FALSE)
+#' formation <- ~edges
+#' target.stats <- 50
+#' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
+#' x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+#'
+#' param <- param.net(inf.prob = 0.3)
+#' init <- init.net(i.num = 10)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+#'
+#' dat <- initialize.net(x, param, init, control)
+#'
+#' dat <- init_tergmLite(dat)
+#'
+init_tergmLite <- function(dat) {
+
+  num_nw <- ifelse(any(class(dat$nw) == "network"), 1, length(dat$nw))
+
+  dat$el <- list()
+  dat$p <- list()
+
+  for (i in 1:num_nw) {
+
+    nwp <- dat$nwparam[[i]]
+    is_tergm <- nwp$coef.diss$duration > 1
+    if (num_nw == 1) {
+      nw <- dat$nw
+    } else {
+      nw <- dat$nw[[i]]
+    }
+
+    dat$el[[i]] <- as.edgelist(nw)
+    attributes(dat$el[[i]])$vnames <- NULL
+
+    if (is_tergm) {
+      p <- stergm_prep(nw, nwp$formation, nwp$coef.diss$dissolution,
+                       nwp$coef.form, nwp$coef.diss$coef.adj, nwp$constraints)
+      p$model.form$formula <- NULL
+      p$model.diss$formula <- NULL
+    } else {
+      p <- tergmLite::ergm_prep(nw, nwp$formation, nwp$coef.form, nwp$constraints)
+      p$model.form$formula <- NULL
+    }
+    dat$p[[i]] <- p
+
+  }
+
+  dat$nw <- NULL
+
+  return(dat)
+}
