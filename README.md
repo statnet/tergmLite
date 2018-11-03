@@ -1,6 +1,6 @@
 # tergmLite
 
-[![Version](http://img.shields.io/badge/Version-1.1.5-orange.svg?style=flat)](https://github.com/statnet/tergmLite)
+[![Version](http://img.shields.io/badge/Version-1.2.0-orange.svg?style=flat)](https://github.com/statnet/tergmLite)
 [![Build Status](https://travis-ci.org/statnet/tergmLite.svg?branch=master)](https://travis-ci.org/statnet/tergmLite)
 
 *Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)*
