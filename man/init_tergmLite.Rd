@@ -14,6 +14,7 @@ initialization information passed from \code{\link{netsim}}.}
 Initializes EpiModel netsim Object for tergmLite Simulation
 }
 \examples{
+library("EpiModel")
 nw <- network.initialize(n = 100, directed = FALSE)
 formation <- ~edges
 target.stats <- 50

@@ -93,6 +93,7 @@ ergm_prep <- function(nw,
 #' @export
 #'
 #' @examples
+#' library("EpiModel")
 #' nw <- network.initialize(n = 100, directed = FALSE)
 #' formation <- ~edges
 #' target.stats <- 50
