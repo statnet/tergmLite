@@ -8,7 +8,7 @@ init_tergmLite(dat)
 }
 \arguments{
 \item{dat}{A list object containing a \code{networkDynamic} object and other
-initialization information passed from \code{\link{netsim}}.}
+initialization information passed from \code{netsim}.}
 }
 \description{
 Initializes EpiModel netsim Object for tergmLite Simulation

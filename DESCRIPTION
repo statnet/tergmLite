@@ -17,7 +17,8 @@ Imports:
     ergm (>= 3.9.4),
     statnet.common (>= 4.1.4),
     Rcpp,
-    tergm (>= 3.5.2)
+    tergm (>= 3.5.2),
+    network
 Suggests: testthat, EpiModel
 LinkingTo: Rcpp, ergm
 LazyData: true

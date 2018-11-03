@@ -96,7 +96,7 @@ test_that("degree, multiple", {
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1:2),
-                target.stats = c(50, 20, 10),
+                target.stats = c(50, 35, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
   p <- stergm_prep(nw,

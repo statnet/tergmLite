@@ -49,6 +49,7 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
 #' @importFrom statnet.common term.list.formula NVL
+#' @importFrom network as.edgelist
 #'
 #' @docType package
 #' @keywords package
