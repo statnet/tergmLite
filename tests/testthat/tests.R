@@ -9,22 +9,17 @@ test_that("concurrent", {
                 target.stats = c(50, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -39,23 +34,17 @@ test_that("concurrent_by", {
                 target.stats = c(50, 20, 10),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$attr$riskg <- nw %v% "riskg"
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -69,23 +58,17 @@ test_that("degree, single", {
                 target.stats = c(50, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$attr$riskg <- nw %v% "riskg"
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -99,23 +82,17 @@ test_that("degree, multiple", {
                 target.stats = c(50, 35, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$attr$riskg <- nw %v% "riskg"
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -130,23 +107,17 @@ test_that("degree_by_attr", {
                 target.stats = c(50, 15, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$attr$riskg <- nw %v% "riskg"
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -160,22 +131,17 @@ test_that("degrange", {
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 
   ## from + to args
@@ -185,22 +151,17 @@ test_that("degrange", {
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$nwparam[[1]] <- est
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
@@ -216,33 +177,20 @@ test_that("nodefactor single", {
                 target.stats = c(50, 25, 25, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$nwparam[[1]] <- est
-  dat$attr <- list()
-  dat$attr$riskg <- riskg
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
-
-  # p$model.form
-  # p$model.form$terms[[2]]
-  # dat$p[[1]]$model.form$terms[[2]]
-  #
-  # length(p$model.form$terms[[2]]$inputs)
-  # length(dat$p[[1]]$model.form$terms[[2]]$inputs)
+  expect_identical(dat$p, p)
 
 })
+
 
 test_that("nodefactor interaction", {
 
@@ -258,25 +206,17 @@ test_that("nodefactor interaction", {
                 target.stats = c(50, 25, 25, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  p <- stergm_prep(nw,
-                   est$formation,
-                   est$coef.diss$dissolution,
-                   est$coef.form,
-                   est$coef.diss$coef.adj,
-                   est$constraints)
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
-  dat <- list()
-  dat$p <- dat$el <- dat$attr <- dat$nwparam <- list()
-  dat$p[[1]] <- p
-  dat$el[[1]] <- as.edgelist(simulate(est$fit))
-  dat$nwparam[[1]] <- est
-  dat$attr <- list()
-  dat$attr$riskg <- riskg
-  dat$attr$race <- race
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
 
+  p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
 
-  expect_identical(dat$p[[1]], p)
+  expect_identical(dat$p, p)
 
 })
 
