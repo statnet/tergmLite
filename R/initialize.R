@@ -48,6 +48,9 @@ stergm_prep <- function(nw,
                                       nw, weights = control$MCMC.prop.weights.diss,
                                       class = "d")
 
+  MHproposal.form$arguments$constraints$.attributes <- NULL
+  MHproposal.diss$arguments$constraints$.attributes <- NULL
+
   out <- list(model.form = model.form, model.diss = model.diss,
               MHproposal.form = MHproposal.form, MHproposal.diss = MHproposal.diss)
 
@@ -79,6 +82,8 @@ ergm_prep <- function(nw,
   MHproposal <- ergm_proposal(constraints, arguments = control$MCMC.prop.args,
                            nw = nw, weights = control$MCMC.prop.weights, class = "c",
                            reference = ~Bernoulli, response = NULL)
+
+  MHproposal$arguments$constraints$.attributes <- NULL
 
   out <- list(model.form = m, MHproposal = MHproposal)
   return(out)
