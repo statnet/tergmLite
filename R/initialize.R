@@ -123,7 +123,7 @@ init_tergmLite <- function(dat) {
   for (i in 1:num_nw) {
 
     nwp <- dat$nwparam[[i]]
-    is_tergm <- nwp$coef.diss$duration > 1
+    is_tergm <- all(nwp$coef.diss$duration > 1)
     if (num_nw == 1) {
       nw <- dat$nw
     } else {
