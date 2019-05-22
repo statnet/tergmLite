@@ -165,6 +165,58 @@ test_that("degrange", {
 
 })
 
+test_that("nodecov formula", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  risk <- runif(100)
+  nw <- set.vertex.attribute(nw, "risk", risk)
+
+  est <- netest(nw = nw,
+                formation = ~edges + nodecov(~risk^2),
+                target.stats = c(50, 65),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+test_that("nodecov function", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  risk <- runif(100)
+  nw <- set.vertex.attribute(nw, "risk", risk)
+
+  est <- netest(nw = nw,
+                formation = ~edges + nodecov(function(x) exp(1 + log((x %v% "risk")^2))),
+                target.stats = c(50, 200),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
 test_that("nodefactor single", {
 
   library("EpiModel")
@@ -220,6 +272,31 @@ test_that("nodefactor interaction", {
 
 })
 
+test_that("nodemix levels", {
+
+  library("EpiModel")
+  nw <- network.initialize(200, directed = FALSE)
+  race <- sample(rep(letters[1:4], each = 50))
+  nw <- set.vertex.attribute(nw, "race", race)
+
+  est <- netest(nw = nw,
+                formation = ~edges + nodemix("race", levels = c("a", "b", "d"), levels2=-(2:3)),
+                target.stats = c(200, 12, 25, 25, 12),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
 
 test_that("get_formula_term...", {
 
