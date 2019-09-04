@@ -1,4 +1,10 @@
 
+# remotes::install_github("chad-klumb/network@tergmLiteterms")
+# remotes::install_github("statnet/tergmLite@tergmLiteterms")
+# remotes::install_github("statnet/EpiModel@tergmLiteterms")
+# library("tergmLite")
+# library("testthat")
+
 test_that("concurrent", {
 
   library("EpiModel")
