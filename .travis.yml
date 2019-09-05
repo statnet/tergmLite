@@ -4,7 +4,7 @@ sudo: false
 cache: packages
 
 r_github_packages:
-- statnet/EpiModel@tergmLiteterms
+- statnet/EpiModel
 - chad-klumb/network@tergmLiteterms
 
 warnings_are_errors: true
