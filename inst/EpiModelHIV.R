@@ -4,7 +4,7 @@
 # package install
 remotes::install_github("chad-klumb/network@tergmLiteterms")
 remotes::install_github("statnet/tergmLite@tergmLiteterms")
-remotes::install_github("statnet/EpiModel@tergmLiteterms")
+remotes::install_github("statnet/EpiModel")
 remotes::install_github(c("EpiModel/ARTnetData", "EpiModel/ARTnet"))
 remotes::install_github("EpiModel/EpiModelHIV-p", ref = "CombPrev", upgrade = FALSE)
 
@@ -16,7 +16,7 @@ suppressMessages(library("ARTnet"))
 epistats <- build_epistats(city_name = "Atlanta")
 saveRDS(epistats, file = "inst/epistats.rda")
 netparams <- build_netparams(epistats = epistats, smooth.main.dur.55p = TRUE)
-netstats <- build_netstats(epistats, netparams, expect.mort = 0.000478213, network.size = 100000)
+netstats <- build_netstats(epistats, netparams, expect.mort = 0.000478213, network.size = 10000)
 saveRDS(netstats, file = "inst/netstats.rda")
 
 
@@ -67,7 +67,7 @@ fit_main <- netest(nw_main,
                    set.control.ergm = control.ergm(MCMLE.maxit = 500,
                                                    SAN.maxit = 3,
                                                    SAN.nsteps.times = 3),
-                   verbose = TRUE)
+                   verbose = FALSE)
 
 
 
@@ -157,8 +157,8 @@ saveRDS(out, file = "inst/netest.rda")
 
 # 5. Run Diagnostics ------------------------------------------------------
 
-est <- readRDS("est/netest.rda")
-netstats <- readRDS("est/netstats.rda")
+est <- readRDS("inst/netest.rda")
+netstats <- readRDS("inst/netstats.rda")
 
 
 ## Main
@@ -167,10 +167,10 @@ fit_main <- est[[1]]
 
 model_main_dx <- ~edges +
   nodematch("age.grp", diff = TRUE) +
-  nodefactor("age.grp", base = 0) +
+  nodefactor("age.grp", levels = NULL) +
   nodematch("race", diff = TRUE) +
-  nodefactor("race", base = 0) +
-  nodefactor("deg.casl", base = 0) +
+  nodefactor("race", levels = NULL) +
+  nodefactor("deg.casl", levels = NULL) +
   degrange(from = 3) +
   concurrent +
   nodematch("role.class", diff = TRUE) +
@@ -190,10 +190,10 @@ fit_casl <- est[[2]]
 
 model_casl_dx <- ~edges +
   nodematch("age.grp", diff = TRUE) +
-  nodefactor("age.grp", base = 0) +
+  nodefactor("age.grp", levels = NULL) +
   nodematch("race", diff = TRUE) +
-  nodefactor("race", base = 0) +
-  nodefactor("deg.main", base = 0) +
+  nodefactor("race", levels = NULL) +
+  nodefactor("deg.main", levels = NULL) +
   degrange(from = 4) +
   concurrent +
   nodematch("role.class", diff = TRUE) +
@@ -213,18 +213,18 @@ fit_inst <- est[[3]]
 
 model_inst_dx <- ~edges +
   nodematch("age.grp", diff = FALSE) +
-  nodefactor("age.grp", base = 0) +
+  nodefactor("age.grp", levels = NULL) +
   nodematch("race", diff = TRUE) +
-  nodefactor("race", base = 0) +
-  nodefactor("risk.grp", base = 0) +
-  nodefactor("deg.tot", base = 0) +
+  nodefactor("race", levels = NULL) +
+  nodefactor("risk.grp", levels = NULL) +
+  nodefactor("deg.tot", levels = NULL) +
   nodematch("role.class", diff = TRUE) +
   degree(0:4)
 dx_inst <- netdx(fit_inst, nsims = 10000, dynamic = FALSE,
                  nwstats.formula = model_inst_dx,
                  set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e5))
 
-print(dx_inst, digits = 1)
+print(dx_inst, digits = 2)
 
 plot(dx_inst, sim.lines = TRUE, sim.lwd = 0.05)
 
