@@ -9,9 +9,9 @@
 \usage{
 \method{as.network}{networkLite}(nw, ...)
 
-get.vertex.attribute.networkLite(x, attrname, ...)
+\method{get.vertex.attribute}{networkLite}(x, attrname, ...)
 
-list.vertex.attributes.networkLite(x)
+\method{list.vertex.attributes}{networkLite}(x)
 }
 \arguments{
 \item{nw}{a networkLite object}

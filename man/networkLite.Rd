@@ -12,7 +12,7 @@ networkLite(el, attr)
 \item{attr}{a list of named vertex attributes for the network represented by \code{el}}
 }
 \value{
-a networkLite object with edge list \code{el}, vertex attributes \code{attr}, and 
+a networkLite object with edge list \code{el}, vertex attributes \code{attr}, and
   network attributes \code{gal}
 }
 \description{
