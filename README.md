@@ -5,12 +5,14 @@
 
 *Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)*
 
-This package provides functions for the computationally efficient simulation and resimulation of 
-dynamic networks estimated with the statistical framework of temporal exponential 
-random graph models (TERGMs), implemented in the tergm package within the Statnet 
-suite of R software. Networks are represented within an edgelist format only, with 
-nodal attributes stored separately. Also includes efficient functions for the deletion 
-and addition of nodes within that nework representation.
+#### Overview
+
+This package provides functions for the computationally efficient simulation and 
+resimulation of dynamic networks estimated with the statistical framework of 
+temporal exponential random graph models (TERGMs), implemented in the tergm package 
+within the Statnet suite of R software. Networks are represented within an edgelist 
+format only, with nodal attributes stored separately. Also includes efficient 
+functions for the deletion and addition of nodes within that nework representation.
 
 The statistical framework of temporal exponential random graph models (TERGMs)
 provides a rigorous, flexible approach to estimating generative models for
@@ -26,8 +28,6 @@ have tremendous flexibility in the types of networks they represent but at the
 expense of object size. Continually reading and writing larger-than-necessary
 data objects has the effect of slowing the iterative dynamic simulations.
 
-<img src="https://raw.githubusercontent.com/statnet/tergmLite/master/inst/diagram.png">
-
 The `tergmLite` package reduces that computational burden by representing
 networks less flexibly, but much more efficiently. For epidemic models, the only
 types of networks that we typically estimate and simulate from are undirected,
@@ -42,3 +42,23 @@ Attributes of the edges that are called within ERGMs may be stored separately in
 vector format, as they are in `EpiModel`. With this approach, the simulation
 time is sped up by a factor of 25-50 fold, depending on the specific research
 application.
+
+#### Version 2.0 Installation Notes
+
+Versions >= 2.0 implement the new `networkLite` API that is implemented across the
+`tergmLite`, `network`, and `EpiModel` packages. As of October 2019, it is necessary
+to install the development versions of these packages from Github in advance of their
+publication on CRAN with:
+
+```r
+remotes::install_github("statnet/network")
+remotes::install_github("statnet/EpiModel")
+remotes::install_github("statnet/tergmLite")
+```
+
+If you would like to use the version before the implementation of this new API,
+you should install version `1.2.0` with:
+
+```r
+remotes::install_github("statnet/tergmLite@v1.2.0")
+```
