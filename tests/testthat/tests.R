@@ -1,7 +1,7 @@
 
-# remotes::install_github("chad-klumb/network@tergmLiteterms")
-# remotes::install_github("statnet/tergmLite@tergmLiteterms")
-# remotes::install_github("statnet/EpiModel@tergmLiteterms")
+# remotes::install_github("statnet/network")
+# remotes::install_github("statnet/EpiModel")
+# remotes::install_github("statnet/tergmLite")
 # library("tergmLite")
 # library("testthat")
 

@@ -19,7 +19,9 @@ Imports:
     Rcpp,
     tergm (>= 3.5.2),
     network
-Suggests: testthat, EpiModel
+Suggests: 
+    testthat, 
+    EpiModel
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 6.1.1
