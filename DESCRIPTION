@@ -1,25 +1,32 @@
 Package: tergmLite
-Version: 1.2.0
-Date: 2018-11-02
+Version: 2.0.0
+Date: 2019-10-17
 Title: Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)
-Authors@R: person("Samuel M.", "Jenness",
-                  email = "samuel.m.jenness@emory.edu", role = c("aut", "cre"))
+Authors@R: c(person("Samuel M.", "Jenness",
+                    role = c("aut", "cre"),
+                    email = "samuel.m.jenness@emory.edu"), 
+             person("Chad", "Klumb",
+                    role="aut", 
+                    email="cklumb@gmail.com"))
 Description: Provides functions for the computationally efficient simulation and resimulation of 
              dynamic networks estimated with the statistical framework of temporal exponential 
              random graph models (TERGMs), implemented in the tergm package within the Statnet 
              suite of R software. Networks are represented within an edgelist format only, with 
              nodal attributes stored separately. Also includes efficient functions for the deletion 
-             and addition of nodes within that nework representation.
+             and addition of nodes within that nework representation. Versions >= 2.0 implement the
+             new networkLite API in network and EpiModel.
 Depends:
     R (>= 3.2.0)
 License: GPL-3
 Imports:
-    ergm (>= 3.9.4),
+    ergm (>= 3.10.1),
     statnet.common (>= 4.1.4),
     Rcpp,
     tergm (>= 3.5.2),
     network
-Suggests: testthat, EpiModel
+Suggests: 
+    testthat, 
+    EpiModel
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 6.1.1

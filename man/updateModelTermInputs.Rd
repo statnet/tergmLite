@@ -2,7 +2,7 @@
 % Please edit documentation in R/updateModelTerms.R
 \name{updateModelTermInputs}
 \alias{updateModelTermInputs}
-\title{Alternate Methods for Computing and Updating ERGM/STERGM Term Inputs}
+\title{Methods for Computing and Updating ERGM/STERGM Term Inputs}
 \usage{
 updateModelTermInputs(dat, network = 1)
 }
@@ -16,8 +16,7 @@ Function to appropriately update model params based on ergm model
              terms when using Edgelist-formatted representations
 }
 \details{
-Contains hard-coded implementations of some of the most commonly used
-ergm terms called instead of InitErgmTerm.x, checkErgmTerm, etc.
+Calls ergm_model.
 
 Implemented terms are:
  \itemize{

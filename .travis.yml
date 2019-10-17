@@ -3,7 +3,9 @@ language: r
 sudo: false
 cache: packages
 
-r_github_packages: statnet/EpiModel
+r_github_packages:
+- statnet/EpiModel
+- statnet/network
 
 warnings_are_errors: true
 
