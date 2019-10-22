@@ -304,6 +304,154 @@ test_that("nodemix levels", {
 
 })
 
+test_that("triangle", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+
+  est <- netest(nw = nw,
+                formation = ~edges + triangle,
+                target.stats = c(50, 0),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+test_that("triangle_attr", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.2))
+
+  est <- netest(nw = nw,
+                formation = ~edges + triangle(attr = "riskg"),
+                target.stats = c(50, 0),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+test_that("triangle_attrdiff", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+
+  est <- netest(nw = nw,
+                formation = ~edges + triangle(attr = "riskg", diff=TRUE),
+                target.stats = c(50, 0, 0),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+test_that("triangle_attrdifflevels", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 2, 0.1))
+
+  est <- netest(nw = nw,
+                formation = ~edges + triangle(attr = "riskg", diff=TRUE, levels=c(1,2)),
+                target.stats = c(50, 0, 0),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+
+test_that("gwesp_true", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+
+  est <- netest(nw = nw,
+                formation = ~edges + gwesp(fixed=TRUE),
+                target.stats = c(50, 2),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
+test_that("gwesp_truedecay", {
+
+  library("EpiModel")
+  nw <- network.initialize(100, directed = FALSE)
+
+  est <- netest(nw = nw,
+                formation = ~edges + gwesp(decay=0.8, fixed=TRUE),
+                target.stats = c(50, 1.1),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  expect_identical(dat$p, p)
+
+})
+
 test_that("get_formula_term...", {
 
   form <- ~edges + concurrent(by = "riskg")
