@@ -22,6 +22,8 @@
 #'    \item nodecov
 #'    \item nodemix
 #'    \item absdiffnodemix (in the EpiModelHIV package)
+#'    \item triangle
+#'    \item gwesp(fixed=TRUE)
 #'  }
 #'  All other terms will return errors.
 #'
@@ -63,8 +65,13 @@ updateModelTermInputs <- function(dat, network = 1) {
                          "concurrent", "concurrent_by_attr",
                          "degree", "degree_by_attr",
                          "absdiff", "absdiffby", "nodecov", "nodemix",
-                         "absdiffnodemix", "degrange")
+                         "absdiffnodemix", "degrange", "triangle", "gwesp")
     if (!(term$name %in% supported.terms)) {
+      ## special error message for gwesp without fixed=TRUE
+      if(term$name == "esp")
+        stop("tergmLite does not support the esp term, and only supports the gwesp term with fixed=TRUE")
+      
+      ## error message for all others
       stop("tergmLite does not know how to update the term ",
            term$name," in the formation model formula")
     }

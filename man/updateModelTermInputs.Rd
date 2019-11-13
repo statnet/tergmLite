@@ -31,6 +31,8 @@ Implemented terms are:
    \item nodecov
    \item nodemix
    \item absdiffnodemix (in the EpiModelHIV package)
+   \item triangle
+   \item gwesp(fixed=TRUE)
  }
  All other terms will return errors.
 }
