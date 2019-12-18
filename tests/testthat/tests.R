@@ -1,5 +1,4 @@
 
-# remotes::install_github("statnet/network")
 # remotes::install_github("statnet/EpiModel")
 # remotes::install_github("statnet/tergmLite")
 # library("tergmLite")

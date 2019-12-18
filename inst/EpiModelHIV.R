@@ -2,8 +2,6 @@
 ## Full scale EpiModelHIV example
 
 # package install
-remotes::install_github("chad-klumb/network@tergmLiteterms")
-remotes::install_github("statnet/tergmLite@tergmLiteterms")
 remotes::install_github("statnet/EpiModel")
 remotes::install_github(c("EpiModel/ARTnetData", "EpiModel/ARTnet"))
 remotes::install_github("EpiModel/EpiModelHIV-p", ref = "CombPrev", upgrade = FALSE)
@@ -14,10 +12,9 @@ suppressMessages(library("EpiModelHIV"))
 suppressMessages(library("ARTnet"))
 
 epistats <- build_epistats(city_name = "Atlanta")
-saveRDS(epistats, file = "inst/epistats.rda")
 netparams <- build_netparams(epistats = epistats, smooth.main.dur.55p = TRUE)
-netstats <- build_netstats(epistats, netparams, expect.mort = 0.000478213, network.size = 10000)
-saveRDS(netstats, file = "inst/netstats.rda")
+netstats <- build_netstats(epistats, netparams,
+                           expect.mort = 0.000478213, network.size = 10000)
 
 
 # 0. Initialize Network ---------------------------------------------------
@@ -146,20 +143,10 @@ fit_inst <- netest(nw_inst,
                                                    SAN.nsteps.times = 3),
                    verbose = FALSE)
 
-
-# 4. Save Data ------------------------------------------------------------
-
 out <- list(fit_main, fit_casl, fit_inst)
 
-saveRDS(out, file = "inst/netest.rda")
 
-
-
-# 5. Run Diagnostics ------------------------------------------------------
-
-est <- readRDS("inst/netest.rda")
-netstats <- readRDS("inst/netstats.rda")
-
+# 4. Run Diagnostics ------------------------------------------------------
 
 ## Main
 
@@ -231,11 +218,8 @@ plot(dx_inst, sim.lines = TRUE, sim.lwd = 0.05)
 netstats$inst
 
 
-# 6. Run Epidemic Model ---------------------------------------------------
+# 5. Run Epidemic Model ---------------------------------------------------
 
-netstats <- readRDS("inst/netstats.rda")
-epistats <- readRDS("inst/epistats.rda")
-est <- readRDS("inst/netest.rda")
 
 param <- param_msm(netstats = netstats,
                    epistats = epistats,
@@ -258,7 +242,7 @@ param <- param_msm(netstats = netstats,
                    trans.scale = c(2.64, 0.45, 0.285),
                    acts.scale = 1.00,
                    acts.aids.vl = 5.75,
-                   prep.start = (52*60)+1,
+                   prep.start = (52*60) + 1,
                    riskh.start = 52*59,
                    prep.start.prob = 0.66,
                    prep.require.lnt = TRUE,
