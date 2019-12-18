@@ -5,8 +5,13 @@
 \title{Converts Network Object, Formation Formulas, Formation Coefficients, and
 Control Settings to a Data-Thin List Format for ERGM Resimulation}
 \usage{
-ergm_prep(nw, formation, coef, constraints,
-  control = ergm::control.simulate.ergm())
+ergm_prep(
+  nw,
+  formation,
+  coef,
+  constraints,
+  control = ergm::control.simulate.ergm()
+)
 }
 \arguments{
 \item{nw}{An object of class \code{network}}

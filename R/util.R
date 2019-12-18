@@ -14,28 +14,27 @@ deinf <- function (x, replace = 1/.Machine$double.eps) {
 #'   Missing attributes \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
 #'   are defaulted to \code{FALSE}.  The network size attribute \code{n} must not be missing.
 #' @param el an edgelist-formatted network representation, including network attributes
-#' @param attr a list of named vertex attributes for the network represented by \code{el} 
-#' @return a networkLite object with edge list \code{el}, vertex attributes \code{attr}, and 
+#' @param attr a list of named vertex attributes for the network represented by \code{el}
+#' @return a networkLite object with edge list \code{el}, vertex attributes \code{attr}, and
 #'   network attributes \code{gal}
 #' @export
-networkLite <- function(el, attr) {  
+networkLite <- function(el, attr) {
   x <- list(el = el, attr = attr, gal = attributes(el))
-  
+
   # network size attribute is required
   if(is.null(x$gal$n)) stop("networkLite constructor requires network size attribute.")
-  
+
   # other common attributes default to FALSE
   if(is.null(x$gal$directed))  x$gal$directed  <- FALSE
   if(is.null(x$gal$bipartite)) x$gal$bipartite <- FALSE
   if(is.null(x$gal$loops))     x$gal$loops     <- FALSE
   if(is.null(x$gal$hyper))     x$gal$hyper     <- FALSE
   if(is.null(x$gal$multiple))  x$gal$multiple  <- FALSE
-   
+
   class(x) <- "networkLite"
   x
 }
 
-#' @rdname networkLitemethods
 #' @name networkLitemethods
 #' @title networkLite methods
 #' @description S3 methods for networkLite class, for generics defined in network package.
@@ -44,7 +43,6 @@ networkLite <- function(el, attr) {
 #' @param x a networkLite object
 #' @param attrname the name of a vertex attribute in \code{x}
 #' @param ... any additional arguments
-
 
 #' @importFrom network as.network
 #' @rdname networkLitemethods

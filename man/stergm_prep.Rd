@@ -6,8 +6,15 @@
 Dissolution Coefficients, and Control Settings to a Data-Thin List Format
 for STERGM Resimulation}
 \usage{
-stergm_prep(nw, formation, dissolution, coef.form, coef.diss, constraints,
-  control = control.simulate.network())
+stergm_prep(
+  nw,
+  formation,
+  dissolution,
+  coef.form,
+  coef.diss,
+  constraints,
+  control = control.simulate.network()
+)
 }
 \arguments{
 \item{nw}{An object of class \code{network}}
