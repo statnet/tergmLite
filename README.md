@@ -46,13 +46,9 @@ application.
 #### Version 2.0 Installation Notes
 
 Versions >= 2.0 implement the new `networkLite` API that is implemented across the
-`tergmLite`, `network`, and `EpiModel` packages. As of October 2019, it is necessary
-to install the development versions of these packages from Github in advance of their
-publication on CRAN with:
+`tergmLite`, `network`, and `EpiModel` packages.
 
 ```r
-remotes::install_github("statnet/network")
-remotes::install_github("statnet/EpiModel")
 remotes::install_github("statnet/tergmLite")
 ```
 
