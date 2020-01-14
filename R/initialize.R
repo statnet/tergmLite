@@ -100,7 +100,6 @@ ergm_prep <- function(nw,
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library("EpiModel")
 #' nw <- network.initialize(n = 100, directed = FALSE)
 #' formation <- ~edges
@@ -115,7 +114,6 @@ ergm_prep <- function(nw,
 #' dat <- initialize.net(x, param, init, control)
 #'
 #' dat <- init_tergmLite(dat)
-#' }
 #'
 init_tergmLite <- function(dat) {
 

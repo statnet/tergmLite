@@ -22,7 +22,8 @@ Imports:
     network (>= 1.16.0),
     Rcpp
 Suggests: 
-    testthat
+    testthat,
+    EpiModel (>= 1.7.5)
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 7.0.2
