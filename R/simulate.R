@@ -1,8 +1,10 @@
 
-
 # STERGM --------------------------------------------------------------
 
-#' Fast Version of tergm::simulate.network for Edgelist-formatted Network
+#' @title Fast Version of tergm::simulate.network for networkLite Object
+#'
+#' @description Resimulates a networkLite object given thin network data structure,
+#'              edgelist, and STERGM model coefficients.
 #'
 #' @param p A list of network-related nodal covariates and related terms that
 #'          is produced with \code{\link{stergm_prep}}
@@ -177,7 +179,10 @@ ergm_Cprepare <- function(el,
 
 # ERGM ----------------------------------------------------------------
 
-#' Fast Version of ergm::simulate.ergm for Edgelist-formatted Network
+#' @title Fast Version of ergm::simulate.ergm for Edgelist-formatted Network
+#'
+#' @description Resimulates a networkLite object given thin network data structure,
+#'              edgelist, and ERGM model coefficients.
 #'
 #' @param p A list of network-related nodal covariates and related terms that
 #'          is produced with \code{\link{ergm_prep}}

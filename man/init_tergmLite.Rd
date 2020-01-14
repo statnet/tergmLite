@@ -14,6 +14,7 @@ initialization information passed from \code{netsim}.}
 Initializes EpiModel netsim Object for tergmLite Simulation
 }
 \examples{
+\dontrun{
 library("EpiModel")
 nw <- network.initialize(n = 100, directed = FALSE)
 formation <- ~edges
@@ -28,5 +29,6 @@ control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 dat <- initialize.net(x, param, init, control)
 
 dat <- init_tergmLite(dat)
+}
 
 }

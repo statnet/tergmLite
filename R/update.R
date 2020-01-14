@@ -1,6 +1,6 @@
 
 
-#' Fast Version of network::add.vertices for Edgelist-formated Network
+#' @title Fast Version of network::add.vertices for Edgelist-formated Network
 #'
 #' @description This function performs a simple operation of updating the
 #'              edgelist attribute \code{n} that tracks the total network
@@ -19,7 +19,7 @@ add_vertices <- function(el, nv) {
 
 
 
-#' Fast Version of network::delete.vertices for Edgelist-formated Network
+#' @title Fast Version of network::delete.vertices for Edgelist-formated Network
 #'
 #' @description Given a current two-column matrix of edges and a vector of IDs
 #'              to delete from the matrix, this function first removes any rows

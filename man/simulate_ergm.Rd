@@ -16,5 +16,6 @@ variable \code{n} containing the total current network size}
 \item{coef}{Vector of coefficients associated with the formation formula}
 }
 \description{
-Fast Version of ergm::simulate.ergm for Edgelist-formatted Network
+Resimulates a networkLite object given thin network data structure,
+             edgelist, and ERGM model coefficients.
 }

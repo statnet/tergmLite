@@ -1,8 +1,8 @@
 
 #' @title Methods for Computing and Updating ERGM/STERGM Term Inputs
 #'
-#' @description Function to appropriately update model params based on ergm model
-#'              terms when using Edgelist-formatted representations
+#' @description Function to appropriately update model params based on ERGM model
+#'              terms when using networkLite representation.
 #'
 #' @param dat EpiModel dat object tracking simulation state
 #' @param network Numberic number of network location for multi-network simulations.
@@ -18,10 +18,10 @@
 #'    \item degree (including heterogenous by attribute)
 #'    \item degrange
 #'    \item absdiff
-#'    \item absdiffby (in the EpiModelHIV package)
+#'    \item absdiffby (in the EpiModel package)
 #'    \item nodecov
 #'    \item nodemix
-#'    \item absdiffnodemix (in the EpiModelHIV package)
+#'    \item absdiffnodemix (in the EpiModel package)
 #'    \item triangle
 #'    \item gwesp(fixed=TRUE)
 #'  }
@@ -68,9 +68,9 @@ updateModelTermInputs <- function(dat, network = 1) {
                          "absdiffnodemix", "degrange", "triangle", "gwesp")
     if (!(term$name %in% supported.terms)) {
       ## special error message for gwesp without fixed=TRUE
-      if(term$name == "esp")
+      if (term$name == "esp") {
         stop("tergmLite does not support the esp term, and only supports the gwesp term with fixed=TRUE")
-      
+      }
       ## error message for all others
       stop("tergmLite does not know how to update the term ",
            term$name," in the formation model formula")
@@ -95,9 +95,9 @@ updateModelTermInputs <- function(dat, network = 1) {
         stop("tergmLite does not know how to update the term ",
              term$name," in the formation model formula")
       }
-      
+
       md$terms[[t]] <- updates$terms[[t]]
-      
+
       # in case offset is used in dissolution model but not formation model
       md$terms[[t]]$coef.names <- term$coef.names
     }

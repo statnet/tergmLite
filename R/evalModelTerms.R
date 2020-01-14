@@ -1,6 +1,7 @@
 
 #' @title Evaluate ERGM Formula Terms
-#' @description This is a work-around for evaluating model terms in the non-standard
+#'
+#' @description A method for evaluating model terms in the non-standard
 #'              tergmLite sequence, as an alternative to ergm.getModel. Computes
 #'              a list of the arguments to the terms in the formula with offsets
 #'              removed, evaluated in the formula calling environment returns a

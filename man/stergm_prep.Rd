@@ -2,9 +2,7 @@
 % Please edit documentation in R/initialize.R
 \name{stergm_prep}
 \alias{stergm_prep}
-\title{Converts Network Object, Formation and Dissolution Formulas, Formation and
-Dissolution Coefficients, and Control Settings to a Data-Thin List Format
-for STERGM Resimulation}
+\title{Prepare Network and STERGM Objects for tergmLite}
 \usage{
 stergm_prep(
   nw,
@@ -33,7 +31,7 @@ constraints currently supported.}
 \item{control}{Control settings passed to \code{tergm::control.simulate.network}}
 }
 \description{
-Converts Network Object, Formation and Dissolution Formulas, Formation and
-Dissolution Coefficients, and Control Settings to a Data-Thin List Format
-for STERGM Resimulation
+Converts network object, formation and dissolution formulas,
+             formation and dissolution coefficients, and control settings to a
+             thin list format for STERGM resimulation.
 }

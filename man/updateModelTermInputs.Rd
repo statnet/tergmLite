@@ -12,8 +12,8 @@ updateModelTermInputs(dat, network = 1)
 \item{network}{Numberic number of network location for multi-network simulations.}
 }
 \description{
-Function to appropriately update model params based on ergm model
-             terms when using Edgelist-formatted representations
+Function to appropriately update model params based on ERGM model
+             terms when using networkLite representation.
 }
 \details{
 Calls ergm_model.
@@ -27,10 +27,10 @@ Implemented terms are:
    \item degree (including heterogenous by attribute)
    \item degrange
    \item absdiff
-   \item absdiffby (in the EpiModelHIV package)
+   \item absdiffby (in the EpiModel package)
    \item nodecov
    \item nodemix
-   \item absdiffnodemix (in the EpiModelHIV package)
+   \item absdiffnodemix (in the EpiModel package)
    \item triangle
    \item gwesp(fixed=TRUE)
  }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate.R
 \name{simulate_network}
 \alias{simulate_network}
-\title{Fast Version of tergm::simulate.network for Edgelist-formatted Network}
+\title{Fast Version of tergm::simulate.network for networkLite Object}
 \usage{
 simulate_network(p, el, coef.form, coef.diss, save.changes = FALSE)
 }
@@ -21,5 +21,6 @@ variable \code{n} containing the total current network size}
 as an attribute of the output edgelist matrix}
 }
 \description{
-Fast Version of tergm::simulate.network for Edgelist-formatted Network
+Resimulates a networkLite object given thin network data structure,
+             edgelist, and STERGM model coefficients.
 }

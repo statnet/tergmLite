@@ -1,8 +1,9 @@
 
-
-#' Converts Network Object, Formation and Dissolution Formulas, Formation and
-#' Dissolution Coefficients, and Control Settings to a Data-Thin List Format
-#' for STERGM Resimulation
+#' @title Prepare Network and STERGM Objects for tergmLite
+#'
+#' @description Converts network object, formation and dissolution formulas,
+#'              formation and dissolution coefficients, and control settings to a
+#'              thin list format for STERGM resimulation.
 #'
 #' @param nw An object of class \code{network}
 #' @param formation Right-hand sided formation formula
@@ -57,9 +58,11 @@ stergm_prep <- function(nw,
   return(out)
 }
 
-
-#' Converts Network Object, Formation Formulas, Formation Coefficients, and
-#' Control Settings to a Data-Thin List Format for ERGM Resimulation
+#' @title Prepare Network and ERGM Objects for tergmLite
+#'
+#' @description Converts network object, formation and dissolution formulas,
+#'              formation and dissolution coefficients, and control settings to a
+#'              thin list format for ERGM resimulation.
 #'
 #' @param nw An object of class \code{network}
 #' @param formation Right-hand sided formation formula
@@ -89,7 +92,6 @@ ergm_prep <- function(nw,
   return(out)
 }
 
-
 #' @title Initializes EpiModel netsim Object for tergmLite Simulation
 #'
 #' @param dat A list object containing a \code{networkDynamic} object and other
@@ -98,6 +100,7 @@ ergm_prep <- function(nw,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #' nw <- network.initialize(n = 100, directed = FALSE)
 #' formation <- ~edges
@@ -112,6 +115,7 @@ ergm_prep <- function(nw,
 #' dat <- initialize.net(x, param, init, control)
 #'
 #' dat <- init_tergmLite(dat)
+#' }
 #'
 init_tergmLite <- function(dat) {
 

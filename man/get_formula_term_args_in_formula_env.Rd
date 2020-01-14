@@ -12,7 +12,7 @@ get_formula_term_args_in_formula_env(form, termIndex)
 \item{termIndex}{an integer index for the formula term in form to be evaluated}
 }
 \description{
-This is a work-around for evaluating model terms in the non-standard
+A method for evaluating model terms in the non-standard
              tergmLite sequence, as an alternative to ergm.getModel. Computes
              a list of the arguments to the terms in the formula with offsets
              removed, evaluated in the formula calling environment returns a

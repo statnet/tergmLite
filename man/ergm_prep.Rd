@@ -2,8 +2,7 @@
 % Please edit documentation in R/initialize.R
 \name{ergm_prep}
 \alias{ergm_prep}
-\title{Converts Network Object, Formation Formulas, Formation Coefficients, and
-Control Settings to a Data-Thin List Format for ERGM Resimulation}
+\title{Prepare Network and ERGM Objects for tergmLite}
 \usage{
 ergm_prep(
   nw,
@@ -26,6 +25,7 @@ constraints currently supported.}
 \item{control}{Control settings passed to \code{ergm::control.simulate.ergm}}
 }
 \description{
-Converts Network Object, Formation Formulas, Formation Coefficients, and
-Control Settings to a Data-Thin List Format for ERGM Resimulation
+Converts network object, formation and dissolution formulas,
+             formation and dissolution coefficients, and control settings to a
+             thin list format for ERGM resimulation.
 }

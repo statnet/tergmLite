@@ -5,7 +5,7 @@
 \alias{as.network.networkLite}
 \alias{get.vertex.attribute.networkLite}
 \alias{list.vertex.attributes.networkLite}
-\title{networkLite methods}
+\title{networkLite Methods}
 \usage{
 \method{as.network}{networkLite}(nw, ...)
 
@@ -23,7 +23,8 @@
 \item{attrname}{the name of a vertex attribute in \code{x}}
 }
 \description{
-S3 methods for networkLite class, for generics defined in network package.
+S3 methods for networkLite class, for generics defined in
+             network package.
 }
 \details{
 Allows use of networkLite objects in \code{ergm_model}.

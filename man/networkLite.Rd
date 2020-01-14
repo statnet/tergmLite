@@ -2,28 +2,32 @@
 % Please edit documentation in R/util.R
 \name{networkLite}
 \alias{networkLite}
-\title{networkLite constructor}
+\title{networkLite Constructor Utility}
 \usage{
 networkLite(el, attr)
 }
 \arguments{
-\item{el}{an edgelist-formatted network representation, including network attributes}
+\item{el}{an edgelist-formatted network representation, including network
+attributes.}
 
-\item{attr}{a list of named vertex attributes for the network represented by \code{el}}
+\item{attr}{a list of named vertex attributes for the network represented
+by \code{el}.}
 }
 \value{
-a networkLite object with edge list \code{el}, vertex attributes \code{attr}, and
-  network attributes \code{gal}
+A networkLite object with edge list \code{el}, vertex attributes \code{attr},
+and network attributes \code{gal}
 }
 \description{
-Constructor function for networkLite object.
+Constructor function for a networkLite object.
 }
 \details{
-This function takes an edge list \code{el} with network attributes attached, and
-  a list of vertex attributes \code{attr}, and returns a networkLite object, which is a list
-  with named fields \code{el}, \code{attr}, and \code{gal}, with each of the first two corresponding to
-  the argument of the same name, and \code{gal} being the list of network attributes
-  (copied from \code{attributes(el)}) for compatibility with some \code{network} accessors.
-  Missing attributes \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
-  are defaulted to \code{FALSE}.  The network size attribute \code{n} must not be missing.
+This function takes an edge list \code{el} with network attributes attached,
+and a list of vertex attributes \code{attr}, and returns a networkLite object,
+which is a list with named fields \code{el}, \code{attr}, and \code{gal}, with
+each of the first two corresponding to the argument of the same name, and
+\code{gal} being the list of network attributes (copied from \code{attributes(el)})
+for compatibility with some \code{network} accessors. Missing attributes
+\code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
+are defaulted to \code{FALSE}.  The network size attribute \code{n} must not
+be missing.
 }
