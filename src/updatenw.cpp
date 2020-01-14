@@ -1,7 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-
 // [[Rcpp::export]]
 NumericVector shiftVec(NumericVector elv, NumericVector vid) {
 
