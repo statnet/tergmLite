@@ -40,11 +40,21 @@ networkLite <- function(el, attr) {
   }
 
   # other common attributes default to FALSE
-  if (is.null(x$gal$directed))  x$gal$directed  <- FALSE
-  if (is.null(x$gal$bipartite)) x$gal$bipartite <- FALSE
-  if (is.null(x$gal$loops))     x$gal$loops     <- FALSE
-  if (is.null(x$gal$hyper))     x$gal$hyper     <- FALSE
-  if (is.null(x$gal$multiple))  x$gal$multiple  <- FALSE
+  if (is.null(x$gal$directed))  {
+    x$gal$directed <- FALSE
+  }
+  if (is.null(x$gal$bipartite)) {
+    x$gal$bipartite <- FALSE
+  }
+  if (is.null(x$gal$loops)) {
+    x$gal$loops <- FALSE
+  }
+  if (is.null(x$gal$hyper)) {
+    x$gal$hyper <- FALSE
+  }
+  if (is.null(x$gal$multiple)) {
+    x$gal$multiple <- FALSE
+  }
 
   class(x) <- "networkLite"
   return(x)
