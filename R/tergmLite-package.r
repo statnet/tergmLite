@@ -1,5 +1,5 @@
 
-#' Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)
+#' Fast Simulation of Simple Temporal Exponential Random Graph Models
 #'
 #' \tabular{ll}{
 #'    Package: \tab tergmLite\cr

@@ -4,7 +4,7 @@
 \name{tergmLite-package}
 \alias{tergmLite-package}
 \alias{tergmLite}
-\title{Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)}
+\title{Fast Simulation of Simple Temporal Exponential Random Graph Models}
 \description{
 \tabular{ll}{
    Package: \tab tergmLite\cr
