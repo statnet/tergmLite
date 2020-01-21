@@ -1,7 +1,7 @@
 Package: tergmLite
-Version: 2.1.5
-Date: 2020-01-14
 Title: Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)
+Version: 2.1.6
+Date: 2020-01-21
 Authors@R: c(person("Samuel M.", "Jenness",
                     role = c("aut", "cre"),
                     email = "samuel.m.jenness@emory.edu"), 
