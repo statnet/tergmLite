@@ -16,7 +16,7 @@ Function to appropriately update model params based on ERGM model
              terms when using networkLite representation.
 }
 \details{
-Calls ergm_model.
+Calls \code{ergm_model}.
 
 Implemented terms are:
  \itemize{
@@ -34,5 +34,5 @@ Implemented terms are:
    \item triangle
    \item gwesp(fixed=TRUE)
  }
- All other terms will return errors.
+All other terms will return errors.
 }
