@@ -156,7 +156,7 @@ init_tergmLite <- function(dat) {
     dat$el[[i]] <- as.edgelist(nw)
     attributes(dat$el[[i]])$vnames <- NULL
 
-    if (is_tergm) {
+    if (is_tergm == TRUE) {
       p <- stergm_prep(nw, nwp$formation, nwp$coef.diss$dissolution,
                        nwp$coef.form, nwp$coef.diss$coef.adj, nwp$constraints)
       p$model.form$formula <- NULL

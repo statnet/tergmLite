@@ -19,3 +19,42 @@ variable \code{n} containing the total current network size}
 Resimulates a networkLite object given thin network data structure,
              edgelist, and ERGM model coefficients.
 }
+\details{
+This function is used within the network resimulation module in \code{EpiModel}
+to update cross-sectional ERGMs based on the model coefficients and current
+network structure.
+}
+\examples{
+library("EpiModel")
+
+# Set seed for reproducibility
+set.seed(12345)
+
+nw <- network.initialize(n = 100, directed = FALSE)
+nw <- set.vertex.attribute(nw, "group", rep(0:1, each = 50))
+formation <- ~edges + nodefactor("group")
+target.stats <- c(15, 10)
+coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 1)
+x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+
+param <- param.net(inf.prob = 0.3)
+init <- init.net(i.num = 10)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+
+# Full network structure after initialization
+dat <- initialize.net(x, param, init, control)
+str(dat, max.level = 1)
+
+# networkLite representation used by tergmLite
+dat <- init_tergmLite(dat)
+
+# Current network structure
+dat$el[[1]]
+
+# New network structure (all edges are new)
+dat$el[[1]] <- simulate_ergm(p = dat$p[[1]],
+                             el = dat$el[[1]],
+                             coef = dat$nwparam[[1]]$coef.form)
+dat$el[[1]]
+
+}
