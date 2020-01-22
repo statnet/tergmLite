@@ -12,11 +12,15 @@ updateModelTermInputs(dat, network = 1)
 \item{network}{Numberic number of network location for multi-network simulations.}
 }
 \description{
-Function to appropriately update model params based on ERGM model
+Function to appropriately update model inputs based on ERGM model
              terms when using networkLite representation.
 }
 \details{
-Calls \code{ergm_model}.
+Calls \code{ergm_model} to update model inputs based on potential
+exogenous changes to network structure (e.g., number of nodes) or nodal attributes
+used within ERGM model (see example below). This function is typically used
+within \code{EpiModel} module for network resimulation, immediately prior to
+calling \code{\link{simulate_network}} or \code{\link{simulate_ergm}}.
 
 Implemented terms are:
  \itemize{
@@ -35,4 +39,46 @@ Implemented terms are:
    \item gwesp(fixed=TRUE)
  }
 All other terms will return errors.
+}
+\examples{
+library("EpiModel")
+
+# Set seed for reproducibility
+set.seed(12345)
+
+nw <- network.initialize(n = 100, directed = FALSE)
+nw <- set.vertex.attribute(nw, "group", rep(0:1, each = 50))
+formation <- ~edges + nodefactor("group")
+target.stats <- c(15, 10)
+coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 1)
+x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+
+param <- param.net(inf.prob = 0.3)
+init <- init.net(i.num = 10)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+
+# Full network structure after initialization
+dat <- initialize.net(x, param, init, control)
+str(dat, max.level = 1)
+
+# networkLite representation used by tergmLite
+dat <- init_tergmLite(dat)
+
+# Examine the network list structure for nodefactor term
+dat$p[[1]]$model.form$terms[[2]]
+
+# inputs vector corresponds to group attribute stored here
+dat$attr$group
+
+# As example of what could happen in EpiModel: randomly reshuffle group
+#   attribute values of 100 nodes
+dat$attr$group <- sample(dat$attr$group)
+dat$attr$group
+
+# Update network list structure
+dat <- updateModelTermInputs(dat)
+
+# Check that network list structure for nodefactor term has been updated
+dat$p[[1]]$model.form$terms[[2]]
+
 }
