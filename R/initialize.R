@@ -113,9 +113,11 @@ ergm_prep <- function(nw,
 #' init <- init.net(i.num = 10)
 #' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 #'
+#' # Full network structure after initialization
 #' dat <- initialize.net(x, param, init, control)
 #' str(dat, max.level = 1)
 #'
+#' # networkLite representation used by tergmLite
 #' dat <- init_tergmLite(dat)
 #' str(dat, max.level = 1)
 #'
