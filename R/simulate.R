@@ -96,7 +96,6 @@ stergm_getMCMCsample <- function(el,
   return(out)
 }
 
-
 ergm_Cprepare <- function(el,
                           m,
                           response = NULL) {
