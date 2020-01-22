@@ -18,3 +18,36 @@ This function performs a simple operation of updating the
              edgelist attribute \code{n} that tracks the total network
              size implicit in an edgelist representation of the network.
 }
+\details{
+This function is used in \code{EpiModel} modules to add vertices (nodes) to the
+edgelist object to account for entries into the population (e.g., births and
+in-migration)
+}
+\examples{
+library("EpiModel")
+nw <- network.initialize(n = 100, directed = FALSE)
+formation <- ~edges
+target.stats <- 50
+coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
+x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+
+param <- param.net(inf.prob = 0.3)
+init <- init.net(i.num = 10)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+
+# Full network structure after initialization
+dat <- initialize.net(x, param, init, control)
+
+# networkLite representation used by tergmLite
+dat <- init_tergmLite(dat)
+
+# Check current network size
+attributes(dat$el[[1]])$n
+
+# Add 10 vertices
+dat$el[[1]] <- add_vertices(dat$el[[1]], 10)
+
+Check new network size
+attributes(dat$el[[1]])$n
+
+}
