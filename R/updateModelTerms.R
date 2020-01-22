@@ -7,7 +7,7 @@
 #' @param dat EpiModel dat object tracking simulation state
 #' @param network Numberic number of network location for multi-network simulations.
 #'
-#' @details Calls ergm_model.
+#' @details Calls \code{ergm_model}.
 #'
 #' Implemented terms are:
 #'  \itemize{
@@ -25,7 +25,7 @@
 #'    \item triangle
 #'    \item gwesp(fixed=TRUE)
 #'  }
-#'  All other terms will return errors.
+#' All other terms will return errors.
 #'
 #' @export
 #' @importFrom statnet.common NVL
