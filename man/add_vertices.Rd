@@ -8,10 +8,10 @@ add_vertices(el, nv)
 }
 \arguments{
 \item{el}{A two-column matrix of current edges (edgelist) with an attribute
-variable \code{n} containing the total current network size}
+variable \code{n} containing the total current network size.}
 
 \item{nv}{A integer equal to the number of nodes to add to the network
-size at the given time step}
+size at the given time step.}
 }
 \description{
 This function performs a simple operation of updating the
