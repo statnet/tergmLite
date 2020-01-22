@@ -5,14 +5,14 @@
 #'              formation and dissolution coefficients, and control settings to a
 #'              thin list format for STERGM resimulation.
 #'
-#' @param nw An object of class \code{network}
-#' @param formation Right-hand sided formation formula
-#' @param dissolution Right-hand sided dissolution formula
-#' @param coef.form Vector of coefficients associated with the formation formula
-#' @param coef.diss Vector of coefficients associated with the dissolution formula
+#' @param nw An object of class \code{network}.
+#' @param formation Right-hand sided formation formula.
+#' @param dissolution Right-hand sided dissolution formula.
+#' @param coef.form Vector of coefficients associated with the formation formula.
+#' @param coef.diss Vector of coefficients associated with the dissolution formula.
 #' @param constraints Constraints for the formation model (only \code{bd})
 #'                    constraints currently supported.
-#' @param control Control settings passed to \code{tergm::control.simulate.network}
+#' @param control Control settings passed to \code{tergm::control.simulate.network}.
 #'
 #' @details
 #' This is an internal function used within \code{\link{init_tergmLite}}.
@@ -65,12 +65,12 @@ stergm_prep <- function(nw,
 #'              formation and dissolution coefficients, and control settings to a
 #'              thin list format for ERGM resimulation.
 #'
-#' @param nw An object of class \code{network}
-#' @param formation Right-hand sided formation formula
+#' @param nw An object of class \code{network}.
+#' @param formation Right-hand sided formation formula.
 #' @param coef Vector of coefficients associated with the formation formula
 #' @param constraints Constraints for the formation model (only \code{bd})
 #'                    constraints currently supported.
-#' @param control Control settings passed to \code{ergm::control.simulate.ergm}
+#' @param control Control settings passed to \code{ergm::control.simulate.ergm}.
 #'
 #' @details
 #' This is an internal function used within \code{\link{init_tergmLite}}.

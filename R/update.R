@@ -7,9 +7,9 @@
 #'              size implicit in an edgelist representation of the network.
 #'
 #' @param el A two-column matrix of current edges (edgelist) with an attribute
-#'           variable \code{n} containing the total current network size
+#'           variable \code{n} containing the total current network size.
 #' @param nv A integer equal to the number of nodes to add to the network
-#'           size at the given time step
+#'           size at the given time step.
 #'
 #' @details
 #' This function is used in \code{EpiModel} modules to add vertices (nodes) to the

@@ -8,17 +8,17 @@ simulate_network(p, el, coef.form, coef.diss, save.changes = FALSE)
 }
 \arguments{
 \item{p}{A list of network-related nodal covariates and related terms that
-is produced with \code{\link{stergm_prep}}}
+is produced with \code{\link{stergm_prep}}.}
 
 \item{el}{A two-column matrix of current edges (edgelist) with an attribute
-variable \code{n} containing the total current network size}
+variable \code{n} containing the total current network size.}
 
-\item{coef.form}{Vector of coefficients associated with the formation formula}
+\item{coef.form}{Vector of coefficients associated with the formation formula.}
 
-\item{coef.diss}{Vector of coefficients associated with the dissolution formula}
+\item{coef.diss}{Vector of coefficients associated with the dissolution formula.}
 
 \item{save.changes}{Logical, if \code{TRUE}, saves a matrix of changed edges
-as an attribute of the output edgelist matrix}
+as an attribute of the output edgelist matrix.}
 }
 \description{
 Resimulates a networkLite object given thin network data structure,
@@ -27,7 +27,9 @@ Resimulates a networkLite object given thin network data structure,
 \details{
 This function is used within the network resimulation module in \code{EpiModel}
 to update temporal ERGMs based on the model coefficients and current network
-structure.
+structure. If network structure (e.g., number of nodes) or nodal attributes
+has changed since the last simulation, this network resimulation should be run
+only after \code{\link{updateModelTermInputs}}.
 }
 \examples{
 library("EpiModel")

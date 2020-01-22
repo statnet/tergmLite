@@ -87,10 +87,10 @@ networkLite <- function(el, attr) {
 #' @description S3 methods for networkLite class, for generics defined in
 #'              network package.
 #'
-#' @param nw a networkLite object
-#' @param x a networkLite object
-#' @param attrname the name of a vertex attribute in \code{x}
-#' @param ... any additional arguments
+#' @param nw a \code{networkLite} object.
+#' @param x a \code{networkLite} object.
+#' @param attrname the name of a vertex attribute in \code{x}.
+#' @param ... any additional arguments.
 #'
 #' @details Allows use of networkLite objects in \code{ergm_model}.
 #'

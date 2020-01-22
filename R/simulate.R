@@ -7,18 +7,20 @@
 #'              edgelist, and STERGM model coefficients.
 #'
 #' @param p A list of network-related nodal covariates and related terms that
-#'          is produced with \code{\link{stergm_prep}}
+#'          is produced with \code{\link{stergm_prep}}.
 #' @param el A two-column matrix of current edges (edgelist) with an attribute
-#'           variable \code{n} containing the total current network size
-#' @param coef.form Vector of coefficients associated with the formation formula
-#' @param coef.diss Vector of coefficients associated with the dissolution formula
+#'           variable \code{n} containing the total current network size.
+#' @param coef.form Vector of coefficients associated with the formation formula.
+#' @param coef.diss Vector of coefficients associated with the dissolution formula.
 #' @param save.changes Logical, if \code{TRUE}, saves a matrix of changed edges
-#'                     as an attribute of the output edgelist matrix
+#'                     as an attribute of the output edgelist matrix.
 #'
 #' @details
 #' This function is used within the network resimulation module in \code{EpiModel}
 #' to update temporal ERGMs based on the model coefficients and current network
-#' structure.
+#' structure. If network structure (e.g., number of nodes) or nodal attributes
+#' has changed since the last simulation, this network resimulation should be run
+#' only after \code{\link{updateModelTermInputs}}.
 #'
 #' @export
 #'
@@ -227,15 +229,17 @@ ergm_Cprepare <- function(el,
 #'              edgelist, and ERGM model coefficients.
 #'
 #' @param p A list of network-related nodal covariates and related terms that
-#'          is produced with \code{\link{ergm_prep}}
+#'          is produced with \code{\link{ergm_prep}}.
 #' @param el A two-column matrix of current edges (edgelist) with an attribute
-#'           variable \code{n} containing the total current network size
-#' @param coef Vector of coefficients associated with the formation formula
+#'           variable \code{n} containing the total current network size.
+#' @param coef Vector of coefficients associated with the formation formula.
 #'
 #' @details
 #' This function is used within the network resimulation module in \code{EpiModel}
 #' to update cross-sectional ERGMs based on the model coefficients and current
-#' network structure.
+#' network structure. If network structure (e.g., number of nodes) or nodal attributes
+#' has changed since the last simulation, this network resimulation should be run
+#' only after \code{\link{updateModelTermInputs}}.
 #'
 #' @export
 #'
