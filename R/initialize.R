@@ -99,6 +99,14 @@ ergm_prep <- function(nw,
 #' @param dat A list object containing a \code{networkDynamic} object and other
 #'        initialization information passed from \code{netsim}.
 #'
+#' @details
+#' This function is typically used within the initialization modules of
+#' \code{EpiModel} to establish the necessary \code{networkLite} infrastructure
+#' needed for \code{tergmLite} network resimulation. Specifically, this function
+#' converts (and then removes) the \code{network} class objects into an edgelist
+#' only format and prepares the ERGM structural information for simulation. The
+#' example below demonstrates the specific information returned.
+#'
 #' @export
 #'
 #' @examples
@@ -120,6 +128,13 @@ ergm_prep <- function(nw,
 #' # networkLite representation used by tergmLite
 #' dat <- init_tergmLite(dat)
 #' str(dat, max.level = 1)
+#'
+#' # Elements removed are nw (network class object)
+#' # Elements added are el (edgelist representation of network)...
+#' dat$el
+#'
+#' # ... and p (contains all relevant ERGM structural information for simulation)
+#' str(dat$p, max.level = 3)
 #'
 init_tergmLite <- function(dat) {
 
