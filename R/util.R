@@ -19,6 +19,10 @@
 #' are defaulted to \code{FALSE}. The network size attribute \code{n} must not
 #' be missing.
 #'
+#' This new data structure is then used within the \code{\link{updateModelTerms}}
+#' function for updating the structural information on the network used for ERGM
+#' simulation.
+#'
 #' @return
 #' A networkLite object with edge list \code{el}, vertex attributes \code{attr},
 #' and network attributes \code{gal}.
@@ -44,6 +48,7 @@
 #' # networkLite representation used by tergmLite
 #' dat <- init_tergmLite(dat)
 #'
+#' # Conversion to networkLite class format
 #' nwl <- networkLite(dat$el[[1]], dat$attr)
 #' nwl
 #'

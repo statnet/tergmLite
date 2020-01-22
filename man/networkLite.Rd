@@ -30,6 +30,10 @@ for compatibility with some \code{network} accessors. Missing attributes
 \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
 are defaulted to \code{FALSE}. The network size attribute \code{n} must not
 be missing.
+
+This new data structure is then used within the \code{\link{updateModelTerms}}
+function for updating the structural information on the network used for ERGM
+simulation.
 }
 \examples{
 library("EpiModel")
@@ -49,6 +53,7 @@ dat <- initialize.net(x, param, init, control)
 # networkLite representation used by tergmLite
 dat <- init_tergmLite(dat)
 
+# Conversion to networkLite class format
 nwl <- networkLite(dat$el[[1]], dat$attr)
 nwl
 
