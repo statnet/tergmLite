@@ -31,7 +31,7 @@ for compatibility with some \code{network} accessors. Missing attributes
 are defaulted to \code{FALSE}. The network size attribute \code{n} must not
 be missing.
 
-This new data structure is then used within the \code{\link{updateModelTerms}}
+This new data structure is then used within the \code{\link{updateModelTermInputs}}
 function for updating the structural information on the network used for ERGM
 simulation.
 }
