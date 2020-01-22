@@ -29,3 +29,6 @@ Converts network object, formation and dissolution formulas,
              formation and dissolution coefficients, and control settings to a
              thin list format for ERGM resimulation.
 }
+\details{
+This is an internal function used within \code{\link{init_tergmLite}}.
+}

@@ -14,7 +14,8 @@
 #'                    constraints currently supported.
 #' @param control Control settings passed to \code{tergm::control.simulate.network}
 #'
-#' @export
+#' @details
+#' This is an internal function used within \code{\link{init_tergmLite}}.
 #'
 stergm_prep <- function(nw,
                         formation,
@@ -71,7 +72,8 @@ stergm_prep <- function(nw,
 #'                    constraints currently supported.
 #' @param control Control settings passed to \code{ergm::control.simulate.ergm}
 #'
-#' @export
+#' @details
+#' This is an internal function used within \code{\link{init_tergmLite}}.
 #'
 ergm_prep <- function(nw,
                       formation,
@@ -112,8 +114,10 @@ ergm_prep <- function(nw,
 #' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 #'
 #' dat <- initialize.net(x, param, init, control)
+#' str(dat, max.level = 1)
 #'
 #' dat <- init_tergmLite(dat)
+#' str(dat, max.level = 1)
 #'
 init_tergmLite <- function(dat) {
 
