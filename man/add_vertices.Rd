@@ -47,7 +47,7 @@ attributes(dat$el[[1]])$n
 # Add 10 vertices
 dat$el[[1]] <- add_vertices(dat$el[[1]], 10)
 
-Check new network size
+# Check new network size
 attributes(dat$el[[1]])$n
 
 }

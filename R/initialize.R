@@ -162,7 +162,7 @@ init_tergmLite <- function(dat) {
       p$model.form$formula <- NULL
       p$model.diss$formula <- NULL
     } else {
-      p <- tergmLite::ergm_prep(nw, nwp$formation, nwp$coef.form, nwp$constraints)
+      p <- ergm_prep(nw, nwp$formation, nwp$coef.form, nwp$constraints)
       p$model.form$formula <- NULL
     }
     dat$p[[i]] <- p
