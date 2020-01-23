@@ -13,19 +13,22 @@ ergm_prep(
 )
 }
 \arguments{
-\item{nw}{An object of class \code{network}}
+\item{nw}{An object of class \code{network}.}
 
-\item{formation}{Right-hand sided formation formula}
+\item{formation}{Right-hand sided formation formula.}
 
 \item{coef}{Vector of coefficients associated with the formation formula}
 
 \item{constraints}{Constraints for the formation model (only \code{bd})
 constraints currently supported.}
 
-\item{control}{Control settings passed to \code{ergm::control.simulate.ergm}}
+\item{control}{Control settings passed to \code{ergm::control.simulate.ergm}.}
 }
 \description{
 Converts network object, formation and dissolution formulas,
              formation and dissolution coefficients, and control settings to a
              thin list format for ERGM resimulation.
+}
+\details{
+This is an internal function used within \code{\link{init_tergmLite}}.
 }

@@ -1,9 +1,4 @@
 
-deinf <- function(x, replace = 1/.Machine$double.eps) {
-  ifelse(is.nan(x) | abs(x) < replace, x, sign(x) * replace)
-}
-
-
 #' @title networkLite Constructor Utility
 #'
 #' @description Constructor function for a networkLite object.
@@ -21,15 +16,41 @@ deinf <- function(x, replace = 1/.Machine$double.eps) {
 #' \code{gal} being the list of network attributes (copied from \code{attributes(el)})
 #' for compatibility with some \code{network} accessors. Missing attributes
 #' \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
-#' are defaulted to \code{FALSE}.  The network size attribute \code{n} must not
+#' are defaulted to \code{FALSE}. The network size attribute \code{n} must not
 #' be missing.
+#'
+#' This new data structure is then used within the \code{\link{updateModelTermInputs}}
+#' function for updating the structural information on the network used for ERGM
+#' simulation.
 #'
 #' @return
 #' A networkLite object with edge list \code{el}, vertex attributes \code{attr},
-#' and network attributes \code{gal}
+#' and network attributes \code{gal}.
 #'
 #' @rdname networkLite
 #' @export
+#'
+#' @examples
+#' library("EpiModel")
+#' nw <- network.initialize(n = 100, directed = FALSE)
+#' formation <- ~edges
+#' target.stats <- 50
+#' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
+#' x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+#'
+#' param <- param.net(inf.prob = 0.3)
+#' init <- init.net(i.num = 10)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+#'
+#' # Full network structure after initialization
+#' dat <- initialize.net(x, param, init, control)
+#'
+#' # networkLite representation used by tergmLite
+#' dat <- init_tergmLite(dat)
+#'
+#' # Conversion to networkLite class format
+#' nwl <- networkLite(dat$el[[1]], dat$attr)
+#' nwl
 #'
 networkLite <- function(el, attr) {
   x <- list(el = el, attr = attr, gal = attributes(el))
@@ -40,11 +61,21 @@ networkLite <- function(el, attr) {
   }
 
   # other common attributes default to FALSE
-  if (is.null(x$gal$directed))  x$gal$directed  <- FALSE
-  if (is.null(x$gal$bipartite)) x$gal$bipartite <- FALSE
-  if (is.null(x$gal$loops))     x$gal$loops     <- FALSE
-  if (is.null(x$gal$hyper))     x$gal$hyper     <- FALSE
-  if (is.null(x$gal$multiple))  x$gal$multiple  <- FALSE
+  if (is.null(x$gal$directed))  {
+    x$gal$directed <- FALSE
+  }
+  if (is.null(x$gal$bipartite)) {
+    x$gal$bipartite <- FALSE
+  }
+  if (is.null(x$gal$loops)) {
+    x$gal$loops <- FALSE
+  }
+  if (is.null(x$gal$hyper)) {
+    x$gal$hyper <- FALSE
+  }
+  if (is.null(x$gal$multiple)) {
+    x$gal$multiple <- FALSE
+  }
 
   class(x) <- "networkLite"
   return(x)
@@ -56,10 +87,10 @@ networkLite <- function(el, attr) {
 #' @description S3 methods for networkLite class, for generics defined in
 #'              network package.
 #'
-#' @param nw a networkLite object
-#' @param x a networkLite object
-#' @param attrname the name of a vertex attribute in \code{x}
-#' @param ... any additional arguments
+#' @param nw a \code{networkLite} object.
+#' @param x a \code{networkLite} object.
+#' @param attrname the name of a vertex attribute in \code{x}.
+#' @param ... any additional arguments.
 #'
 #' @details Allows use of networkLite objects in \code{ergm_model}.
 #'

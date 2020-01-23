@@ -13,6 +13,14 @@ initialization information passed from \code{netsim}.}
 \description{
 Initializes EpiModel netsim Object for tergmLite Simulation
 }
+\details{
+This function is typically used within the initialization modules of
+\code{EpiModel} to establish the necessary \code{networkLite} infrastructure
+needed for \code{tergmLite} network resimulation. Specifically, this function
+converts (and then removes) the \code{network} class objects into an edgelist
+only format and prepares the ERGM structural information for simulation. The
+example below demonstrates the specific information returned.
+}
 \examples{
 library("EpiModel")
 nw <- network.initialize(n = 100, directed = FALSE)
@@ -25,8 +33,19 @@ param <- param.net(inf.prob = 0.3)
 init <- init.net(i.num = 10)
 control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 
+# Full network structure after initialization
 dat <- initialize.net(x, param, init, control)
+str(dat, max.level = 1)
 
+# networkLite representation used by tergmLite
 dat <- init_tergmLite(dat)
+str(dat, max.level = 1)
+
+# Elements removed are nw (network class object)
+# Elements added are el (edgelist representation of network)...
+dat$el
+
+# ... and p (contains all relevant ERGM structural information for simulation)
+str(dat$p, max.level = 3)
 
 }

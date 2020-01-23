@@ -14,13 +14,13 @@
 \method{list.vertex.attributes}{networkLite}(x)
 }
 \arguments{
-\item{nw}{a networkLite object}
+\item{nw}{a \code{networkLite} object.}
 
-\item{...}{any additional arguments}
+\item{...}{any additional arguments.}
 
-\item{x}{a networkLite object}
+\item{x}{a \code{networkLite} object.}
 
-\item{attrname}{the name of a vertex attribute in \code{x}}
+\item{attrname}{the name of a vertex attribute in \code{x}.}
 }
 \description{
 S3 methods for networkLite class, for generics defined in

@@ -1,9 +1,9 @@
 # tergmLite
 
-[![Version](http://img.shields.io/badge/Version-2.1.5-orange.svg?style=flat)](https://github.com/statnet/tergmLite)
+[![Version](http://img.shields.io/badge/Version-2.1.6-orange.svg?style=flat)](https://github.com/statnet/tergmLite)
 [![Build Status](https://travis-ci.org/statnet/tergmLite.svg?branch=master)](https://travis-ci.org/statnet/tergmLite)
 
-*Fast Simulation of Simple Temporal Exponential Random Graph Models (TERGMs)*
+*Fast Simulation of Simple Temporal Exponential Random Graph Models*
 
 #### Overview
 
@@ -46,14 +46,9 @@ application.
 #### Version 2.0 Installation Notes
 
 Versions >= 2.0 implement the new `networkLite` API that is implemented across the
-`tergmLite`, `network`, and `EpiModel` packages.
-
-```r
-remotes::install_github("statnet/tergmLite")
-```
-
-If you would like to use the version before the implementation of this new API,
-you should install version `1.2.0` with:
+`tergmLite`, `network`, and `EpiModel` packages. If you would like to use the 
+version before the implementation of this new API, you should install version 
+`1.2.0` with:
 
 ```r
 remotes::install_github("statnet/tergmLite@v1.2.0")
