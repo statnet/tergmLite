@@ -2,8 +2,14 @@
 ## Full scale EpiModelHIV example
 
 # package install
-remotes::install_github("statnet/EpiModel")
-remotes::install_github(c("EpiModel/ARTnetData", "EpiModel/ARTnet"))
+install.packages("EpiModel", dep = TRUE)
+remotes::install_github(c("statnet/EpiModel@2c131f0",
+                          "statnet/EpiModelHPC@a64dbf2",
+                          "statnet/tergmLite@v2.1.6",
+                          "EpiModel/EpiABC@c32ecb6",
+                          "EpiModel/ARTnetData@1d8ec6e",
+                          "EpiModel/ARTnet@150c631"),
+                        upgrade = FALSE)
 remotes::install_github("EpiModel/EpiModelHIV-p", ref = "CombPrev", upgrade = FALSE)
 
 ## Packages ##
@@ -150,7 +156,7 @@ out <- list(fit_main, fit_casl, fit_inst)
 
 ## Main
 
-fit_main <- est[[1]]
+fit_main <- out[[1]]
 
 model_main_dx <- ~edges +
   nodematch("age.grp", diff = TRUE) +
@@ -173,7 +179,7 @@ netstats$main
 
 ## Casual
 
-fit_casl <- est[[2]]
+fit_casl <- out[[2]]
 
 model_casl_dx <- ~edges +
   nodematch("age.grp", diff = TRUE) +
@@ -196,7 +202,7 @@ netstats$casl
 
 ## One-Off
 
-fit_inst <- est[[3]]
+fit_inst <- out[[3]]
 
 model_inst_dx <- ~edges +
   nodematch("age.grp", diff = FALSE) +
@@ -258,7 +264,7 @@ control <- control_msm(simno = 1,
                        save.nwstats = TRUE,
                        save.clin.hist = FALSE)
 
-sim <- netsim(est, param, init, control)
+sim <- netsim(out, param, init, control)
 
 df <- as.data.frame(sim, out = "mean")
 names(df)
