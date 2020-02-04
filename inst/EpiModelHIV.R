@@ -22,6 +22,7 @@ netparams <- build_netparams(epistats = epistats, smooth.main.dur.55p = TRUE)
 netstats <- build_netstats(epistats, netparams,
                            expect.mort = 0.000478213, network.size = 10000)
 
+save(epistats, netparams, netstats, file = "inst/ARTnetTestParams.rda")
 
 # 0. Initialize Network ---------------------------------------------------
 
