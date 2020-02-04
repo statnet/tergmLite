@@ -10,6 +10,13 @@ init_tergmLite(dat)
 \item{dat}{A list object containing a \code{networkDynamic} object and other
 initialization information passed from \code{netsim}.}
 }
+\value{
+Returns the list object \code{dat} and adds two elements to the objects: \code{el}
+is an edgelist representation of the network; and \code{p} is a list object
+that contains all the relevant structural information for ERGM/TERGM simulation.
+The function also removes the network class object on the \code{dat} object,
+stored under \code{nw} because it is no longer needed.
+}
 \description{
 Initializes EpiModel netsim Object for tergmLite Simulation
 }

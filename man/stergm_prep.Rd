@@ -30,11 +30,22 @@ constraints currently supported.}
 
 \item{control}{Control settings passed to \code{tergm::control.simulate.network}.}
 }
+\value{
+Returns a list class object with four elements:
+\itemize{
+  \item{\code{model.form}}: Formation model coefficients and data elements.
+  \item{\code{model.diss}}: Dissolution model coefficients and data elements.
+  \item{\code{MHproposal.form}}: Formation model constraint data elements.
+  \item{\code{MHproposal.diss}}: Dissolution model constraint data elements.
+}
+}
 \description{
 Converts network object, formation and dissolution formulas,
              formation and dissolution coefficients, and control settings to a
              thin list format for STERGM resimulation.
 }
 \details{
-This is an internal function used within \code{\link{init_tergmLite}}.
+This is an internal function used within \code{\link{init_tergmLite}}. It is
+not exported from the package but it is documented here to demonstrate the
+internal inputs for \code{\link{init_tergmLite}}.
 }

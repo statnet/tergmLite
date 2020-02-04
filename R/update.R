@@ -16,6 +16,11 @@
 #' edgelist object to account for entries into the population (e.g., births and
 #' in-migration)
 #'
+#' @return
+#' Returns the updated the attribute containing the population size on the
+#' edgelist, \code{el}, based on the number of new vertices specified to be
+#' added in \code{nv}.
+#'
 #' @export
 #'
 #' @examples
@@ -67,6 +72,11 @@ add_vertices <- function(el, nv) {
 #' This function is used in \code{EpiModel} modules to remove vertices (nodes)
 #' from the edgelist object to account for exits from the population (e.g.,
 #' deaths and out-migration)
+#'
+#' @return
+#' Returns a updated edgelist object, \code{el}, with the edges of deleted
+#' vertices removed from the edgelist and the ID numbers of the remaining edges
+#' permuted downward.
 #'
 #' @export
 #'

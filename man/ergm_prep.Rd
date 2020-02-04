@@ -24,11 +24,20 @@ constraints currently supported.}
 
 \item{control}{Control settings passed to \code{ergm::control.simulate.ergm}.}
 }
+\value{
+Returns a list class object with two elements:
+\itemize{
+  \item{\code{model.form}}: Model coefficients and data elements.
+  \item{\code{MHproposal}}: Model constraint data elements.
+}
+}
 \description{
 Converts network object, formation and dissolution formulas,
              formation and dissolution coefficients, and control settings to a
              thin list format for ERGM resimulation.
 }
 \details{
-This is an internal function used within \code{\link{init_tergmLite}}.
+This is an internal function used within \code{\link{init_tergmLite}}. It is
+not exported from the package but it is documented here to demonstrate the
+internal inputs for \code{\link{init_tergmLite}}.
 }

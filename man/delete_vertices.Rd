@@ -12,6 +12,11 @@ variable \code{n} containing the total current network size.}
 
 \item{vid}{A vector of IDs to delete from the edgelist.}
 }
+\value{
+Returns a updated edgelist object, \code{el}, with the edges of deleted
+vertices removed from the edgelist and the ID numbers of the remaining edges
+permuted downward.
+}
 \description{
 Given a current two-column matrix of edges and a vector of IDs
              to delete from the matrix, this function first removes any rows

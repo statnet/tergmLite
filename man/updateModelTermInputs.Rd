@@ -11,6 +11,11 @@ updateModelTermInputs(dat, network = 1)
 
 \item{network}{Numberic number of network location for multi-network simulations.}
 }
+\value{
+Returns an updated \code{dat} object with the network list structure inputs
+used by \code{\link{simulate_network}} or \code{\link{simulate_ergm}} with changes
+to network size or nodal covariates.
+}
 \description{
 Function to appropriately update model inputs based on ERGM model
              terms when using networkLite representation.
@@ -24,21 +29,21 @@ calling \code{\link{simulate_network}} or \code{\link{simulate_ergm}}.
 
 Implemented terms are:
  \itemize{
-   \item edges
-   \item nodematch
-   \item nodefactor
-   \item concurrent (including heterogenous by attribute)
-   \item degree (including heterogenous by attribute)
-   \item degrange
-   \item absdiff
-   \item absdiffby (in the EpiModel package)
-   \item nodecov
-   \item nodemix
-   \item absdiffnodemix (in the EpiModel package)
-   \item triangle
-   \item gwesp(fixed=TRUE)
+   \item \code{edges}
+   \item \code{nodematch}
+   \item \code{nodefactor}
+   \item \code{concurrent} (including heterogenous by attribute)
+   \item \code{degree} (including heterogenous by attribute)
+   \item \code{degrange}
+   \item \code{absdiff}
+   \item \code{absdiffby} (in the EpiModel package)
+   \item \code{nodecov}
+   \item \code{nodemix}
+   \item \code{absdiffnodemix} (in the EpiModel package)
+   \item \code{triangle}
+   \item \code{gwesp(fixed=TRUE)}
  }
-All other terms will return errors.
+All other ERGM terms will return errors.
 }
 \examples{
 library("EpiModel")

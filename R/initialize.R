@@ -15,7 +15,18 @@
 #' @param control Control settings passed to \code{tergm::control.simulate.network}.
 #'
 #' @details
-#' This is an internal function used within \code{\link{init_tergmLite}}.
+#' This is an internal function used within \code{\link{init_tergmLite}}. It is
+#' not exported from the package but it is documented here to demonstrate the
+#' internal inputs for \code{\link{init_tergmLite}}.
+#'
+#' @return
+#' Returns a list class object with four elements:
+#' \itemize{
+#'   \item{\code{model.form}}: Formation model coefficients and data elements.
+#'   \item{\code{model.diss}}: Dissolution model coefficients and data elements.
+#'   \item{\code{MHproposal.form}}: Formation model constraint data elements.
+#'   \item{\code{MHproposal.diss}}: Dissolution model constraint data elements.
+#' }
 #'
 stergm_prep <- function(nw,
                         formation,
@@ -73,7 +84,16 @@ stergm_prep <- function(nw,
 #' @param control Control settings passed to \code{ergm::control.simulate.ergm}.
 #'
 #' @details
-#' This is an internal function used within \code{\link{init_tergmLite}}.
+#' This is an internal function used within \code{\link{init_tergmLite}}. It is
+#' not exported from the package but it is documented here to demonstrate the
+#' internal inputs for \code{\link{init_tergmLite}}.
+#'
+#' @return
+#' Returns a list class object with two elements:
+#' \itemize{
+#'   \item{\code{model.form}}: Model coefficients and data elements.
+#'   \item{\code{MHproposal}}: Model constraint data elements.
+#' }
 #'
 ergm_prep <- function(nw,
                       formation,
@@ -108,6 +128,13 @@ ergm_prep <- function(nw,
 #' example below demonstrates the specific information returned.
 #'
 #' @export
+#'
+#' @return
+#' Returns the list object \code{dat} and adds two elements to the objects: \code{el}
+#' is an edgelist representation of the network; and \code{p} is a list object
+#' that contains all the relevant structural information for ERGM/TERGM simulation.
+#' The function also removes the network class object on the \code{dat} object,
+#' stored under \code{nw} because it is no longer needed.
 #'
 #' @examples
 #' library("EpiModel")

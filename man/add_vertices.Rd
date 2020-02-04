@@ -13,6 +13,11 @@ variable \code{n} containing the total current network size.}
 \item{nv}{A integer equal to the number of nodes to add to the network
 size at the given time step.}
 }
+\value{
+Returns the updated the attribute containing the population size on the
+edgelist, \code{el}, based on the number of new vertices specified to be
+added in \code{nv}.
+}
 \description{
 This function performs a simple operation of updating the
              edgelist attribute \code{n} that tracks the total network

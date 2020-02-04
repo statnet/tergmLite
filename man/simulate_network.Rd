@@ -20,6 +20,12 @@ variable \code{n} containing the total current network size.}
 \item{save.changes}{Logical, if \code{TRUE}, saves a matrix of changed edges
 as an attribute of the output edgelist matrix.}
 }
+\value{
+Returns an updated network edgelist object, typically stored on the master
+\code{dat} list object, based on the model simulation. If \code{save.changes}
+is \code{TRUE}, also returns a list of new edges and disolved edges with the
+resimulation.
+}
 \description{
 Resimulates a networkLite object given thin network data structure,
              edgelist, and STERGM model coefficients.

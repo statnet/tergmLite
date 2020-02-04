@@ -24,6 +24,12 @@
 #'
 #' @export
 #'
+#' @return
+#' Returns an updated network edgelist object, typically stored on the master
+#' \code{dat} list object, based on the model simulation. If \code{save.changes}
+#' is \code{TRUE}, also returns a list of new edges and disolved edges with the
+#' resimulation.
+#'
 #' @examples
 #' library("EpiModel")
 #'
@@ -242,6 +248,10 @@ ergm_Cprepare <- function(el,
 #' only after \code{\link{updateModelTermInputs}}.
 #'
 #' @export
+#'
+#' @return
+#' Returns an updated network edgelist object, typically stored on the master
+#' \code{dat} list object, based on the model simulation.
 #'
 #' @examples
 #' library("EpiModel")

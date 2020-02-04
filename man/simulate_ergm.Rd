@@ -15,6 +15,10 @@ variable \code{n} containing the total current network size.}
 
 \item{coef}{Vector of coefficients associated with the formation formula.}
 }
+\value{
+Returns an updated network edgelist object, typically stored on the master
+\code{dat} list object, based on the model simulation.
+}
 \description{
 Resimulates a networkLite object given thin network data structure,
              edgelist, and ERGM model coefficients.
