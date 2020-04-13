@@ -175,7 +175,7 @@ init_tergmLite <- function(dat) {
     nwp <- dat$nwparam[[i]]
     is_tergm <- all(nwp$coef.diss$duration > 1)
     if (num_nw == 1) {
-      nw <- dat$nw
+      nw <- dat$nw[[1]]
     } else {
       nw <- dat$nw[[i]]
     }
