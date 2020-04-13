@@ -48,6 +48,7 @@
 #' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 #'
 #' # Full network structure after initialization
+#' dat <- crosscheck.net(x, param, init, control)
 #' dat <- initialize.net(x, param, init, control)
 #' str(dat, max.level = 1)
 #'
@@ -271,6 +272,7 @@ ergm_Cprepare <- function(el,
 #' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 #'
 #' # Full network structure after initialization
+#' dat <- crosscheck.net(x, param, init, control)
 #' dat <- initialize.net(x, param, init, control)
 #' str(dat, max.level = 1)
 #'
