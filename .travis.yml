@@ -1,5 +1,6 @@
 
 language: r
+r_github_packages: statnet/EpiModel@EpiModel_Overhaul_nwobjupdate
 sudo: false
 cache: packages
 
