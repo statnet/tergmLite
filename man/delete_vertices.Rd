@@ -45,6 +45,7 @@ control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 set.seed(123456)
 
 # Full network structure after initialization
+dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 
 # networkLite representation used by tergmLite
