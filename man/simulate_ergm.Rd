@@ -44,7 +44,7 @@ coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 1)
 x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
 param <- param.net(inf.prob = 0.3)
-init <- init.net(i.num = 10)
+init <- init.net(i.num = 10, i.num.g2 = 10)
 control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 
 # Full network structure after initialization
