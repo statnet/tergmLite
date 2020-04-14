@@ -17,6 +17,7 @@ test_that("concurrent", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -42,6 +43,7 @@ test_that("concurrent_by", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -66,6 +68,7 @@ test_that("degree, single", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -90,6 +93,7 @@ test_that("degree, multiple", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -115,6 +119,7 @@ test_that("degree_by_attr", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -139,6 +144,7 @@ test_that("degrange", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -159,6 +165,7 @@ test_that("degrange", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -185,6 +192,7 @@ test_that("nodecov formula", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -211,6 +219,7 @@ test_that("nodecov function", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -237,6 +246,7 @@ test_that("nodefactor single", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -266,6 +276,7 @@ test_that("nodefactor interaction", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -292,6 +303,7 @@ test_that("nodemix levels", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -316,6 +328,7 @@ test_that("triangle", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -341,6 +354,7 @@ test_that("triangle_attr", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -366,6 +380,7 @@ test_that("triangle_attrdiff", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -391,6 +406,7 @@ test_that("triangle_attrdifflevels", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -416,6 +432,7 @@ test_that("gwesp_true", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 
@@ -440,6 +457,7 @@ test_that("gwesp_truedecay", {
   init <- init.net(i.num = 10)
   control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
 
+  dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control)
   dat <- init_tergmLite(dat)
 

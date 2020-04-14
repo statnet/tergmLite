@@ -45,20 +45,20 @@ control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
 set.seed(123456)
 
 # Full network structure after initialization
+dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 
 # networkLite representation used by tergmLite
 dat <- init_tergmLite(dat)
 
-# Current edges include {1, 87}, {2, 33}, {4, 19}, and {5, 99}
+# Current edges
 head(dat$el[[1]], 4)
 
 # Remove nodes 1 and 2
 nodes.to.delete <- 1:2
 dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
 
-# Old nodes 1 and 2 removed, and old nodes 4 and 5 become nodes 2 and 3
-# with edges 19 and 99 also shifted down to 17 and 97
+# Newly permuted edges
 head(dat$el[[1]], 4)
 
 }
