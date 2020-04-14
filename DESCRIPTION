@@ -22,7 +22,7 @@ Imports:
     Rcpp
 Suggests: 
     testthat,
-    EpiModel (>= 1.7.5)
+    EpiModel (>= 2.0.0)
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 7.0.2
