@@ -7,7 +7,7 @@ r:
   - devel
 
 r_github_packages:
-  statnet/EpiModel@EpiModel_Overhaul_nwobjupdate
+  statnet/EpiModel@EpiModel_Overhaul
 
 warnings_are_errors: true
 
