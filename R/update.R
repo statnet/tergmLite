@@ -33,7 +33,8 @@
 #'
 #' param <- param.net(inf.prob = 0.3)
 #' init <- init.net(i.num = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
+#'                        resimulate.network = TRUE)
 #'
 #' # Full network structure after initialization
 #' dat <- crosscheck.net(x, param, init, control)
@@ -103,15 +104,14 @@ add_vertices <- function(el, nv) {
 #' # networkLite representation used by tergmLite
 #' dat <- init_tergmLite(dat)
 #'
-#' # Current edges include {1, 87}, {2, 33}, {4, 19}, and {5, 99}
+#' # Current edges
 #' head(dat$el[[1]], 4)
 #'
 #' # Remove nodes 1 and 2
 #' nodes.to.delete <- 1:2
 #' dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
 #'
-#' # Old nodes 1 and 2 removed, and old nodes 4 and 5 become nodes 2 and 3
-#' # with edges 19 and 99 also shifted down to 17 and 97
+#' # Newly permuted edges
 #' head(dat$el[[1]], 4)
 #'
 delete_vertices <- function(el, vid) {
@@ -124,8 +124,6 @@ delete_vertices <- function(el, vid) {
     }
     if (nrow(new.el) > 0) {
       elv <- as.vector(new.el)
-      # shifted.elv <- vapply(1:length(elv),
-      #                       function(x) elv[x] - sum(elv[x] > vid), FUN.VALUE = integer(1))
       shifted.elv <- shiftVec(elv, vid)
       new.el <- matrix(shifted.elv, ncol = 2)
     }
