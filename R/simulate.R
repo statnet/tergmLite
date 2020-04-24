@@ -37,7 +37,7 @@
 #' set.seed(1234)
 #'
 #' nw <- network_initialize(100)
-#' nw <- set.vertex.attribute(nw, "group", rep(1:2, each = 50))
+#' nw <- set_vertex_attribute(nw, "group", rep(1:2, each = 50))
 #' formation <- ~edges + nodefactor("group")
 #' target.stats <- c(15, 10)
 #' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
@@ -259,7 +259,7 @@ ergm_Cprepare <- function(el,
 #' set.seed(1234)
 #'
 #' nw <- network_initialize(100)
-#' nw <- set.vertex.attribute(nw, "group", rep(1:2, each = 50))
+#' nw <- set_vertex_attribute(nw, "group", rep(1:2, each = 50))
 #' formation <- ~edges + nodefactor("group")
 #' target.stats <- c(15, 10)
 #' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 1)

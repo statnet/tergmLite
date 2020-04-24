@@ -28,7 +28,7 @@ test_that("concurrent_by", {
 
   library("EpiModel")
   nw <- network_initialize(100)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
                 formation = ~edges + concurrent(by = "riskg"),
@@ -104,7 +104,7 @@ test_that("degree_by_attr", {
 
   library("EpiModel")
   nw <- network_initialize(100)
-  nw <- set.vertex.attribute(nw, "riskg", sample(rep(0:1, each = 50)))
+  nw <- set_vertex_attribute(nw, "riskg", sample(rep(0:1, each = 50)))
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1, by = "riskg"),
@@ -177,7 +177,7 @@ test_that("nodecov formula", {
   library("EpiModel")
   nw <- network_initialize(100)
   risk <- runif(100)
-  nw <- set.vertex.attribute(nw, "risk", risk)
+  nw <- set_vertex_attribute(nw, "risk", risk)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodecov(~risk^2),
@@ -204,7 +204,7 @@ test_that("nodecov function", {
   library("EpiModel")
   nw <- network_initialize(100)
   risk <- runif(100)
-  nw <- set.vertex.attribute(nw, "risk", risk)
+  nw <- set_vertex_attribute(nw, "risk", risk)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodecov(function(x) exp(1 + log((x %v% "risk")^2))),
@@ -231,7 +231,7 @@ test_that("nodefactor single", {
   library("EpiModel")
   nw <- network_initialize(100)
   riskg <- rep(1:4, each = 25)
-  nw <- set.vertex.attribute(nw, "riskg", riskg)
+  nw <- set_vertex_attribute(nw, "riskg", riskg)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodefactor("riskg"),
@@ -260,8 +260,8 @@ test_that("nodefactor interaction", {
   nw <- network_initialize(100)
   riskg <- sample(rep(1:2, each = 50))
   race <- sample(rep(0:1, each = 50))
-  nw <- set.vertex.attribute(nw, "riskg", riskg)
-  nw <- set.vertex.attribute(nw, "race", race)
+  nw <- set_vertex_attribute(nw, "riskg", riskg)
+  nw <- set_vertex_attribute(nw, "race", race)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodefactor(c("riskg", "race")),
@@ -288,7 +288,7 @@ test_that("nodemix levels", {
   library("EpiModel")
   nw <- network_initialize(200)
   race <- sample(rep(letters[1:4], each = 50))
-  nw <- set.vertex.attribute(nw, "race", race)
+  nw <- set_vertex_attribute(nw, "race", race)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodemix("race", levels = c("a", "b", "d"), levels2=-(2:3)),
@@ -339,7 +339,7 @@ test_that("triangle_attr", {
 
   library("EpiModel")
   nw <- network_initialize(100)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.2))
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.2))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg"),
@@ -365,7 +365,7 @@ test_that("triangle_attrdiff", {
 
   library("EpiModel")
   nw <- network_initialize(100)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg", diff=TRUE),
@@ -391,7 +391,7 @@ test_that("triangle_attrdifflevels", {
 
   library("EpiModel")
   nw <- network_initialize(100)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 2, 0.1))
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 2, 0.1))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg", diff=TRUE, levels=c(1,2)),

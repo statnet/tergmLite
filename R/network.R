@@ -49,7 +49,10 @@ network_initialize <- function(n, ...) {
 #' nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
 #' nw
 #'
-set_vertex_attribute <- function(x, attrname, value, v = seq_len(network.size(x))) {
+set_vertex_attribute <- function(x, attrname, value, v) {
+  if (missing(v)) {
+    v <- seq_len(network.size(x))
+  }
   g <- set.vertex.attribute(x, attrname, value, v)
   return(g)
 }
