@@ -49,7 +49,8 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
 #' @importFrom statnet.common term.list.formula NVL
-#' @importFrom network as.edgelist
+#' @importFrom network as.edgelist network.initialize get.vertex.attribute
+#'             set.vertex.attribute network.size
 #'
 #' @docType package
 #' @keywords package

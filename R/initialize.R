@@ -138,7 +138,7 @@ ergm_prep <- function(nw,
 #'
 #' @examples
 #' library("EpiModel")
-#' nw <- network.initialize(n = 100, directed = FALSE)
+#' nw <- network_initialize(100)
 #' formation <- ~edges
 #' target.stats <- 50
 #' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
@@ -166,7 +166,7 @@ ergm_prep <- function(nw,
 #'
 init_tergmLite <- function(dat) {
 
-  num_nw <- ifelse(inherits(dat$nw, "network"), 1, length(dat$nw))
+  num_nw <- length(dat$nw)
 
   dat$el <- list()
   dat$p <- list()
