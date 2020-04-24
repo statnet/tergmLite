@@ -43,7 +43,7 @@ library("EpiModel")
 # Set seed for reproducibility
 set.seed(1234)
 
-nw <- network.initialize(n = 100, directed = FALSE)
+nw <- network_initialize(100)
 nw <- set.vertex.attribute(nw, "group", rep(1:2, each = 50))
 formation <- ~edges + nodefactor("group")
 target.stats <- c(15, 10)
