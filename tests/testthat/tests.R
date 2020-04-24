@@ -1,8 +1,4 @@
 
-# remotes::install_github("statnet/tergmLite")
-# library("tergmLite")
-# library("testthat")
-
 test_that("concurrent", {
 
   library("EpiModel")
