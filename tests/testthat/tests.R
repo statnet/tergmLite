@@ -2,7 +2,7 @@
 test_that("concurrent", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + concurrent,
@@ -27,7 +27,7 @@ test_that("concurrent", {
 test_that("concurrent_by", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
@@ -53,7 +53,7 @@ test_that("concurrent_by", {
 test_that("degree, single", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1),
@@ -78,7 +78,7 @@ test_that("degree, single", {
 test_that("degree, multiple", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1:2),
@@ -103,7 +103,7 @@ test_that("degree, multiple", {
 test_that("degree_by_attr", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   nw <- set.vertex.attribute(nw, "riskg", sample(rep(0:1, each = 50)))
 
   est <- netest(nw = nw,
@@ -129,7 +129,7 @@ test_that("degree_by_attr", {
 test_that("degrange", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degrange(from = 4),
@@ -175,7 +175,7 @@ test_that("degrange", {
 test_that("nodecov formula", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   risk <- runif(100)
   nw <- set.vertex.attribute(nw, "risk", risk)
 
@@ -202,7 +202,7 @@ test_that("nodecov formula", {
 test_that("nodecov function", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   risk <- runif(100)
   nw <- set.vertex.attribute(nw, "risk", risk)
 
@@ -229,7 +229,7 @@ test_that("nodecov function", {
 test_that("nodefactor single", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   riskg <- rep(1:4, each = 25)
   nw <- set.vertex.attribute(nw, "riskg", riskg)
 
@@ -257,7 +257,7 @@ test_that("nodefactor single", {
 test_that("nodefactor interaction", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   riskg <- sample(rep(1:2, each = 50))
   race <- sample(rep(0:1, each = 50))
   nw <- set.vertex.attribute(nw, "riskg", riskg)
@@ -286,7 +286,7 @@ test_that("nodefactor interaction", {
 test_that("nodemix levels", {
 
   library("EpiModel")
-  nw <- network.initialize(200, directed = FALSE)
+  nw <- network_initialize(200)
   race <- sample(rep(letters[1:4], each = 50))
   nw <- set.vertex.attribute(nw, "race", race)
 
@@ -313,7 +313,7 @@ test_that("nodemix levels", {
 test_that("triangle", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle,
@@ -338,7 +338,7 @@ test_that("triangle", {
 test_that("triangle_attr", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.2))
 
   est <- netest(nw = nw,
@@ -364,7 +364,7 @@ test_that("triangle_attr", {
 test_that("triangle_attrdiff", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
@@ -390,7 +390,7 @@ test_that("triangle_attrdiff", {
 test_that("triangle_attrdifflevels", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 2, 0.1))
 
   est <- netest(nw = nw,
@@ -417,7 +417,7 @@ test_that("triangle_attrdifflevels", {
 test_that("gwesp_true", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + gwesp(fixed=TRUE),
@@ -442,7 +442,7 @@ test_that("gwesp_true", {
 test_that("gwesp_truedecay", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + gwesp(decay=0.8, fixed=TRUE),

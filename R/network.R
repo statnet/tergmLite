@@ -24,3 +24,4 @@ network_initialize <- function(n, ...) {
   nw <- network.initialize(n, directed = FALSE, ...)
   return(nw)
 }
+

@@ -27,7 +27,7 @@ save(epistats, netparams, netstats, file = "inst/ARTnetTestParams.rda")
 # 0. Initialize Network ---------------------------------------------------
 
 num <- netstats$demog$num
-nw <- network::network.initialize(num, directed = FALSE)
+nw <- network_initialize(num)
 
 attr.names <- names(netstats$attr)
 attr.values <- netstats$attr

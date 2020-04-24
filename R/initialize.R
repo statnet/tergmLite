@@ -138,7 +138,7 @@ ergm_prep <- function(nw,
 #'
 #' @examples
 #' library("EpiModel")
-#' nw <- network.initialize(n = 100, directed = FALSE)
+#' nw <- network_initialize(100)
 #' formation <- ~edges
 #' target.stats <- 50
 #' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
