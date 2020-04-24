@@ -25,3 +25,59 @@ network_initialize <- function(n, ...) {
   return(nw)
 }
 
+#' @title Set Vertex Attribute on Network Object
+#'
+#' @description Set a vertex attribute on an object of class \code{network},
+#'              wrapping the related function in the \code{network} package.
+#'
+#' @param x An object of class network.
+#' @param attrname The name of the attribute to set.
+#' @param value A vector of values of the attribute to be set.
+#' @param v IDs for the vertices whose attributes are to be altered.
+#'
+#' @details
+#' This function is used in \code{EpiModel} workflows to set vertex attributes on
+#' an initialized empty network object (with \code{\link{network_initialize}}.
+#'
+#' @return
+#' Returns an object of class \code{network}.
+#'
+#' @export
+#'
+#' @examples
+#' nw <- network_initialize(100)
+#' nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
+#' nw
+#'
+set_vertex_attribute <- function(x, attrname, value, v = seq_len(network.size(x))) {
+  g <- set.vertex.attribute(x, attrname, value, v)
+  return(g)
+}
+
+#' @title Get Vertex Attribute on Network Object
+#'
+#' @description Gets a vertex attribute from an object of class \code{network},
+#'              wrapping the related function in the \code{network} package.
+#'
+#' @param x An object of class network.
+#' @param attrname The name of the attribute to get.
+#'
+#' @details
+#' This function is used in \code{EpiModel} workflows to set vertex attributes on
+#' an initialized empty network object (with \code{\link{network_initialize}}.
+#'
+#' @return
+#' Returns an object of class \code{network}.
+#'
+#' @export
+#'
+#' @examples
+#' nw <- network_initialize(100)
+#' nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
+#' get_vertex_attribute(nw, "age")
+#'
+get_vertex_attribute <- function(x, attrname) {
+  attr <- get.vertex.attribute(x, attrname, na.omit = FALSE,
+                               null.na = TRUE, unlist = TRUE)
+  return(attr)
+}
