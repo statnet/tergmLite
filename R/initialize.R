@@ -166,7 +166,7 @@ ergm_prep <- function(nw,
 #'
 init_tergmLite <- function(dat) {
 
-  num_nw <- ifelse(inherits(dat$nw, "network"), 1, length(dat$nw))
+  num_nw <- length(dat$nw)
 
   dat$el <- list()
   dat$p <- list()
