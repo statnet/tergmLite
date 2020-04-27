@@ -57,7 +57,6 @@ add_vertices <- function(el, nv) {
   return(el)
 }
 
-
 #' @title Fast Version of network::delete.vertices for Edgelist-formated Network
 #'
 #' @description Given a current two-column matrix of edges and a vector of IDs
@@ -69,6 +68,8 @@ add_vertices <- function(el, nv) {
 #' @param el A two-column matrix of current edges (edgelist) with an attribute
 #'           variable \code{n} containing the total current network size.
 #' @param vid A vector of IDs to delete from the edgelist.
+#' @param network In multi-network models, the network to remove the verticies from.
+#'                Default of \code{network = 1}.
 #'
 #' @details
 #' This function is used in \code{EpiModel} modules to remove vertices (nodes)
@@ -109,14 +110,14 @@ add_vertices <- function(el, nv) {
 #'
 #' # Remove nodes 1 and 2
 #' nodes.to.delete <- 1:2
-#' dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
+#' dat <- delete_vertices(dat, nodes.to.delete, 1)
 #'
 #' # Newly permuted edges
 #' head(dat$el[[1]], 4)
 #'
-delete_vertices <- function(el, vid) {
+delete_vertices <- function(dat, vid, network = 1) {
 
-  new.el <- el
+  new.el <- el <- dat$el[[network]]
   if (length(vid) > 0) {
     el.rows.to.del <- which(el[, 1] %in% vid | el[, 2] %in% vid)
     if (length(el.rows.to.del) > 0) {
@@ -130,5 +131,7 @@ delete_vertices <- function(el, vid) {
     attributes(new.el)$n <- attributes(el)$n - length(vid)
   }
 
-  return(new.el)
+  dat$el[[network]] <- new.el
+
+  return(dat)
 }
