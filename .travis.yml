@@ -7,7 +7,7 @@ r:
   - devel
 
 r_github_packages:
-  statnet/EpiModel@EpiModel@delete_vertices
+  statnet/EpiModel@delete_vertices
 
 warnings_are_errors: true
 
