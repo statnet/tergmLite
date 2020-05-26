@@ -19,7 +19,9 @@ Imports:
     statnet.common (>= 4.3.0),
     tergm (>= 3.6.1),
     network (>= 1.16.0),
-    Rcpp
+    Rcpp,
+    tibble,
+    methods
 Suggests: 
     testthat,
     EpiModel (>= 2.0.0)
