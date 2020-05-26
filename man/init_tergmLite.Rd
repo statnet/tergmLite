@@ -27,6 +27,24 @@ needed for \code{tergmLite} network resimulation. Specifically, this function
 converts (and then removes) the \code{network} class objects into an edgelist
 only format and prepares the ERGM structural information for simulation. The
 example below demonstrates the specific information returned.
+
+Implemented terms are:
+\itemize{
+  \item edges
+  \item nodematch
+  \item nodefactor
+  \item concurrent (including heterogenous by attribute)
+  \item degree (including heterogenous by attribute)
+  \item degrange
+  \item absdiff
+  \item absdiffby (in the EpiModel package)
+  \item nodecov
+  \item nodemix
+  \item absdiffnodemix (in the EpiModel package)
+  \item triangle
+  \item gwesp(fixed=TRUE)
+}
+All other terms will return errors.
 }
 \examples{
 library("EpiModel")

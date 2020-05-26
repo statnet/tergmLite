@@ -4,7 +4,7 @@
 \alias{networkLite}
 \title{networkLite Constructor Utility}
 \usage{
-networkLite(el, attr)
+networkLite(el, attr = NULL)
 }
 \arguments{
 \item{el}{an edgelist-formatted network representation, including network
@@ -29,7 +29,8 @@ each of the first two corresponding to the argument of the same name, and
 for compatibility with some \code{network} accessors. Missing attributes
 \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
 are defaulted to \code{FALSE}. The network size attribute \code{n} must not
-be missing.
+be missing.  Attributes \code{class}, \code{dim}, and \code{vnames} (if present)
+are not copied from \code{el} to the networkLite.
 
 This new data structure is then used within the \code{\link{updateModelTermInputs}}
 function for updating the structural information on the network used for ERGM

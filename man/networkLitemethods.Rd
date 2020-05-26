@@ -2,25 +2,38 @@
 % Please edit documentation in R/util.R
 \name{networkLitemethods}
 \alias{networkLitemethods}
-\alias{as.network.networkLite}
 \alias{get.vertex.attribute.networkLite}
 \alias{list.vertex.attributes.networkLite}
+\alias{network.edgecount.networkLite}
+\alias{as.edgelist.networkLite}
+\alias{[<-.networkLite}
+\alias{print.networkLite}
 \title{networkLite Methods}
 \usage{
-\method{as.network}{networkLite}(nw, ...)
-
 \method{get.vertex.attribute}{networkLite}(x, attrname, ...)
 
 \method{list.vertex.attributes}{networkLite}(x)
+
+\method{network.edgecount}{networkLite}(x, ...)
+
+\method{as.edgelist}{networkLite}(x, output = c("matrix", "tibble"), ...)
+
+\method{[}{networkLite}(x, i, j) <- value
+
+\method{print}{networkLite}(x, ...)
 }
 \arguments{
-\item{nw}{a \code{networkLite} object.}
-
-\item{...}{any additional arguments.}
-
 \item{x}{a \code{networkLite} object.}
 
 \item{attrname}{the name of a vertex attribute in \code{x}.}
+
+\item{...}{any additional arguments.}
+
+\item{output}{Type of edgelist to output.}
+
+\item{i, j}{Nodal indices (must be missing for networkLite method)}
+
+\item{value}{Value to set edges to (must be FALSE for networkLite method)}
 }
 \description{
 S3 methods for networkLite class, for generics defined in
