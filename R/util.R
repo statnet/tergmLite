@@ -17,7 +17,8 @@
 #' for compatibility with some \code{network} accessors. Missing attributes
 #' \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
 #' are defaulted to \code{FALSE}. The network size attribute \code{n} must not
-#' be missing.
+#' be missing.  Attributes \code{class}, \code{dim}, and \code{vnames} (if present)
+#' are not copied from \code{el} to the networkLite.
 #'
 #' This new data structure is then used within the \code{\link{updateModelTermInputs}}
 #' function for updating the structural information on the network used for ERGM
@@ -53,8 +54,12 @@
 #' nwl <- networkLite(dat$el[[1]], dat$attr)
 #' nwl
 #'
-networkLite <- function(el, attr) {
-  x <- list(el = el, attr = attr, gal = attributes(el))
+networkLite <- function(el, attr = NULL) {
+  x <- list(el = el, 
+            attr = attr, 
+            gal = attributes(el)[setdiff(names(attributes(el)), c("class", "dim", "vnames"))])
+
+  storage.mode(x$el) <- "integer" # some "double" edgelists have been coming through...
 
   # network size attribute is required
   if (is.null(x$gal$n)) {
@@ -62,7 +67,7 @@ networkLite <- function(el, attr) {
   }
 
   # other common attributes default to FALSE
-  if (is.null(x$gal$directed))  {
+  if (is.null(x$gal$directed)) {
     x$gal$directed <- FALSE
   }
   if (is.null(x$gal$bipartite)) {
@@ -78,7 +83,7 @@ networkLite <- function(el, attr) {
     x$gal$multiple <- FALSE
   }
 
-  class(x) <- "networkLite"
+  class(x) <- c("networkLite", "network")
   return(x)
 }
 
@@ -88,24 +93,12 @@ networkLite <- function(el, attr) {
 #' @description S3 methods for networkLite class, for generics defined in
 #'              network package.
 #'
-#' @param nw a \code{networkLite} object.
 #' @param x a \code{networkLite} object.
 #' @param attrname the name of a vertex attribute in \code{x}.
 #' @param ... any additional arguments.
 #'
 #' @details Allows use of networkLite objects in \code{ergm_model}.
 #'
-#' @importFrom network as.network
-#'
-#' @rdname networkLitemethods
-#' @export
-#'
-as.network.networkLite <- function(nw, ...) {
-  class(nw) <- c("networkLite", "network")
-  nw
-}
-
-#' @importFrom network get.vertex.attribute
 #' @rdname networkLitemethods
 #' @export
 #'
@@ -113,10 +106,65 @@ get.vertex.attribute.networkLite <- function(x,attrname,...) {
   x$attr[[attrname]]
 }
 
-#' @importFrom network list.vertex.attributes
 #' @rdname networkLitemethods
 #' @export
 #'
 list.vertex.attributes.networkLite <- function(x) {
   sort(unique(names(x$attr)))
+}
+
+#' @rdname networkLitemethods
+#' @export
+#'
+network.edgecount.networkLite <- function(x, ...) {
+  NROW(x$el)
+}
+
+#' @importFrom tibble as_tibble
+#' @rdname networkLitemethods
+#' @param output Type of edgelist to output.
+#' @export
+#'
+as.edgelist.networkLite <- function(x, output=c("matrix","tibble"), ...) {
+  output <- match.arg(output)
+
+  if(output == "matrix") {
+    m <- x$el
+  } else {
+    m <- as_tibble(list(.tail = x$el[,1], .head = x$el[,2]))
+    class(m) <- c("tibble_edgelist", "edgelist", class(m))
+  }
+
+  attr(m, "n") <- as.integer(network.size(x))
+  attr(m, "directed") <- as.logical(is.directed(x))
+  bip <- if(is.bipartite(x)) x %n% "bipartite" else FALSE
+  attr(m, "bipartite") <- if(is.numeric(bip)) as.integer(bip) else bip
+  attr(m, "loops") <- as.logical(has.loops(x))
+  attr(m, "vnames") <- network.vertex.names(x)
+  
+  return(m)
+}
+
+#' @rdname networkLitemethods
+#' @param i,j Nodal indices (must be missing for networkLite method)
+#' @param value Value to set edges to (must be FALSE for networkLite method)
+#' @export
+"[<-.networkLite" <- function(x, i, j, value) {
+  if(missing(i) && missing(j) && isTRUE(all(value == FALSE))) {
+    x$el <- structure(x$el[NULL,,drop=FALSE], class = class(x$el), n = x$gal$n)
+    return(x)
+  } else {
+    stop("networkLite `[<-` operator only supports removing all edges at this time")
+  }
+}
+
+#' @rdname networkLitemethods
+#' @export
+print.networkLite <- function(x, ...) {
+  cat("networkLite with properties:\n")
+  cat("  Network size:", x$gal$n, "\n")
+  cat("  Edge count:", NROW(x$el), "\n")
+  cat("  Network attributes:", sort(unique(names(x$gal))), "\n")
+  cat("  Vertex attributes:", sort(unique(names(x$attr))), "\n")
+  invisible(x)
 }
