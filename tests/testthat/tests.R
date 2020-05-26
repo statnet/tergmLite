@@ -1,4 +1,61 @@
 
+run_checks <- function(nw, est) {
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control)
+  dat <- init_tergmLite(dat)
+
+  attr(dat$el[[1]], "time") <- 0 # so tergmLite time matches tergm time, which defaults to 0
+  dat <- updateModelTermInputs(dat, network = 1)
+
+  ## classes and exact set of attributes differ, so we need to massage things 
+  ## into a common form before comparison
+  el_s <- structure(as.edgelist(matrix(unlist(dat$p[[1]]$state$el), ncol = 2), 
+                      n = attr(dat$p[[1]]$state$el, "n"), 
+                      directed = attr(dat$p[[1]]$state$el, "directed"), 
+                      bipartite = attr(dat$p[[1]]$state$el, "bipartite"), 
+                      loops = attr(dat$p[[1]]$state$el, "loops"),
+                      vnames = NULL), time = 0)
+
+  ## this checks that the edge sets and basic network attributes are the same
+  expect_identical(dat$el[[1]], el_s)
+
+  ## now do a tergm simulation with a network, getting the ergm_state as output
+  add.edges(nw, el_s[,1], el_s[,2])  
+  set.seed(0)
+  es_t_n <- simulate(nw ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$MCMC_control[[1]])
+
+  ## now do a tergm simulation with a networkLite, getting the ergm_state as output
+  nwL <- networkLite(dat$el[[1]], dat$attr)
+  set.seed(0)
+  es_t <- simulate(nwL ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$MCMC_control[[1]])
+
+  ## obviously the network structures will not be equal (network != networkLite), but
+  ## the rest of the ergm_state data structures should be equal, in particular the final edgelists,
+  ## indicating we got equivalent simulation results
+  es_t_n$nw0 <- es_t$nw0
+  expect_equal(es_t_n, es_t)
+
+  ## do an equivalent tergmLite simulation
+  nwparam <- EpiModel::get_nwparam(dat, network = 1)
+  set.seed(0)
+  es_tL <- simulate_network(dat$p[[1]]$state, coef=c(nwparam$coef.form, nwparam$coef.diss$coef.adj), control=dat$control$MCMC_control[[1]], save.changes=TRUE)$state
+
+  ## the two output states should be equal, up to some minor issues with attributes:
+  
+  ## force common set and ordering of network attributes here
+  es_t$nw0$gal <- es_t$nw0$gal[names(es_tL$nw0$gal)]
+
+  ## tergm state has some additional attributes that tergmLite state does not; remove them here
+  attributes(es_t) <- attributes(es_t)[c("names", "class")]
+  
+  ## the two states should now be equal (not identical due to formulas)
+  expect_equal(es_tL, es_t)
+}
+
 test_that("concurrent", {
 
   library("EpiModel")
@@ -9,19 +66,7 @@ test_that("concurrent", {
                 target.stats = c(50, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("concurrent_by", {
@@ -35,19 +80,7 @@ test_that("concurrent_by", {
                 target.stats = c(50, 20, 10),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("degree, single", {
@@ -60,19 +93,7 @@ test_that("degree, single", {
                 target.stats = c(50, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("degree, multiple", {
@@ -85,19 +106,7 @@ test_that("degree, multiple", {
                 target.stats = c(50, 35, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("degree_by_attr", {
@@ -111,22 +120,10 @@ test_that("degree_by_attr", {
                 target.stats = c(50, 15, 20),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
-test_that("degrange", {
+test_that("degrangefrom", {
 
   library("EpiModel")
   nw <- network_initialize(100)
@@ -136,40 +133,21 @@ test_that("degrange", {
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
+  run_checks(nw, est)
+})
 
 
-  ## from + to args
+test_that("degrangefromto", {
+
+  library("EpiModel")
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degrange(from = 4, to = 6),
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("nodecov formula", {
@@ -184,19 +162,7 @@ test_that("nodecov formula", {
                 target.stats = c(50, 65),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("nodecov function", {
@@ -211,19 +177,7 @@ test_that("nodecov function", {
                 target.stats = c(50, 200),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("nodefactor single", {
@@ -238,19 +192,7 @@ test_that("nodefactor single", {
                 target.stats = c(50, 25, 25, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 
@@ -268,19 +210,7 @@ test_that("nodefactor interaction", {
                 target.stats = c(50, 25, 25, 25),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("nodemix levels", {
@@ -295,19 +225,7 @@ test_that("nodemix levels", {
                 target.stats = c(200, 12, 25, 25, 12),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("triangle", {
@@ -320,19 +238,7 @@ test_that("triangle", {
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("triangle_attr", {
@@ -346,19 +252,7 @@ test_that("triangle_attr", {
                 target.stats = c(50, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("triangle_attrdiff", {
@@ -372,19 +266,7 @@ test_that("triangle_attrdiff", {
                 target.stats = c(50, 0, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("triangle_attrdifflevels", {
@@ -398,19 +280,7 @@ test_that("triangle_attrdifflevels", {
                 target.stats = c(50, 0, 0),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 
@@ -420,23 +290,11 @@ test_that("gwesp_true", {
   nw <- network_initialize(100)
 
   est <- netest(nw = nw,
-                formation = ~edges + gwesp(fixed=TRUE),
+                formation = ~edges + gwesp(0, fixed=TRUE),
                 target.stats = c(50, 2),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
 
 test_that("gwesp_truedecay", {
@@ -449,17 +307,5 @@ test_that("gwesp_truedecay", {
                 target.stats = c(50, 1.1),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
-  param <- param.net(inf.prob = 0.3)
-  init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
-
-  dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
-
-  p <- dat$p
-  dat <- updateModelTermInputs(dat, network = 1)
-
-  expect_identical(dat$p, p)
-
+  run_checks(nw, est)
 })
