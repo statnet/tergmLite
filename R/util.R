@@ -146,6 +146,46 @@ as.edgelist.networkLite <- function(x, output=c("matrix","tibble"), ...) {
 }
 
 #' @rdname networkLitemethods
+#' @param object a \code{networkLite} object
+#' @param attr specification of a vertex attribute in \code{object} as
+#'             described in \code{\link[ergm]{node-attr}}
+#' @export
+mixingmatrix.networkLite <- function(object, attr, ...) {
+  nw <- object
+  all_attr <- ergm_get_vattr(attr, nw, multiple = "paste")
+
+  el <- as.edgelist(nw)
+  
+  tbl <- table(all_attr[el[,1]], all_attr[el[,2]])
+
+  if(is.bipartite(nw)) {
+    row_attr <- ergm_get_vattr(attr, nw, bip = "b1", multiple = "paste")
+    col_attr <- ergm_get_vattr(attr, nw, bip = "b2", multiple = "paste")  
+  } else {
+    row_attr <- all_attr
+    col_attr <- all_attr
+  }
+  
+  row_levels <- sort(unique(row_attr))
+  col_levels <- sort(unique(col_attr))
+  
+  rows_present <- match(rownames(tbl), row_levels)
+  cols_present <- match(colnames(tbl), col_levels)
+
+  m <- matrix(0L, nrow = length(row_levels), ncol = length(col_levels))
+  rownames(m) <- row_levels
+  colnames(m) <- col_levels
+  
+  m[rows_present, cols_present] <- tbl
+  
+  if(!is.bipartite(nw) && !is.directed(nw)) {
+    m <- m + t(m) - diag(diag(m))
+  }
+  
+  m
+}
+
+#' @rdname networkLitemethods
 #' @param i,j Nodal indices (must be missing for networkLite method)
 #' @param value Value to set edges to (must be FALSE for networkLite method)
 #' @export
