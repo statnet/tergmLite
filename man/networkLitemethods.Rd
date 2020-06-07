@@ -6,6 +6,7 @@
 \alias{list.vertex.attributes.networkLite}
 \alias{network.edgecount.networkLite}
 \alias{as.edgelist.networkLite}
+\alias{mixingmatrix.networkLite}
 \alias{[<-.networkLite}
 \alias{print.networkLite}
 \title{networkLite Methods}
@@ -17,6 +18,8 @@
 \method{network.edgecount}{networkLite}(x, ...)
 
 \method{as.edgelist}{networkLite}(x, output = c("matrix", "tibble"), ...)
+
+\method{mixingmatrix}{networkLite}(object, attr, ...)
 
 \method{[}{networkLite}(x, i, j) <- value
 
@@ -30,6 +33,11 @@
 \item{...}{any additional arguments.}
 
 \item{output}{Type of edgelist to output.}
+
+\item{object}{a \code{networkLite} object}
+
+\item{attr}{specification of a vertex attribute in \code{object} as
+described in \code{\link[ergm]{node-attr}}}
 
 \item{i, j}{Nodal indices (must be missing for networkLite method)}
 
