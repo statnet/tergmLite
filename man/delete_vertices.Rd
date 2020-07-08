@@ -31,6 +31,7 @@ deaths and out-migration)
 }
 \examples{
 library("EpiModel")
+set.seed(12345)
 nw <- network_initialize(100)
 formation <- ~edges
 target.stats <- 50
@@ -44,21 +45,18 @@ control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 # Set seed for reproducibility
 set.seed(123456)
 
-# Full network structure after initialization
+# networkLite representation structure after initialization
 dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 
-# networkLite representation used by tergmLite
-dat <- init_tergmLite(dat)
-
 # Current edges
-head(dat$el[[1]], 4)
+head(dat$el[[1]], 20)
 
 # Remove nodes 1 and 2
 nodes.to.delete <- 1:2
 dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
 
 # Newly permuted edges
-head(dat$el[[1]], 4)
+head(dat$el[[1]], 20)
 
 }

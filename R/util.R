@@ -42,12 +42,9 @@
 #' init <- init.net(i.num = 10)
 #' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
-#' # Full network structure after initialization
+#' # networkLite representation after initialization
 #' dat <- crosscheck.net(x, param, init, control)
 #' dat <- initialize.net(x, param, init, control)
-#'
-#' # networkLite representation used by tergmLite
-#' dat <- init_tergmLite(dat)
 #'
 #' # Conversion to networkLite class format
 #' nwl <- networkLite(dat$el[[1]], dat$attr)
