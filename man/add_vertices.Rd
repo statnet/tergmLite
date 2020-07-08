@@ -38,8 +38,7 @@ x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
 param <- param.net(inf.prob = 0.3)
 init <- init.net(i.num = 10)
-control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-                       resimulate.network = TRUE)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 
 # Full network structure after initialization
 dat <- crosscheck.net(x, param, init, control)
