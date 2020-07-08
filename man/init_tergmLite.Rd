@@ -40,14 +40,13 @@ param <- param.net(inf.prob = 0.3)
 init <- init.net(i.num = 10)
 control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 
-# Full network structure after initialization
+# networkLite representation after initialization
 dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 str(dat, max.level = 1)
 
 # networkLite representation used by tergmLite
-dat <- init_tergmLite(dat)
-str(dat, max.level = 1)
+str(dat$p, max.level = 3)
 
 # Elements removed are nw (network class object)
 # Elements added are el (edgelist representation of network)...
