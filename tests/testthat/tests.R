@@ -1,12 +1,8 @@
 
-# remotes::install_github("statnet/tergmLite")
-# library("tergmLite")
-# library("testthat")
-
 test_that("concurrent", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + concurrent,
@@ -15,10 +11,11 @@ test_that("concurrent", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -30,8 +27,8 @@ test_that("concurrent", {
 test_that("concurrent_by", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+  nw <- network_initialize(100)
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
                 formation = ~edges + concurrent(by = "riskg"),
@@ -40,10 +37,11 @@ test_that("concurrent_by", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -55,7 +53,7 @@ test_that("concurrent_by", {
 test_that("degree, single", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1),
@@ -64,10 +62,11 @@ test_that("degree, single", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -79,7 +78,7 @@ test_that("degree, single", {
 test_that("degree, multiple", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1:2),
@@ -88,10 +87,11 @@ test_that("degree, multiple", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -103,8 +103,8 @@ test_that("degree, multiple", {
 test_that("degree_by_attr", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", sample(rep(0:1, each = 50)))
+  nw <- network_initialize(100)
+  nw <- set_vertex_attribute(nw, "riskg", sample(rep(0:1, each = 50)))
 
   est <- netest(nw = nw,
                 formation = ~edges + degree(1, by = "riskg"),
@@ -113,10 +113,11 @@ test_that("degree_by_attr", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -128,7 +129,7 @@ test_that("degree_by_attr", {
 test_that("degrange", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + degrange(from = 4),
@@ -137,10 +138,11 @@ test_that("degrange", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -157,10 +159,11 @@ test_that("degrange", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -172,9 +175,9 @@ test_that("degrange", {
 test_that("nodecov formula", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   risk <- runif(100)
-  nw <- set.vertex.attribute(nw, "risk", risk)
+  nw <- set_vertex_attribute(nw, "risk", risk)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodecov(~risk^2),
@@ -183,10 +186,11 @@ test_that("nodecov formula", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -198,9 +202,9 @@ test_that("nodecov formula", {
 test_that("nodecov function", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   risk <- runif(100)
-  nw <- set.vertex.attribute(nw, "risk", risk)
+  nw <- set_vertex_attribute(nw, "risk", risk)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodecov(function(x) exp(1 + log((x %v% "risk")^2))),
@@ -209,10 +213,11 @@ test_that("nodecov function", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -224,9 +229,9 @@ test_that("nodecov function", {
 test_that("nodefactor single", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   riskg <- rep(1:4, each = 25)
-  nw <- set.vertex.attribute(nw, "riskg", riskg)
+  nw <- set_vertex_attribute(nw, "riskg", riskg)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodefactor("riskg"),
@@ -235,10 +240,11 @@ test_that("nodefactor single", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -251,11 +257,11 @@ test_that("nodefactor single", {
 test_that("nodefactor interaction", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
   riskg <- sample(rep(1:2, each = 50))
   race <- sample(rep(0:1, each = 50))
-  nw <- set.vertex.attribute(nw, "riskg", riskg)
-  nw <- set.vertex.attribute(nw, "race", race)
+  nw <- set_vertex_attribute(nw, "riskg", riskg)
+  nw <- set_vertex_attribute(nw, "race", race)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodefactor(c("riskg", "race")),
@@ -264,10 +270,11 @@ test_that("nodefactor interaction", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -279,9 +286,9 @@ test_that("nodefactor interaction", {
 test_that("nodemix levels", {
 
   library("EpiModel")
-  nw <- network.initialize(200, directed = FALSE)
+  nw <- network_initialize(200)
   race <- sample(rep(letters[1:4], each = 50))
-  nw <- set.vertex.attribute(nw, "race", race)
+  nw <- set_vertex_attribute(nw, "race", race)
 
   est <- netest(nw = nw,
                 formation = ~edges + nodemix("race", levels = c("a", "b", "d"), levels2=-(2:3)),
@@ -290,10 +297,11 @@ test_that("nodemix levels", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -305,7 +313,7 @@ test_that("nodemix levels", {
 test_that("triangle", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle,
@@ -314,10 +322,11 @@ test_that("triangle", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -329,8 +338,8 @@ test_that("triangle", {
 test_that("triangle_attr", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.2))
+  nw <- network_initialize(100)
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.2))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg"),
@@ -339,10 +348,11 @@ test_that("triangle_attr", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -354,8 +364,8 @@ test_that("triangle_attr", {
 test_that("triangle_attrdiff", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 1, 0.5))
+  nw <- network_initialize(100)
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg", diff=TRUE),
@@ -364,10 +374,11 @@ test_that("triangle_attrdiff", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -379,8 +390,8 @@ test_that("triangle_attrdiff", {
 test_that("triangle_attrdifflevels", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
-  nw <- set.vertex.attribute(nw, "riskg", rbinom(100, 2, 0.1))
+  nw <- network_initialize(100)
+  nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 2, 0.1))
 
   est <- netest(nw = nw,
                 formation = ~edges + triangle(attr = "riskg", diff=TRUE, levels=c(1,2)),
@@ -389,10 +400,11 @@ test_that("triangle_attrdifflevels", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -405,7 +417,7 @@ test_that("triangle_attrdifflevels", {
 test_that("gwesp_true", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + gwesp(fixed=TRUE),
@@ -414,10 +426,11 @@ test_that("gwesp_true", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -429,7 +442,7 @@ test_that("gwesp_true", {
 test_that("gwesp_truedecay", {
 
   library("EpiModel")
-  nw <- network.initialize(100, directed = FALSE)
+  nw <- network_initialize(100)
 
   est <- netest(nw = nw,
                 formation = ~edges + gwesp(decay=0.8, fixed=TRUE),
@@ -438,10 +451,11 @@ test_that("gwesp_truedecay", {
 
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)

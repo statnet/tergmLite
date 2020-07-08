@@ -138,7 +138,7 @@ ergm_prep <- function(nw,
 #'
 #' @examples
 #' library("EpiModel")
-#' nw <- network.initialize(n = 100, directed = FALSE)
+#' nw <- network_initialize(100)
 #' formation <- ~edges
 #' target.stats <- 50
 #' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
@@ -146,15 +146,15 @@ ergm_prep <- function(nw,
 #'
 #' param <- param.net(inf.prob = 0.3)
 #' init <- init.net(i.num = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
-#' # Full network structure after initialization
+#' # networkLite representation after initialization
+#' dat <- crosscheck.net(x, param, init, control)
 #' dat <- initialize.net(x, param, init, control)
 #' str(dat, max.level = 1)
 #'
 #' # networkLite representation used by tergmLite
-#' dat <- init_tergmLite(dat)
-#' str(dat, max.level = 1)
+#' str(dat$p, max.level = 3)
 #'
 #' # Elements removed are nw (network class object)
 #' # Elements added are el (edgelist representation of network)...
@@ -165,7 +165,7 @@ ergm_prep <- function(nw,
 #'
 init_tergmLite <- function(dat) {
 
-  num_nw <- ifelse(inherits(dat$nw, "network"), 1, length(dat$nw))
+  num_nw <- length(dat$nw)
 
   dat$el <- list()
   dat$p <- list()
@@ -175,7 +175,7 @@ init_tergmLite <- function(dat) {
     nwp <- dat$nwparam[[i]]
     is_tergm <- all(nwp$coef.diss$duration > 1)
     if (num_nw == 1) {
-      nw <- dat$nw
+      nw <- dat$nw[[1]]
     } else {
       nw <- dat$nw[[i]]
     }

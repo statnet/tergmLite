@@ -4,8 +4,8 @@
 #' \tabular{ll}{
 #'    Package: \tab tergmLite\cr
 #'    Type: \tab Package\cr
-#'    Version: \tab 2.1.7\cr
-#'    Date: \tab 2020-02-04\cr
+#'    Version: \tab 2.2.0\cr
+#'    Date: \tab 2020-07-08\cr
 #'    License: \tab GPL-3\cr
 #'    LazyLoad: \tab yes\cr
 #' }
@@ -49,7 +49,8 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
 #' @importFrom statnet.common term.list.formula NVL
-#' @importFrom network as.edgelist
+#' @importFrom network as.edgelist network.initialize get.vertex.attribute
+#'             set.vertex.attribute network.size
 #'
 #' @docType package
 #' @keywords package

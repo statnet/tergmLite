@@ -34,25 +34,23 @@ only after \code{\link{updateModelTermInputs}}.
 library("EpiModel")
 
 # Set seed for reproducibility
-set.seed(12345)
+set.seed(1234)
 
-nw <- network.initialize(n = 100, directed = FALSE)
-nw <- set.vertex.attribute(nw, "group", rep(0:1, each = 50))
+nw <- network_initialize(100)
+nw <- set_vertex_attribute(nw, "group", rep(1:2, each = 50))
 formation <- ~edges + nodefactor("group")
 target.stats <- c(15, 10)
 coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 1)
 x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
-param <- param.net(inf.prob = 0.3)
-init <- init.net(i.num = 10)
-control <- control.net(type = "SI", nsteps = 100, nsims = 5, depend = TRUE)
+param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.1)
+init <- init.net(i.num = 10, i.num.g2 = 10)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 
 # Full network structure after initialization
+dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 str(dat, max.level = 1)
-
-# networkLite representation used by tergmLite
-dat <- init_tergmLite(dat)
 
 # Current network structure
 dat$el[[1]]

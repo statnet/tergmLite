@@ -27,11 +27,11 @@ save(epistats, netparams, netstats, file = "inst/ARTnetTestParams.rda")
 # 0. Initialize Network ---------------------------------------------------
 
 num <- netstats$demog$num
-nw <- network::network.initialize(num, directed = FALSE)
+nw <- network_initialize(num)
 
 attr.names <- names(netstats$attr)
 attr.values <- netstats$attr
-nw <- network::set.vertex.attribute(nw, attr.names, attr.values)
+nw <- set_vertex_attribute(nw, attr.names, attr.values)
 nw_main <- nw_casl <- nw_inst <- nw
 
 
