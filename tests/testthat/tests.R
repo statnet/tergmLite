@@ -16,7 +16,6 @@ test_that("concurrent", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -43,7 +42,6 @@ test_that("concurrent_by", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -69,7 +67,6 @@ test_that("degree, single", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -95,7 +92,6 @@ test_that("degree, multiple", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -122,7 +118,6 @@ test_that("degree_by_attr", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -148,7 +143,6 @@ test_that("degrange", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -170,7 +164,6 @@ test_that("degrange", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -198,7 +191,6 @@ test_that("nodecov formula", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -226,7 +218,6 @@ test_that("nodecov function", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -254,7 +245,6 @@ test_that("nodefactor single", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -285,7 +275,6 @@ test_that("nodefactor interaction", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -313,7 +302,6 @@ test_that("nodemix levels", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -339,7 +327,6 @@ test_that("triangle", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -366,7 +353,6 @@ test_that("triangle_attr", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -393,7 +379,6 @@ test_that("triangle_attrdiff", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -420,7 +405,6 @@ test_that("triangle_attrdifflevels", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -447,7 +431,6 @@ test_that("gwesp_true", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
@@ -473,7 +456,6 @@ test_that("gwesp_truedecay", {
 
   dat <- crosscheck.net(est, param, init, control)
   dat <- initialize.net(est, param, init, control, s = 1)
-  dat <- init_tergmLite(dat)
 
   p <- dat$p
   dat <- updateModelTermInputs(dat, network = 1)
