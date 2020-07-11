@@ -9,6 +9,11 @@
 \alias{mixingmatrix.networkLite}
 \alias{[<-.networkLite}
 \alias{print.networkLite}
+\alias{network.naedgecount.networkLite}
+\alias{add.edges.networkLite}
+\alias{as.networkLite}
+\alias{as.networkLite.network}
+\alias{as.networkLite.networkLite}
 \title{networkLite Methods}
 \usage{
 \method{get.vertex.attribute}{networkLite}(x, attrname, ...)
@@ -24,6 +29,24 @@
 \method{[}{networkLite}(x, i, j) <- value
 
 \method{print}{networkLite}(x, ...)
+
+\method{network.naedgecount}{networkLite}(x, ...)
+
+\method{add.edges}{networkLite}(
+  x,
+  tail,
+  head,
+  names.eval = NULL,
+  vals.eval = NULL,
+  ...,
+  check.unique = FALSE
+)
+
+as.networkLite(x, ...)
+
+\method{as.networkLite}{network}(x, ...)
+
+\method{as.networkLite}{networkLite}(x, ...)
 }
 \arguments{
 \item{x}{a \code{networkLite} object.}
@@ -42,6 +65,17 @@ described in \code{\link[ergm]{node-attr}}}
 \item{i, j}{Nodal indices (must be missing for networkLite method)}
 
 \item{value}{Value to set edges to (must be FALSE for networkLite method)}
+
+\item{tail}{vector of tails of edges to add to the networkLite}
+
+\item{head}{vector of heads of edges to add to the networkLite}
+
+\item{names.eval}{currently unsupported by add.edges.networkLite}
+
+\item{vals.eval}{currently unsupported by add.edges.networkLite}
+
+\item{check.unique}{should a check to ensure uniqueness of edges
+in the final edgelist be performed?}
 }
 \description{
 S3 methods for networkLite class, for generics defined in
