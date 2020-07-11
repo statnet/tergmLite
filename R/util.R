@@ -102,7 +102,7 @@ networkLite <- function(el, attr = NULL) {
 #' @rdname networkLitemethods
 #' @export
 #'
-get.vertex.attribute.networkLite <- function(x,attrname,...) {
+get.vertex.attribute.networkLite <- function(x, attrname, ...) {
   x$attr[[attrname]]
 }
 
@@ -125,7 +125,7 @@ network.edgecount.networkLite <- function(x, ...) {
 #' @param output Type of edgelist to output.
 #' @export
 #'
-as.edgelist.networkLite <- function(x, output=c("matrix","tibble"), ...) {
+as.edgelist.networkLite <- function(x, output = c("matrix", "tibble"), ...) {
   output <- match.arg(output)
 
   if(output == "matrix") {
@@ -207,4 +207,69 @@ print.networkLite <- function(x, ...) {
   cat("  Network attributes:", sort(unique(names(x$gal))), "\n")
   cat("  Vertex attributes:", sort(unique(names(x$attr))), "\n")
   invisible(x)
+}
+
+#' @rdname networkLitemethods
+#' @export
+network.naedgecount.networkLite <- function(x, ...) {
+  0 # for now
+}
+
+#' @rdname networkLitemethods
+#' @param tail vector of tails of edges to add to the networkLite
+#' @param head vector of heads of edges to add to the networkLite
+#' @param names.eval currently unsupported by add.edges.networkLite
+#' @param vals.eval currently unsupported by add.edges.networkLite
+#' @param check.unique should a check to ensure uniqueness of edges
+#'                     in the final edgelist be performed?
+#' @export
+add.edges.networkLite <- function(x, tail, head, names.eval = NULL, vals.eval = NULL, ..., check.unique = FALSE) {
+#  if(!missing(names.eval) || !missing(vals.eval)) {
+#    stop("add.edges.networkLite does not currently support ", sQuote("names.eval"), " or ", sQuote("vals.eval"), " arguments.")
+#  }
+    
+  xn <- substitute(x)
+  
+  if(length(tail) > 0) {
+    new_el <- rbind(x$el, cbind(tail, head))
+    new_el <- new_el[order(new_el[,1], new_el[,2]),]
+    if(check.unique) {
+      ## this could be made faster by exploiting
+      ## the fact that new_el is sorted
+      new_el <- unique(new_el)
+    }
+    class(new_el) <- c("edgelist", class(new_el))    
+    attr(new_el, "n") <- x$gal$n
+    x$el <- new_el
+  }
+  
+  on.exit(eval.parent(call("<-", xn, x)))
+  invisible(x)
+}
+
+#' @rdname networkLitemethods
+#' @export
+as.networkLite <- function(x, ...) {
+  UseMethod("as.networkLite")
+}
+
+#' @rdname networkLitemethods
+#' @export
+as.networkLite.network <- function(x, ...) {
+  edgelist <- as.edgelist(x)
+  vertex_attributes <- data.frame(row.names = seq_len(network.size(x)))
+  for(name in list.vertex.attributes(x)) {
+    vertex_attributes[[name]] <- x %v% name
+  }
+  rv <- networkLite(edgelist, vertex_attributes)
+  for(name in list.network.attributes(x)) {
+    rv$gal[[name]] <- x %n% name
+  }
+  rv
+}
+
+#' @rdname networkLitemethods
+#' @export
+as.networkLite.networkLite <- function(x, ...) {
+  x
 }

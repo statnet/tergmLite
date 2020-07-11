@@ -77,6 +77,10 @@ init_tergmLite <- function(dat) {
   if (!is(dat$control$MCMC_control, "list")) {
     dat$control$MCMC_control <- list()
   }
+  
+  if (!is(dat$control$monitors, "list")) {
+    dat$control$monitors <- list()  
+  }
 
   supported.terms <- c("edges", "nodematch", "nodefactor",
                        "concurrent", "concurrent_by_attr",
@@ -126,6 +130,15 @@ init_tergmLite <- function(dat) {
     proposal$aux.slots <- model$slots.extra.aux$proposal
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
+    if(length(dat$control$monitors) < i || !is(dat$control$monitors[[i]], "formula")) {
+      dat$control$monitors[[i]] <- ~.
+    }
+    
+    model_mon <- ergm_model(dat$control$monitors[[i]], nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options)
+    dat$p[[i]]$state_mon <- ergm_state(nw, model=model_mon, proposal=NULL, stats=rep(0, nparam(model_mon, canonical=TRUE)))
+
+    term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
+
     ## check for unsupported terms
     difference <- setdiff(term_names, supported.terms)
     if (length(difference) > 0) {
@@ -134,8 +147,7 @@ init_tergmLite <- function(dat) {
         stop("tergmLite does not support the esp term, and only supports the gwesp term with fixed=TRUE")
       }
       ## error message for all others
-      stop("tergmLite does not know how to update the term ",
-           difference[1]," in the model formula")
+      stop("tergmLite does not know how to update the term ", difference[1])
     }
   }
 

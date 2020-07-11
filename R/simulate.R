@@ -76,7 +76,8 @@ simulate_network <- function(state,
 
   ## need matrix not tibble
   el <- as.matrix(z$state$el)
-
+  storage.mode(el) <- "integer"
+  
   if (save.changes == TRUE) {
     if (z$diffnwtime[1] > 0) {
       changes <- cbind(z$diffnwtails[2:(z$diffnwtails[1] + 1)],
@@ -95,7 +96,7 @@ simulate_network <- function(state,
   attributes(el)$loops <- attributes(state$el)$loops
   attributes(el)$inverted <- attributes(state$el)$inverted
   class(el) <- c("edgelist", class(el))
-
+  
   return(list(el = el, state = z$state))
 }
 
@@ -160,5 +161,7 @@ simulate_network <- function(state,
 #'
 simulate_ergm <- function(state, coef, control) {
   z <- ergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control, verbose = FALSE)
-  list(el = structure(as.matrix(z$state$el), n = attr(state$el, "n"), class = c("edgelist", "matrix")), state = z$state)
+  el <- structure(as.matrix(z$state$el), n = attr(state$el, "n"), class = c("edgelist", "matrix"))
+  storage.mode(el) <- "integer"
+  list(el = el, state = z$state)
 }

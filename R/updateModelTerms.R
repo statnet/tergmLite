@@ -74,5 +74,9 @@ updateModelTermInputs <- function(dat, network = 1) {
   }
   proposal$aux.slots <- model$slots.extra.aux$proposal
   dat$p[[network]]$state <- ergm_state(nwL, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
+  
+  model_mon <- ergm_model(dat$control$monitors[[network]], nw = nwL, term.options = dat$control$MCMC_control[[network]]$term.options)
+  dat$p[[network]]$state_mon <- ergm_state(nwL, model=model_mon, proposal=NULL, stats=rep(0, nparam(model_mon, canonical=TRUE)))
+  
   return(dat)
 }
