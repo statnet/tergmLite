@@ -10,7 +10,7 @@
    Package: \tab tergmLite\cr
    Type: \tab Package\cr
    Version: \tab 2.2.0\cr
-   Date: \tab 2020-04-14\cr
+   Date: \tab 2020-07-08\cr
    License: \tab GPL-3\cr
    LazyLoad: \tab yes\cr
 }

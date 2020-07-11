@@ -2,11 +2,11 @@
 run_checks <- function(nw, est) {
   param <- param.net(inf.prob = 0.3)
   init <- init.net(i.num = 10)
-  control <- control.net(type = "SI", nsteps = 100, nsims = 1, depend = TRUE)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
 
   dat <- crosscheck.net(est, param, init, control)
-  dat <- initialize.net(est, param, init, control)
-  dat <- init_tergmLite(dat)
+  dat <- initialize.net(est, param, init, control, s = 1)
 
   attr(dat$el[[1]], "time") <- 0 # so tergmLite time matches tergm time, which defaults to 0
   dat <- updateModelTermInputs(dat, network = 1)
@@ -135,7 +135,6 @@ test_that("degrangefrom", {
 
   run_checks(nw, est)
 })
-
 
 test_that("degrangefromto", {
 

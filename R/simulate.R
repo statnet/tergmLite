@@ -45,8 +45,7 @@
 #'
 #' param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.25)
 #' init <- init.net(i.num = 10, i.num.g2 = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-#'                        resimulate.network = TRUE, tergmLite = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
 #' # Full network structure after initialization
 #' dat <- crosscheck.net(x, param, init, control)
@@ -142,8 +141,7 @@ simulate_network <- function(state,
 #'
 #' param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.1)
 #' init <- init.net(i.num = 10, i.num.g2 = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-#'                        resimulate.network = TRUE, tergmLite = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
 #' # Full network structure after initialization
 #' dat <- crosscheck.net(x, param, init, control)
