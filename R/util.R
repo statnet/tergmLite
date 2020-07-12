@@ -221,9 +221,9 @@ network.naedgecount.networkLite <- function(x, ...) {
 #'                     in the final edgelist be performed?
 #' @export
 add.edges.networkLite <- function(x, tail, head, names.eval = NULL, vals.eval = NULL, ..., check.unique = FALSE) {
-#  if(!missing(names.eval) || !missing(vals.eval)) {
-#    stop("add.edges.networkLite does not currently support ", sQuote("names.eval"), " or ", sQuote("vals.eval"), " arguments.")
-#  }
+  if(!is.null(names.eval) || !is.null(vals.eval)) {
+    stop("add.edges.networkLite does not currently support ", sQuote("names.eval"), " or ", sQuote("vals.eval"), " arguments.")
+  }
     
   xn <- substitute(x)
   
