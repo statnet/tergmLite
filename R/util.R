@@ -104,6 +104,24 @@ get.vertex.attribute.networkLite <- function(x, attrname, ...) {
 }
 
 #' @rdname networkLitemethods
+#' @param value vertex attribute values.
+#' @param v indices at which to set vertex attribute values.
+#' @export
+#'
+set.vertex.attribute.networkLite <- function(x, attrname, value, v = seq_len(network.size(x)), ...) {
+  xn <- substitute(x)
+
+  if(!(attrname %in% list.vertex.attributes(x))) {
+    x$attr[[attrname]] <- rep(NA, length = network.size(x))
+  }
+  
+  x$attr[[attrname]][v] <- value
+
+  on.exit(eval.parent(call("<-", xn, x)))
+  invisible(x)
+}
+
+#' @rdname networkLitemethods
 #' @export
 #'
 list.vertex.attributes.networkLite <- function(x) {

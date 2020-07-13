@@ -3,6 +3,7 @@
 \name{networkLitemethods}
 \alias{networkLitemethods}
 \alias{get.vertex.attribute.networkLite}
+\alias{set.vertex.attribute.networkLite}
 \alias{list.vertex.attributes.networkLite}
 \alias{network.edgecount.networkLite}
 \alias{as.edgelist.networkLite}
@@ -17,6 +18,8 @@
 \title{networkLite Methods}
 \usage{
 \method{get.vertex.attribute}{networkLite}(x, attrname, ...)
+
+\method{set.vertex.attribute}{networkLite}(x, attrname, value, v = seq_len(network.size(x)), ...)
 
 \method{list.vertex.attributes}{networkLite}(x)
 
@@ -55,6 +58,10 @@ as.networkLite(x, ...)
 
 \item{...}{any additional arguments.}
 
+\item{value}{Value to set edges to (must be FALSE for networkLite method)}
+
+\item{v}{indices at which to set vertex attribute values.}
+
 \item{output}{Type of edgelist to output.}
 
 \item{object}{a \code{networkLite} object}
@@ -63,8 +70,6 @@ as.networkLite(x, ...)
 described in \code{\link[ergm]{node-attr}}}
 
 \item{i, j}{Nodal indices (must be missing for networkLite method)}
-
-\item{value}{Value to set edges to (must be FALSE for networkLite method)}
 
 \item{tail}{vector of tails of edges to add to the networkLite}
 
