@@ -63,6 +63,11 @@ networkLite <- function(el, attr = NULL) {
     stop("networkLite constructor requires network size attribute.")
   }
 
+  ## for consistency with network,
+  ## we want x$gal$n to be of type
+  ## numeric, not integer
+  x$gal$n <- as.numeric(x$gal$n)
+
   # other common attributes default to FALSE
   if (is.null(x$gal$directed)) {
     x$gal$directed <- FALSE
