@@ -31,6 +31,7 @@ has changed since the last simulation, this network resimulation should be run
 only after \code{\link{updateModelTermInputs}}.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 
 # Set seed for reproducibility
@@ -60,5 +61,6 @@ dat$el[[1]] <- simulate_ergm(p = dat$p[[1]],
                              el = dat$el[[1]],
                              coef = dat$nwparam[[1]]$coef.form)
 dat$el[[1]]
+}
 
 }

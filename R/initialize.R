@@ -137,6 +137,7 @@ ergm_prep <- function(nw,
 #' stored under \code{nw} because it is no longer needed.
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #' nw <- network_initialize(100)
 #' formation <- ~edges
@@ -162,6 +163,8 @@ ergm_prep <- function(nw,
 #'
 #' # ... and p (contains all relevant ERGM structural information for simulation)
 #' str(dat$p, max.level = 3)
+#' }
+
 #'
 init_tergmLite <- function(dat) {
 

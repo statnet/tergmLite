@@ -29,6 +29,7 @@ edgelist object to account for entries into the population (e.g., births and
 in-migration)
 }
 \examples{
+\dontrun{
 library("EpiModel")
 nw <- network_initialize(100)
 formation <- ~edges
@@ -52,5 +53,6 @@ dat$el[[1]] <- add_vertices(dat$el[[1]], 10)
 
 # Check new network size
 attributes(dat$el[[1]])$n
+}
 
 }

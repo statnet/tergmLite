@@ -29,6 +29,7 @@ only format and prepares the ERGM structural information for simulation. The
 example below demonstrates the specific information returned.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 nw <- network_initialize(100)
 formation <- ~edges
@@ -54,5 +55,6 @@ dat$el
 
 # ... and p (contains all relevant ERGM structural information for simulation)
 str(dat$p, max.level = 3)
+}
 
 }

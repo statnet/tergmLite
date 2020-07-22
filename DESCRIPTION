@@ -1,6 +1,6 @@
 Package: tergmLite
-Version: 2.2.0
-Date: 2020-07-20
+Version: 2.2.1
+Date: 2020-07-22
 Title: Fast Simulation of Simple Temporal Exponential Random Graph Models
 Authors@R: c(person("Samuel M.", "Jenness",
                     role = c("aut", "cre"),
@@ -22,7 +22,7 @@ Imports:
     Rcpp
 Suggests: 
     testthat,
-    EpiModel (>= 2.0.0)
+    EpiModel (>= 1.8.0)
 LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 7.1.1

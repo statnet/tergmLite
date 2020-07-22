@@ -6,9 +6,6 @@ r:
   - release
   - devel
 
-r_github_packages:
-  statnet/EpiModel
-
 warnings_are_errors: true
 
 notifications:

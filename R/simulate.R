@@ -31,6 +31,7 @@
 #' resimulation.
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #'
 #' # Set seed for reproducibility
@@ -66,6 +67,7 @@
 #' # Specific changes listed under changes list
 #' #    (new edges: to = 1; dissolved edges: to = 0):
 #' attributes(dat$el[[1]])$changes
+#' }
 #'
 simulate_network <- function(p,
                              el,
@@ -252,6 +254,7 @@ ergm_Cprepare <- function(el,
 #' \code{dat} list object, based on the model simulation.
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #'
 #' # Set seed for reproducibility
@@ -281,6 +284,7 @@ ergm_Cprepare <- function(el,
 #'                              el = dat$el[[1]],
 #'                              coef = dat$nwparam[[1]]$coef.form)
 #' dat$el[[1]]
+#' }
 #'
 simulate_ergm <- function(p, el, coef) {
 

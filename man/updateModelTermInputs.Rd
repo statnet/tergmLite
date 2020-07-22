@@ -46,6 +46,7 @@ Implemented terms are:
 All other ERGM terms will return errors.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 
 # Set seed for reproducibility
@@ -83,5 +84,6 @@ dat <- updateModelTermInputs(dat)
 
 # Check that network list structure for nodefactor term has been updated
 dat$p[[1]]$model.form$terms[[2]]
+}
 
 }

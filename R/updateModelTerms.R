@@ -40,6 +40,7 @@
 #' @importFrom statnet.common NVL
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #'
 #' # Set seed for reproducibility
@@ -77,6 +78,7 @@
 #'
 #' # Check that network list structure for nodefactor term has been updated
 #' dat$p[[1]]$model.form$terms[[2]]
+#' }
 #'
 updateModelTermInputs <- function(dat, network = 1) {
 
