@@ -314,7 +314,7 @@ test_that("nodemix levels", {
     nw <- set_vertex_attribute(nw, "race", race)
 
     est <- netest(nw = nw,
-                  formation = ~edges + nodemix("race", levels = c("a", "b", "d"), levels2=-(2:3)),
+                  formation = ~edges + nodemix("race", levels = c("a", "b", "d"), levels2 = -(2:3)),
                   target.stats = c(200, 12, 25, 25, 12),
                   coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
@@ -397,7 +397,7 @@ test_that("triangle_attrdiff", {
     nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 1, 0.5))
 
     est <- netest(nw = nw,
-                  formation = ~edges + triangle(attr = "riskg", diff=TRUE),
+                  formation = ~edges + triangle(attr = "riskg", diff = TRUE),
                   target.stats = c(50, 0, 0),
                   coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
@@ -425,7 +425,7 @@ test_that("triangle_attrdifflevels", {
     nw <- set_vertex_attribute(nw, "riskg", rbinom(100, 2, 0.1))
 
     est <- netest(nw = nw,
-                  formation = ~edges + triangle(attr = "riskg", diff=TRUE, levels=c(1,2)),
+                  formation = ~edges + triangle(attr = "riskg", diff = TRUE, levels = c(1, 2)),
                   target.stats = c(50, 0, 0),
                   coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
@@ -453,7 +453,7 @@ test_that("gwesp_true", {
     nw <- network_initialize(100)
 
     est <- netest(nw = nw,
-                  formation = ~edges + gwesp(fixed=TRUE),
+                  formation = ~edges + gwesp(fixed = TRUE),
                   target.stats = c(50, 2),
                   coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
@@ -480,7 +480,7 @@ test_that("gwesp_truedecay", {
     nw <- network_initialize(100)
 
     est <- netest(nw = nw,
-                  formation = ~edges + gwesp(decay=0.8, fixed=TRUE),
+                  formation = ~edges + gwesp(decay = 0.8, fixed = TRUE),
                   target.stats = c(50, 1.1),
                   coef.diss = dissolution_coefs(~offset(edges), duration = 100))
 
