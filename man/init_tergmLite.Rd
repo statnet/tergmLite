@@ -43,6 +43,7 @@ Implemented terms are:
   \item absdiffnodemix (in the EpiModel package)
   \item triangle
   \item gwesp(fixed=TRUE)
+  \item mean.age
 }
 All other terms will return errors.
 }
