@@ -27,6 +27,7 @@
 #'   \item absdiffnodemix (in the EpiModel package)
 #'   \item triangle
 #'   \item gwesp(fixed=TRUE)
+#'   \item mean.age
 #' }
 #' All other terms will return errors.
 #'
@@ -86,7 +87,7 @@ init_tergmLite <- function(dat) {
                        "degree", "degree_by_attr",
                        "absdiff", "absdiffby", "nodecov", "nodemix",
                        "absdiffnodemix", "degrange", "triangle", "gwesp",
-                       "_utp_wtnet") # _utp_wtnet is an auxiliary for gwesp
+                       "mean_age_mon", "_lasttoggle", "_utp_wtnet") # _utp_wtnet is an auxiliary for gwesp
   
   for (i in 1:num_nw) {
     dat$p[[i]] <- list()
@@ -114,6 +115,11 @@ init_tergmLite <- function(dat) {
       model <- ergm_model(~FormE(dat$nwparam[[i]]$formation) + DissE(dat$nwparam[[i]]$coef.diss$dissolution), nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=~.lasttoggle))
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
+      
+      if (dat$control$track_duration) {
+        if(is.null(nw %n% "time")) nw %n% "time" <- 0
+        if(is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
+      }
     } else {
       if (length(dat$control$MCMC_control) < i || !is(dat$control$MCMC_control[[i]], "control.simulate.formula")) {
         dat$control$MCMC_control[[i]] <- control.simulate.formula(MCMC.burnin=10000L)

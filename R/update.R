@@ -110,6 +110,8 @@ add_vertices <- function(el, nv) {
 #'
 delete_vertices <- function(el, vid) {
 
+  vid <- sort(vid)  
+
   new.el <- el
   if (length(vid) > 0) {
     el.rows.to.del <- which(el[, 1] %in% vid | el[, 2] %in% vid)
@@ -117,11 +119,12 @@ delete_vertices <- function(el, vid) {
       new.el <- el[-el.rows.to.del, , drop = FALSE]
     }
     if (nrow(new.el) > 0) {
-      elv <- as.vector(new.el)
-      shifted.elv <- shiftVec(elv, vid)
-      new.el <- matrix(shifted.elv, ncol = 2)
+      o1 <- order(new.el[,1])
+      new.el[,1] <- shiftVec(new.el[o1,1], vid)[order(o1)]
+      o2 <- order(new.el[,2])
+      new.el[,2] <- shiftVec(new.el[o2,2], vid)[order(o2)]
     }
-    attributes(new.el)$n <- attributes(el)$n - length(vid)
+    if(!is.null(attr(el,"n"))) attr(new.el,"n") <- attr(el,"n") - length(vid)
   }
 
   return(new.el)
