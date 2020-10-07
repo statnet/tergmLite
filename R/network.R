@@ -77,7 +77,7 @@ set_vertex_attribute <- function(x, attrname, value, v) {
 #' @param attrname The name of the attribute to get.
 #'
 #' @details
-#' This function is used in \code{EpiModel} workflows to set vertex attributes on
+#' This function is used in \code{EpiModel} workflow to query vertex attributes on
 #' an initialized empty network object (with \code{\link{network_initialize}}.
 #'
 #' @return
