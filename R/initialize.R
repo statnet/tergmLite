@@ -111,7 +111,7 @@ init_tergmLite <- function(dat) {
       dat$control$MCMC_control[[i]]$changes <- TRUE
       dat$control$MCMC_control[[i]]$collect <- FALSE
 
-      proposal <- ergm_proposal(nwp$constraints, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$MCMC_control[[i]]$MCMC.prop, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
       model <- ergm_model(~FormE(dat$nwparam[[i]]$formation) + DissE(dat$nwparam[[i]]$coef.diss$dissolution), nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=~.lasttoggle))
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
@@ -126,7 +126,7 @@ init_tergmLite <- function(dat) {
       }
       dat$control$MCMC_control[[i]]$MCMC.samplesize <- 1L
     
-      proposal <- ergm_proposal(nwp$constraints, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$MCMC_control[[i]]$MCMC.prop, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
       model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
 
       term_names <- unlist(lapply(model$terms, function(x) x$name))
