@@ -168,7 +168,7 @@ as.edgelist.networkLite <- function(x, output = c("matrix", "tibble"), ...) {
 #' @rdname networkLitemethods
 #' @param object a \code{networkLite} object
 #' @param attr specification of a vertex attribute in \code{object} as
-#'             described in \code{\link[ergm]{node-attr}}
+#'             described in \code{\link[ergm]{nodal_attributes}}
 #' @export
 mixingmatrix.networkLite <- function(object, attr, ...) {
   nw <- object
