@@ -67,7 +67,7 @@ as.networkLite(x, ...)
 \item{object}{a \code{networkLite} object}
 
 \item{attr}{specification of a vertex attribute in \code{object} as
-described in \code{\link[ergm]{node-attr}}}
+described in \code{\link[ergm]{nodal_attributes}}}
 
 \item{i, j}{Nodal indices (must be missing for networkLite method)}
 
