@@ -31,6 +31,7 @@ calling \code{\link{simulate_network}} or \code{\link{simulate_ergm}}. Both
 for the next round of simulation.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 
 # Set seed for reproducibility
@@ -68,5 +69,6 @@ dat <- updateModelTermInputs(dat)
 
 # Check that network list structure for nodefactor term has been updated
 dat$p[[1]]$state$model$terms[[2]]
+}
 
 }

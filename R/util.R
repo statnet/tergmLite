@@ -32,6 +32,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #' nw <- network_initialize(100)
 #' formation <- ~edges
@@ -50,6 +51,7 @@
 #' # Conversion to networkLite class format
 #' nwl <- networkLite(dat$el[[1]], dat$attr)
 #' nwl
+#' }
 #'
 networkLite <- function(el, attr = NULL) {
   x <- list(el = el, 

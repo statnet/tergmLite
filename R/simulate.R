@@ -31,6 +31,7 @@
 #' attached to \code{el} as the \code{changes} attribute.
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #'
 #' # Set seed for reproducibility
@@ -66,6 +67,7 @@
 #' # Specific changes listed under changes list
 #' #    (new edges: to = 1; dissolved edges: to = 0):
 #' attributes(dat$el[[1]])$changes
+#' }
 #'
 simulate_network <- function(state, 
                              coef,
@@ -127,6 +129,7 @@ simulate_network <- function(state,
 #' \code{ergm_MCMC_slave}).
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #'
 #' # Set seed for reproducibility
@@ -156,6 +159,7 @@ simulate_network <- function(state,
 #'                              coef = dat$nwparam[[1]]$coef.form,
 #'                              control = dat$control$MCMC_control[[1]])$el
 #' dat$el[[1]]
+#' }
 #'
 simulate_ergm <- function(state, coef, control) {
   z <- ergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control, verbose = FALSE)

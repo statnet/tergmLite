@@ -37,6 +37,7 @@ has changed since the last simulation, this network resimulation should be run
 only after \code{\link{updateModelTermInputs}}.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 
 # Set seed for reproducibility
@@ -72,5 +73,6 @@ dat$el[[1]]
 # Specific changes listed under changes list
 #    (new edges: to = 1; dissolved edges: to = 0):
 attributes(dat$el[[1]])$changes
+}
 
 }

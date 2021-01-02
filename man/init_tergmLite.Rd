@@ -48,6 +48,7 @@ Implemented terms are:
 All other terms will return errors.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 nw <- network_initialize(100)
 formation <- ~edges
@@ -73,5 +74,6 @@ dat$el
 
 # ... and p (contains all relevant ERGM structural information for simulation)
 str(dat$p, max.level = 3)
+}
 
 }

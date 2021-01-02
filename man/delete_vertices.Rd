@@ -30,6 +30,7 @@ from the edgelist object to account for exits from the population (e.g.,
 deaths and out-migration)
 }
 \examples{
+\dontrun{
 library("EpiModel")
 set.seed(12345)
 nw <- network_initialize(100)
@@ -58,5 +59,6 @@ dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
 
 # Newly permuted edges
 head(dat$el[[1]], 20)
+}
 
 }

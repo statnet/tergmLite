@@ -24,6 +24,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #' nw <- network_initialize(100)
 #' formation <- ~edges
@@ -47,6 +48,7 @@
 #'
 #' # Check new network size
 #' attributes(dat$el[[1]])$n
+#' }
 #'
 add_vertices <- function(el, nv) {
   attributes(el)$n <- attributes(el)$n + nv
@@ -79,6 +81,7 @@ add_vertices <- function(el, nv) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library("EpiModel")
 #' set.seed(12345)
 #' nw <- network_initialize(100)
@@ -107,6 +110,7 @@ add_vertices <- function(el, nv) {
 #'
 #' # Newly permuted edges
 #' head(dat$el[[1]], 20)
+#' }
 #'
 delete_vertices <- function(el, vid) {
 

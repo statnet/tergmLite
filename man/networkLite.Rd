@@ -37,6 +37,7 @@ function for updating the structural information on the network used for ERGM
 simulation.
 }
 \examples{
+\dontrun{
 library("EpiModel")
 nw <- network_initialize(100)
 formation <- ~edges
@@ -55,5 +56,6 @@ dat <- initialize.net(x, param, init, control)
 # Conversion to networkLite class format
 nwl <- networkLite(dat$el[[1]], dat$attr)
 nwl
+}
 
 }
