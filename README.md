@@ -1,7 +1,9 @@
 # tergmLite
 
 [![Version](http://img.shields.io/badge/Version-2.2.1-orange.svg?style=flat)](https://github.com/statnet/tergmLite/releases)
-[![Build Status](https://travis-ci.org/statnet/tergmLite.svg?branch=master)](https://travis-ci.org/statnet/tergmLite)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/statnet/tergmLite/workflows/R-CMD-check/badge.svg)](https://github.com/statnet/tergmLite/actions)
+<!-- badges: end -->
 
 *Fast Simulation of Simple Temporal Exponential Random Graph Models*
 
@@ -12,7 +14,7 @@ resimulation of dynamic networks estimated with the statistical framework of
 temporal exponential random graph models (TERGMs), implemented in the tergm package 
 within the Statnet suite of R software. Networks are represented within an edgelist 
 format only, with nodal attributes stored separately. Also includes efficient 
-functions for the deletion and addition of nodes within that nework representation.
+functions for the deletion and addition of nodes within that network representation.
 
 The statistical framework of temporal exponential random graph models (TERGMs)
 provides a rigorous, flexible approach to estimating generative models for
