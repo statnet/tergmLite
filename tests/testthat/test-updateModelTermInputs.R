@@ -201,6 +201,37 @@ test_that("absdiff", {
 
 })
 
+
+test_that("absdiffby", {
+  
+  library("EpiModel")
+  nw <- network_initialize(100)
+  age <- sample(15:65, 100, TRUE)
+  sex <- rbinom(100, 1, 0.5)
+  nw <- set_vertex_attribute(nw, "age", age)
+  nw <- set_vertex_attribute(nw, "sex", sex)
+  
+  est <- netest(nw = nw,
+                formation = ~edges + absdiffby("age", "sex", 2),
+                target.stats = c(50, 100),
+                coef.diss = dissolution_coefs(~offset(edges), duration = 100))
+
+  param <- param.net(inf.prob = 0.3)
+  init <- init.net(i.num = 10)
+  control <- control.net(type = "SI", nsteps = 100, nsims = 1, tergmLite = TRUE,
+                         resimulate.network = TRUE)
+  
+  dat <- crosscheck.net(est, param, init, control)
+  dat <- initialize.net(est, param, init, control, s = 1)
+  
+  p <- dat$p
+  dat <- updateModelTermInputs(dat, network = 1)
+  
+  expect_identical(dat$p, p)
+  
+})
+
+
 test_that("nodecov function", {
 
   library("EpiModel")
