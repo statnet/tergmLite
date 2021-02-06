@@ -5,7 +5,7 @@
 \alias{networkLite.numeric}
 \alias{networkLite.edgelist}
 \alias{networkLite.matrix}
-\title{\code{networkLite} Constructor Utilities}
+\title{networkLite Constructor Utilities}
 \usage{
 networkLite(x, ...)
 

@@ -1,5 +1,5 @@
 
-#' @title \code{networkLite} Constructor Utilities
+#' @title networkLite Constructor Utilities
 #'
 #' @description Constructor methods for \code{networkLite} objects.
 #'
