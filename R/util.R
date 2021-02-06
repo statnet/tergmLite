@@ -1,32 +1,44 @@
 
-#' @title networkLite Constructor Utility
+#' @title \code{networkLite} Constructor Utilities
 #'
-#' @description Constructor function for a networkLite object.
+#' @description Constructor methods for \code{networkLite} objects.
 #'
-#' @param el an edgelist-formatted network representation, including network
-#'        attributes.
-#' @param attr a list of named vertex attributes for the network represented
-#'        by \code{el}.
+#' @param x either an \code{edgelist} class network representation (including network
+#'        attributes in its \code{attributes} list), or a number specifying the network
+#'        size
+#' @param attr a named list of vertex attributes for the network represented by \code{x}.
+#' @param directed,bipartite,loops,hyper,multiple common network attributes that 
+#'        may be set via arguments to the \code{networkLite.numeric} method
+#' @param ... additional arguments used by other methods
 #'
-#' @details
-#' This function takes an edge list \code{el} with network attributes attached,
-#' and a list of vertex attributes \code{attr}, and returns a networkLite object,
-#' which is a list with named fields \code{el}, \code{attr}, and \code{gal}, with
-#' each of the first two corresponding to the argument of the same name, and
-#' \code{gal} being the list of network attributes (copied from \code{attributes(el)})
-#' for compatibility with some \code{network} accessors. Missing attributes
-#' \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple}
-#' are defaulted to \code{FALSE}. The network size attribute \code{n} must not
-#' be missing.  Attributes \code{class}, \code{dim}, and \code{vnames} (if present)
-#' are not copied from \code{el} to the networkLite.
+#' @details Currently there are two distinct \code{networkLite} constructor methods available.
+#'          
+#'          The \code{edgelist} method takes an \code{edgelist} class object \code{x} with network 
+#'          attributes attached in its \code{attributes} list, and a named list of vertex 
+#'          attributes \code{attr}, and returns a \code{networkLite} object, which is a named  
+#'          list with fields \code{el}, \code{attr}, and \code{gal}; the fields \code{el} and \code{attr} match
+#'          the arguments \code{x} and \code{attr} respectively, and the field \code{gal} is the list 
+#'          of network attributes (copied from \code{attributes(x)}). Missing attributes
+#'          \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple} are defaulted to 
+#'          \code{FALSE}; the network size attribute \code{n} must not be missing.  Attributes 
+#'          \code{class}, \code{dim}, and \code{vnames} (if present) are not copied from \code{x} to the 
+#'          \code{networkLite}.  (For convenience, a \code{matrix} method, identical to the 
+#'          \code{edgelist} method, is also defined, to handle cases where the edgelist is,
+#'          for whatever reason, not classed as an \code{edgelist}.)
 #'
-#' This new data structure is then used within the \code{\link{updateModelTermInputs}}
-#' function for updating the structural information on the network used for ERGM
-#' simulation.
+#'          The \code{numeric} method takes a number \code{x} as well as the network attributes
+#'          \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple} (defaulting to
+#'          \code{FALSE}), and returns an empty \code{networkLite} with these network attributes
+#'          and number of nodes \code{x}.
 #'
-#' @return
-#' A networkLite object with edge list \code{el}, vertex attributes \code{attr},
-#' and network attributes \code{gal}.
+#'          Within \code{tergmLite}, the \code{networkLite} data structure is used in the
+#'          \code{\link{updateModelTermInputs}} function to wrap the relevant parts of the
+#'          \code{dat} object in a form that will be usable by \code{ergm}'s proposal, model, and
+#'          state initialization functions, whose outputs are then utilized for network
+#'          simulation.
+#'
+#' @return  A networkLite object with edge list \code{el}, vertex attributes \code{attr}, and 
+#'          network attributes \code{gal}.
 #'
 #' @rdname networkLite
 #' @export
@@ -53,43 +65,68 @@
 #' nwl
 #' }
 #'
-networkLite <- function(el, attr = NULL) {
-  x <- list(el = el, 
-            attr = attr, 
-            gal = attributes(el)[setdiff(names(attributes(el)), c("class", "dim", "vnames"))])
+networkLite <- function(x, ...) {
+  UseMethod("networkLite")
+}
 
-  storage.mode(x$el) <- "integer" # some "double" edgelists have been coming through...
+#' @rdname networkLite
+#' @export
+networkLite.numeric <- function(x, directed = FALSE, bipartite = FALSE, loops = FALSE, hyper = FALSE, multiple = FALSE, ...) {
+  x <- as.numeric(x) # so it's not of class integer
+  
+  el <- matrix(0L, nrow = 0L, ncol = 2L)
+  attr <- list()
+  gal <- list(n = x, directed = directed, bipartite = bipartite, loops = loops, hyper = hyper, multiple = multiple)
+  
+  nw <- list(el = el, attr = attr, gal = gal)
+  
+  class(nw) <- c("networkLite", "network")
+  return(nw)
+}
+
+#' @rdname networkLite
+#' @export
+networkLite.edgelist <- function(x, attr = list(), ...) {
+  nw <- list(el = x, 
+             attr = attr, 
+             gal = attributes(x)[setdiff(names(attributes(x)), c("class", "dim", "vnames"))])
 
   # network size attribute is required
-  if (is.null(x$gal$n)) {
-    stop("networkLite constructor requires network size attribute.")
+  if (is.null(nw$gal[["n"]])) {
+    stop("edgelist passed to networkLite constructor must have the `n` attribute.")  
+  }
+  # other common attributes default to FALSE
+  if (is.null(nw$gal[["directed"]])) {
+    nw$gal[["directed"]] <- FALSE
+  }
+  if (is.null(nw$gal[["bipartite"]])) {
+    nw$gal[["bipartite"]] <- FALSE
+  }
+  if (is.null(nw$gal[["loops"]])) {
+    nw$gal[["loops"]] <- FALSE
+  }
+  if (is.null(nw$gal[["hyper"]])) {
+    nw$gal[["hyper"]] <- FALSE
+  }
+  if (is.null(nw$gal[["multiple"]])) {
+    nw$gal[["multiple"]] <- FALSE
   }
 
   ## for consistency with network,
-  ## we want x$gal$n to be of type
-  ## numeric, not integer
-  x$gal$n <- as.numeric(x$gal$n)
+  ## we want nw$gal[["n"]] to be of
+  ## type numeric, not integer
+  nw$gal[["n"]] <- as.numeric(nw$gal[["n"]])
 
-  # other common attributes default to FALSE
-  if (is.null(x$gal$directed)) {
-    x$gal$directed <- FALSE
-  }
-  if (is.null(x$gal$bipartite)) {
-    x$gal$bipartite <- FALSE
-  }
-  if (is.null(x$gal$loops)) {
-    x$gal$loops <- FALSE
-  }
-  if (is.null(x$gal$hyper)) {
-    x$gal$hyper <- FALSE
-  }
-  if (is.null(x$gal$multiple)) {
-    x$gal$multiple <- FALSE
-  }
+  ## some "double" edgelists have been coming through...
+  storage.mode(nw$el) <- "integer"
 
-  class(x) <- c("networkLite", "network")
-  return(x)
+  class(nw) <- c("networkLite", "network")
+  return(nw)
 }
+
+#' @rdname networkLite
+#' @export
+networkLite.matrix <- networkLite.edgelist
 
 #' @name networkLitemethods
 #' @title networkLite Methods
@@ -269,7 +306,7 @@ as.networkLite <- function(x, ...) {
 #' @export
 as.networkLite.network <- function(x, ...) {
   edgelist <- as.edgelist(x)
-  vertex_attributes <- data.frame(row.names = seq_len(network.size(x)))
+  vertex_attributes <- list()
   for(name in list.vertex.attributes(x)) {
     vertex_attributes[[name]] <- x %v% name
   }
