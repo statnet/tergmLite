@@ -14,7 +14,9 @@ test_that("network and networkLite simulate identically in ergm", {
   set.seed(0)
   nwL_1 <- simulate(nwL ~ edges + nodefactor("a") + nodecov(~b^2 + b), coef = coef, output = "network", dynamic = FALSE)
   
-  expect_equal(unclass(as.edgelist(nw_1)), unclass(as.edgelist(nwL_1)), check.attributes = FALSE)
+  expect_equal(unclass(as.edgelist(nw_1)), unclass(as.edgelist(nwL_1)), check.attributes = FALSE)  
+  expect_identical(summary(nw_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)), 
+                   summary(nwL_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)))
   
   set.seed(0)
   nw_2 <- simulate(nw_1 ~ edges + nodefactor("a") + nodecov(~b^2 + b), coef = coef, output = "network", dynamic = FALSE)
@@ -22,6 +24,8 @@ test_that("network and networkLite simulate identically in ergm", {
   nwL_2 <- simulate(nwL_1 ~ edges + nodefactor("a") + nodecov(~b^2 + b), coef = coef, output = "network", dynamic = FALSE)
   
   expect_equal(unclass(as.edgelist(nw_2)), unclass(as.edgelist(nwL_2)), check.attributes = FALSE)  
+  expect_identical(summary(nw_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)), 
+                   summary(nwL_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)))
 })
 
 test_that("network and networkLite simulate identically in san", {
@@ -39,6 +43,8 @@ test_that("network and networkLite simulate identically in san", {
   nwL_1 <- san(nwL ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = c(1000, 500, 300, 200, 600, 1500))
   
   expect_equal(unclass(as.edgelist(nw_1)), unclass(as.edgelist(nwL_1)), check.attributes = FALSE)
+  expect_identical(summary(nw_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)), 
+                   summary(nwL_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)))
   
   set.seed(0)
   nw_2 <- san(nw_1 ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = c(800, 400, 200, 100, 600, 1200))
@@ -46,6 +52,8 @@ test_that("network and networkLite simulate identically in san", {
   nwL_2 <- san(nwL_1 ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = c(800, 400, 200, 100, 600, 1200))
   
   expect_equal(unclass(as.edgelist(nw_2)), unclass(as.edgelist(nwL_2)), check.attributes = FALSE)
+  expect_identical(summary(nw_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)), 
+                   summary(nwL_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + gwnsp(0.3, fixed=TRUE)))
 })
 
 test_that("network and networkLite simulate identically in tergm", {
@@ -67,6 +75,8 @@ test_that("network and networkLite simulate identically in tergm", {
   expect_equal(unclass(as.edgelist(nw_1)), unclass(as.edgelist(nwL_1)), check.attributes = FALSE)
   expect_identical(nw_1 %n% "lasttoggle", nwL_1 %n% "lasttoggle")
   expect_identical(nw_1 %n% "time", nwL_1 %n% "time")
+  expect_identical(summary(nw_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)),
+                   summary(nwL_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)))
   
   set.seed(0)
   nw_2 <- simulate(nw_1 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
@@ -76,6 +86,8 @@ test_that("network and networkLite simulate identically in tergm", {
   expect_equal(unclass(as.edgelist(nw_2)), unclass(as.edgelist(nwL_2)), check.attributes = FALSE)  
   expect_identical(nw_2 %n% "lasttoggle", nwL_2 %n% "lasttoggle")
   expect_identical(nw_2 %n% "time", nwL_2 %n% "time")
+  expect_identical(summary(nw_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)),
+                   summary(nwL_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)))
 
   set.seed(0)
   nw_3 <- simulate(nw_2 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
@@ -85,4 +97,6 @@ test_that("network and networkLite simulate identically in tergm", {
   expect_equal(unclass(as.edgelist(nw_3)), unclass(as.edgelist(nwL_3)), check.attributes = FALSE)  
   expect_identical(nw_3 %n% "lasttoggle", nwL_3 %n% "lasttoggle")
   expect_identical(nw_3 %n% "time", nwL_3 %n% "time")
+  expect_identical(summary(nw_3 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)),
+                   summary(nwL_3 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)))
 })
