@@ -143,4 +143,87 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   expect_equal(lapply(nw_el, unclass), lapply(dat_el, unclass), check.attributes = FALSE)
   expect_equal(nw_lt, dat_lt, check.attributes = FALSE)
   expect_equal(nw_time, dat_time, check.attributes = FALSE)
+  
+  
+  
+  ## now do the same thing making use of EpiModel
+  require(EpiModel)
+
+  set.seed(0)
+  nw <- network.initialize(1000, dir = FALSE)
+  nw %v% "age" <- sample(age_vals, 1000, TRUE)
+  nw %v% "race" <- sample(race_vals, 1000, TRUE)
+
+  ff <- ~edges + nodecov(~age) + nodefactor(~race)
+  
+  coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
+  
+  x <- list(nw = nw, 
+            formation = ff,
+            coef.form = coef[-length(coef)],
+            coef.diss = list(dissolution = ~edges, duration = 1 + exp(3), coef.adj = 3),
+            constraints = ~.)
+  
+  init_dat <- function(x, param, init, control, s) {
+    dat <- list(nw = list(x$nw),
+                attr = list(age = x$nw %v% "age",
+                            race = x$nw %v% "race",
+                            active = rep(TRUE, network.size(x$nw))),
+                nwparam = list(list(formation = x$formation,
+                                    coef.form = x$coef.form,
+                                    coef.diss = x$coef.diss,
+                                    constraints = x$constraints)),
+                param = list(groups = Inf), # hack
+                epi = list(name = matrix(2,2,2)), # hack
+                control = control,
+                edgelist = list(),
+                lasttoggle = list(),
+                time = list())
+  
+    dat <- init_tergmLite(dat)
+    
+    dat
+  }
+
+  update_dat <- function(dat, at) {
+    dat$time[[length(dat$time) + 1]] <- dat$p[[1]]$state$nw0 %n% "time"
+    dat$lasttoggle[[length(dat$lasttoggle) + 1]] <- dat$p[[1]]$state$nw0 %n% "lasttoggle"
+    dat$edgelist[[length(dat$edgelist) + 1]] <- dat$el[[1]]
+    
+    dat$attr$age <- dat$attr$age + 1
+    
+    nodes_to_remove <- sample(seq_len(attr(dat$el[[1]], "n")), rpois(1, 25), FALSE)
+    nodes_to_add <- rpois(1,30)
+
+    dat$attr$age <- c(dat$attr$age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
+    dat$attr$race <- c(dat$attr$race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
+    dat$attr$active <- c(dat$attr$active[-nodes_to_remove], rep(TRUE, nodes_to_add))
+    
+    dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes_to_remove)
+    dat$p[[1]]$state$nw0 %n% "lasttoggle" <- delete_vertices(dat$p[[1]]$state$nw0 %n% "lasttoggle", nodes_to_remove)
+    dat$el[[1]] <- add_vertices(dat$el[[1]], nodes_to_add)
+
+    dat      
+  }
+
+  control <- control.net(nsteps = 12, 
+                         initialize.FUN = init_dat,
+                         nwupdate.FUN = update_dat,
+                         prevalence.FUN = NULL,
+                         verbose.FUN = NULL,
+                         resimulate.network = TRUE, 
+                         tergmLite = TRUE,
+                         skip.check = TRUE, 
+                         track_duration = TRUE,
+            #             extract.summary.stats = TRUE, 
+                         save.other = c("edgelist", "lasttoggle", "time"),
+             #            monitors = list(~mean.age + concurrent),
+                         MCMC_control = list(control.simulate.network.tergm()))
+
+  sim <- netsim(x, NULL, NULL, control)
+  
+  expect_equal(lapply(nw_el, unclass), lapply(sim$edgelist[[1]], unclass), check.attributes = FALSE)
+  expect_equal(nw_lt, sim$lasttoggle[[1]], check.attributes = FALSE)
+  expect_equal(nw_time, sim$time[[1]])  
+
 })
