@@ -43,8 +43,13 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   nw %v% "race" <- sample(race_vals, 1000, TRUE)
 
   ff <- ~Form(~edges + nodecov(~age) + nodefactor(~race)) + Diss(~edges)
+  ff_m <- ~mean.age + concurrent
+
+  nw_summstats <- NULL
   
   coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
+
+  nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nw), summary(ff_m, basis=nw)))
 
   nw <- simulate(ff, basis = nw, coef = coef, output = "final", dynamic = TRUE)
 
@@ -59,6 +64,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     nodes_to_add <- rpois(1,30)
     
     nw <- update_nw(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals)
+
+    nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nw), summary(ff_m, basis=nw)))
         
     nw <- simulate(ff, basis = nw, coef = coef, output = "final", dynamic = TRUE)
 
@@ -85,6 +92,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   dat_lt <- list()
   dat_time <- list()
 
+  dat_summstats <- NULL
+  
   set.seed(0)
   nw <- network.initialize(1000, dir = FALSE)
   nw %v% "age" <- sample(age_vals, 1000, TRUE)
@@ -100,6 +109,12 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
+
+  nwL <- networkLite(dat$el[[1]], dat$attr)
+  nwL %n% "time" <- dat$p[[1]]$state$nw0 %n% "time"
+  nwL %n% "lasttoggle" <- dat$p[[1]]$state$nw0 %n% "lasttoggle"
+  
+  dat_summstats <- rbind(dat_summstats, c(summary(ff, basis=nwL), summary(ff_m, basis=nwL)))
 
   nwparam <- dat$nwparam[[1]]
   rv <- tergmLite::simulate_network(state = dat$p[[1]]$state,
@@ -124,7 +139,13 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     dat <- update_dat(dat, nodes_to_remove, nodes_to_add, age_vals, race_vals)
     
     dat <- updateModelTermInputs(dat)
-  
+
+    nwL <- networkLite(dat$el[[1]], dat$attr)
+    nwL %n% "time" <- dat$p[[1]]$state$nw0 %n% "time"
+    nwL %n% "lasttoggle" <- dat$p[[1]]$state$nw0 %n% "lasttoggle"
+
+    dat_summstats <- rbind(dat_summstats, c(summary(ff, basis=nwL), summary(ff_m, basis=nwL)))
+    
     nwparam <- dat$nwparam[[1]]
     rv <- tergmLite::simulate_network(state = dat$p[[1]]$state,
                                       coef = c(nwparam$coef.form, nwparam$coef.diss$coef.adj),
@@ -215,9 +236,9 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
                          tergmLite = TRUE,
                          skip.check = TRUE, 
                          track_duration = TRUE,
-            #             extract.summary.stats = TRUE, 
+                         extract.summary.stats = TRUE, 
                          save.other = c("edgelist", "lasttoggle", "time"),
-             #            monitors = list(~mean.age + concurrent),
+                         monitors = list(ff_m),
                          MCMC_control = list(control.simulate.network.tergm()))
 
   sim <- netsim(x, NULL, NULL, control)
@@ -226,4 +247,6 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   expect_equal(nw_lt, sim$lasttoggle[[1]], check.attributes = FALSE)
   expect_equal(nw_time, sim$time[[1]])  
 
+  expect_identical(nw_summstats, dat_summstats)
+  expect_identical(nw_summstats, sim$stats$summstats[[1]][[1]])
 })
