@@ -1,6 +1,33 @@
 test_that("manual and tergmLite dynamic simulations produce identical results", {
   require(tergm)
 
+  age_vals <- 1:20
+  race_vals <- c("A","B","C","D","E")
+  sex_vals <- c("M","F")
+  
+  set.seed(0)
+  nw <- network.initialize(1000, dir = FALSE)
+  nw %v% "age" <- sample(age_vals, 1000, TRUE)
+  nw %v% "race" <- sample(race_vals, 1000, TRUE)
+  nw %v% "sex" <- sample(sex_vals, 1000, TRUE)
+  
+  formation <- ~edges + nodecov(~age) + nodefactor(~race)
+  dissolution <- ~edges
+
+  coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
+
+  ff <- ~Form(formation) + Diss(dissolution)
+
+  pmat <- matrix(3 + runif(25), 5, 5)
+  pmat <- pmat + t(pmat)
+  
+  constraints <- ~bd(maxout = 3) + blocks(~sex, levels2 = diag(TRUE, 2)) + Strat(~race, pmat=pmat)
+
+  ff_m <- ~edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
+
+  # set some arbitrary, non-default control to ensure it gets propagated correctly
+  control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, MCMC.burnin.max = 123456)
+
   update_nw <- function(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
     el <- as.edgelist(nw)
     lt <- nw %n% "lasttoggle"
@@ -8,6 +35,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     
     age <- nw %v% "age"
     race <- nw %v% "race"
+    sex <- nw %v% "sex"
     
     new_indices <- seq_len(network.size(nw))
     new_indices[nodes_to_remove] <- 0
@@ -16,6 +44,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     nw <- network.initialize(network.size(nw) + nodes_to_add - length(nodes_to_remove), directed = FALSE)
     nw %v% "age" <- c(age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
     nw %v% "race" <- c(race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
+    nw %v% "sex" <- c(sex[-nodes_to_remove], sample(sex_vals, nodes_to_add, TRUE))
     nw %n% "time" <- time
     
     ## need to update el and lt for removed nodes
@@ -30,48 +59,38 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     nw
   }
 
+  set.seed(0)
+  nws <- nw
+
   nw_el <- list()
   nw_lt <- list()
   nw_time <- list()
   
-  age_vals <- 1:20
-  race_vals <- c("A","B","C","D","E")
-  
-  set.seed(0)
-  nw <- network.initialize(1000, dir = FALSE)
-  nw %v% "age" <- sample(age_vals, 1000, TRUE)
-  nw %v% "race" <- sample(race_vals, 1000, TRUE)
-
-  ff <- ~Form(~edges + nodecov(~age) + nodefactor(~race)) + Diss(~edges)
-  ff_m <- ~mean.age + concurrent
-
   nw_summstats <- NULL
   
-  coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
+  nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nws), summary(ff_m, basis=nws)))
 
-  nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nw), summary(ff_m, basis=nw)))
+  nws <- simulate(ff, basis = nws, coef = coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
 
-  nw <- simulate(ff, basis = nw, coef = coef, output = "final", dynamic = TRUE)
-
-  nw_el[[length(nw_el) + 1]] <- as.edgelist(nw)
-  nw_lt[[length(nw_lt) + 1]] <- nw %n% "lasttoggle"
-  nw_time[[length(nw_time) + 1]] <- nw %n% "time"
+  nw_el[[length(nw_el) + 1]] <- as.edgelist(nws)
+  nw_lt[[length(nw_lt) + 1]] <- nws %n% "lasttoggle"
+  nw_time[[length(nw_time) + 1]] <- nws %n% "time"
   
   for(j in seq_len(10)) {
-    nw %v% "age" <- nw %v% "age" + 1
+    nws %v% "age" <- nws %v% "age" + 1
 
-    nodes_to_remove <- sample(seq_len(network.size(nw)), rpois(1, 25), FALSE)
+    nodes_to_remove <- sample(seq_len(network.size(nws)), rpois(1, 25), FALSE)
     nodes_to_add <- rpois(1,30)
     
-    nw <- update_nw(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals)
+    nws <- update_nw(nws, nodes_to_remove, nodes_to_add, age_vals, race_vals)
 
-    nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nw), summary(ff_m, basis=nw)))
+    nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nws), summary(ff_m, basis=nws)))
         
-    nw <- simulate(ff, basis = nw, coef = coef, output = "final", dynamic = TRUE)
+    nws <- simulate(ff, basis = nws, coef = coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
 
-    nw_el[[length(nw_el) + 1]] <- as.edgelist(nw)
-    nw_lt[[length(nw_lt) + 1]] <- nw %n% "lasttoggle"
-    nw_time[[length(nw_time) + 1]] <- nw %n% "time"
+    nw_el[[length(nw_el) + 1]] <- as.edgelist(nws)
+    nw_lt[[length(nw_lt) + 1]] <- nws %n% "lasttoggle"
+    nw_time[[length(nw_time) + 1]] <- nws %n% "time"
   }
 
 
@@ -79,6 +98,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   update_dat <- function(dat, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
     dat$attr$age <- c(dat$attr$age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
     dat$attr$race <- c(dat$attr$race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
+    dat$attr$sex <- c(dat$attr$sex[-nodes_to_remove], sample(sex_vals, nodes_to_add, TRUE))
     
     dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes_to_remove)
     dat$p[[1]]$state$nw0 %n% "lasttoggle" <- delete_vertices(dat$p[[1]]$state$nw0 %n% "lasttoggle", nodes_to_remove)
@@ -94,19 +114,17 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
 
   dat_summstats <- NULL
   
-  set.seed(0)
-  nw <- network.initialize(1000, dir = FALSE)
-  nw %v% "age" <- sample(age_vals, 1000, TRUE)
-  nw %v% "race" <- sample(race_vals, 1000, TRUE)
   dat <- list(nw = list(nw),
               attr = list(age = nw %v% "age", 
-                          race = nw %v% "race"),
-              nwparam = list(list(formation = ~edges + nodecov(~age) + nodefactor(~race),
+                          race = nw %v% "race",
+                          sex = nw %v% "sex"),
+              nwparam = list(list(formation = formation,
                                   coef.form = coef[-length(coef)],
-                                  coef.diss = list(dissolution = ~offset(edges), duration = 1 + exp(3), coef.adj = 3),
-                                  constraints = ~.)),
-              control = list(track_duration = TRUE))
+                                  coef.diss = list(dissolution = dissolution, duration = 1 + exp(3), coef.adj = 3),
+                                  constraints = constraints)),
+              control = list(track_duration = TRUE, MCMC_control = list(control)))
 
+  set.seed(0)
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
 
@@ -169,26 +187,18 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   
   ## now do the same thing making use of EpiModel
   require(EpiModel)
-
-  set.seed(0)
-  nw <- network.initialize(1000, dir = FALSE)
-  nw %v% "age" <- sample(age_vals, 1000, TRUE)
-  nw %v% "race" <- sample(race_vals, 1000, TRUE)
-
-  ff <- ~edges + nodecov(~age) + nodefactor(~race)
-  
-  coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
-  
+    
   x <- list(nw = nw, 
-            formation = ff,
+            formation = formation,
             coef.form = coef[-length(coef)],
-            coef.diss = list(dissolution = ~edges, duration = 1 + exp(3), coef.adj = 3),
-            constraints = ~.)
+            coef.diss = list(dissolution = dissolution, duration = 1 + exp(3), coef.adj = 3),
+            constraints = constraints)
   
   init_dat <- function(x, param, init, control, s) {
     dat <- list(nw = list(x$nw),
                 attr = list(age = x$nw %v% "age",
                             race = x$nw %v% "race",
+                            sex = x$nw %v% "sex",
                             active = rep(TRUE, network.size(x$nw))),
                 nwparam = list(list(formation = x$formation,
                                     coef.form = x$coef.form,
@@ -218,6 +228,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
 
     dat$attr$age <- c(dat$attr$age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
     dat$attr$race <- c(dat$attr$race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
+    dat$attr$sex <- c(dat$attr$sex[-nodes_to_remove], sample(sex_vals, nodes_to_add, TRUE))
     dat$attr$active <- c(dat$attr$active[-nodes_to_remove], rep(TRUE, nodes_to_add))
     
     dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes_to_remove)
@@ -227,21 +238,22 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
     dat      
   }
 
-  control <- control.net(nsteps = 12, 
-                         initialize.FUN = init_dat,
-                         nwupdate.FUN = update_dat,
-                         prevalence.FUN = NULL,
-                         verbose.FUN = NULL,
-                         resimulate.network = TRUE, 
-                         tergmLite = TRUE,
-                         skip.check = TRUE, 
-                         track_duration = TRUE,
-                         extract.summary.stats = TRUE, 
-                         save.other = c("edgelist", "lasttoggle", "time"),
-                         monitors = list(ff_m),
-                         MCMC_control = list(control.simulate.network.tergm()))
+  netsim_control <- control.net(nsteps = 12, 
+                                initialize.FUN = init_dat,
+                                nwupdate.FUN = update_dat,
+                                prevalence.FUN = NULL,
+                                verbose.FUN = NULL,
+                                resimulate.network = TRUE, 
+                                tergmLite = TRUE,
+                                skip.check = TRUE, 
+                                track_duration = TRUE,
+                                extract.summary.stats = TRUE, 
+                                save.other = c("edgelist", "lasttoggle", "time"),
+                                monitors = list(ff_m),
+                                MCMC_control = list(control))
 
-  sim <- netsim(x, NULL, NULL, control)
+  set.seed(0)
+  sim <- netsim(x, NULL, NULL, netsim_control)
   
   expect_equal(lapply(nw_el, unclass), lapply(sim$edgelist[[1]], unclass), check.attributes = FALSE)
   expect_equal(nw_lt, sim$lasttoggle[[1]], check.attributes = FALSE)
