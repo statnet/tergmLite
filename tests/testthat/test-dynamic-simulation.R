@@ -1,5 +1,6 @@
 test_that("manual and tergmLite dynamic simulations produce identical results", {
   require(tergm)
+  require(EpiModel)
 
   age_vals <- 1:20
   race_vals <- c("A","B","C","D","E")
@@ -12,21 +13,24 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   nw %v% "sex" <- sample(sex_vals, 1000, TRUE)
   
   formation <- ~edges + nodecov(~age) + nodefactor(~race)
-  dissolution <- ~edges
+  dissolution <- ~offset(edges)
 
-  coef <- c(-10, 0.05, 0.5, 0.3, 0.4, 0.9, 3)
+  ## obtained from simulating previously chosen coefficients
+  target_stats <- c(835.168, 18817.544, 378.888, 296.758, 320.370, 409.382)
 
+  diss_coefs <- dissolution_coefs(dissolution, duration = 1 + exp(3))    
+  
   ff <- ~Form(formation) + Diss(dissolution)
 
   pmat <- matrix(3 + runif(25), 5, 5)
   pmat <- pmat + t(pmat)
   
-  constraints <- ~bd(maxout = 3) + blocks(~sex, levels2 = diag(TRUE, 2)) + Strat(~race, pmat=pmat)
+  constraints <- ~bd(maxout = 3) + blocks(~sex, levels2 = diag(TRUE, 2))
 
   ff_m <- ~edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
 
   # set some arbitrary, non-default control to ensure it gets propagated correctly
-  control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, MCMC.burnin.max = 123456)
+  control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, MCMC.burnin.max = 123456, MCMC.prop = ~Strat(~race, pmat=pmat) + discord + TNT)
 
   update_nw <- function(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
     el <- as.edgelist(nw)
@@ -62,6 +66,9 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   set.seed(0)
   nws <- nw
 
+  nw_ergm <- ergm(nw ~ edges + nodecov(~age) + nodefactor(~race), target.stats = target_stats, constraints = constraints, eval.loglik = FALSE, control = list(init.method="MPLE"))
+  nw_coef <- c(coef(nw_ergm)[1] - diss_coefs$coef.form.corr, coef(nw_ergm)[-1], diss_coefs$coef.adj)
+  
   nw_el <- list()
   nw_lt <- list()
   nw_time <- list()
@@ -70,7 +77,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   
   nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nws), summary(ff_m, basis=nws)))
 
-  nws <- simulate(ff, basis = nws, coef = coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
+  nws <- simulate(ff, basis = nws, coef = nw_coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
 
   nw_el[[length(nw_el) + 1]] <- as.edgelist(nws)
   nw_lt[[length(nw_lt) + 1]] <- nws %n% "lasttoggle"
@@ -86,7 +93,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
 
     nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nws), summary(ff_m, basis=nws)))
         
-    nws <- simulate(ff, basis = nws, coef = coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
+    nws <- simulate(ff, basis = nws, coef = nw_coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
 
     nw_el[[length(nw_el) + 1]] <- as.edgelist(nws)
     nw_lt[[length(nw_lt) + 1]] <- nws %n% "lasttoggle"
@@ -113,18 +120,24 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   dat_time <- list()
 
   dat_summstats <- NULL
+
+  set.seed(0)
+  nwL <- as.networkLite(nw)
+
+  nwL_ergm <- ergm(nwL ~ edges + nodecov(~age) + nodefactor(~race), target.stats = target_stats, constraints = constraints, eval.loglik = FALSE, control = list(init.method="MPLE"))
+  nwL_coef <- c(coef(nwL_ergm)[1] - diss_coefs$coef.form.corr, coef(nwL_ergm)[-1])
+
   
   dat <- list(nw = list(nw),
               attr = list(age = nw %v% "age", 
                           race = nw %v% "race",
                           sex = nw %v% "sex"),
               nwparam = list(list(formation = formation,
-                                  coef.form = coef[-length(coef)],
-                                  coef.diss = list(dissolution = dissolution, duration = 1 + exp(3), coef.adj = 3),
+                                  coef.form = nwL_coef,
+                                  coef.diss = diss_coefs,
                                   constraints = constraints)),
               control = list(track_duration = TRUE, MCMC_control = list(control)))
 
-  set.seed(0)
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
 
@@ -186,20 +199,19 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
   
   
   ## now do the same thing making use of EpiModel
-  require(EpiModel)
-    
-  x <- list(nw = nw, 
-            formation = formation,
-            coef.form = coef[-length(coef)],
-            coef.diss = list(dissolution = dissolution, duration = 1 + exp(3), coef.adj = 3),
-            constraints = constraints)
+  set.seed(0)
+  nwL <- as.networkLite(nw)
+  netest_ergm <- netest(nwL, formation, target.stats = target_stats, coef.diss = diss_coefs, constraints = constraints, set.control.ergm = list(init.method = "MPLE"))
   
   init_dat <- function(x, param, init, control, s) {
-    dat <- list(nw = list(x$nw),
-                attr = list(age = x$nw %v% "age",
-                            race = x$nw %v% "race",
-                            sex = x$nw %v% "sex",
-                            active = rep(TRUE, network.size(x$nw))),
+    nwL <- x$fit$network
+    nwL[,] <- FALSE
+    
+    dat <- list(nw = list(nwL),
+                attr = list(age = nwL %v% "age",
+                            race = nwL %v% "race",
+                            sex = nwL %v% "sex",
+                            active = rep(TRUE, network.size(nwL))),
                 nwparam = list(list(formation = x$formation,
                                     coef.form = x$coef.form,
                                     coef.diss = x$coef.diss,
@@ -252,8 +264,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results", 
                                 monitors = list(ff_m),
                                 MCMC_control = list(control))
 
-  set.seed(0)
-  sim <- netsim(x, NULL, NULL, netsim_control)
+  sim <- netsim(netest_ergm, NULL, NULL, netsim_control)
   
   expect_equal(lapply(nw_el, unclass), lapply(sim$edgelist[[1]], unclass), check.attributes = FALSE)
   expect_equal(nw_lt, sim$lasttoggle[[1]], check.attributes = FALSE)
