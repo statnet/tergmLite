@@ -1,3 +1,47 @@
+test_that("network and networkLite estimate identically in ergm", {
+  require(ergm)
+
+  set.seed(0)
+  nw <- network.initialize(1000, dir = FALSE)
+  nw %v% "a" <- rep(letters[1:5], each = 200)
+  nw %v% "b" <- runif(1000)
+  nw %v% "sex" <- rep(c("M","F"), length.out=1000)
+
+  nwL <- as.networkLite(nw)
+  
+  di_constraints <- ~blocks(~sex, levels2=diag(TRUE,2))
+  dd_constraints <- ~bd(maxout=2) + blocks(~sex, levels2=diag(TRUE,2))
+  dm_constraints <- ~bd(maxout=2, minout = 0) + blocks(~sex, levels2=diag(TRUE,2))
+  
+  target_stats <- c(851.0370, 375.2088, 384.6334, 357.3602, 250.4054, 1468.3650)
+
+  set.seed(0)
+  nw_di_ergm <- ergm(nw ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = di_constraints)
+  set.seed(0)
+  nwL_di_ergm <- ergm(nwL ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = di_constraints)
+  expect_equal(coef(nw_di_ergm), coef(nwL_di_ergm))
+
+  set.seed(0)
+  nw_dd_ergm <- ergm(nw ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = dd_constraints, control = list(init.method="MPLE"))
+  set.seed(0)
+  nwL_dd_ergm <- ergm(nwL ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = dd_constraints, control = list(init.method="MPLE"))
+  expect_equal(coef(nw_dd_ergm), coef(nwL_dd_ergm))
+
+  set.seed(0)
+  nw_dm_ergm <- ergm(nw ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = dm_constraints)
+  set.seed(0)
+  nwL_dm_ergm <- ergm(nwL ~ edges + nodefactor("a") + nodecov(~b^2 + b), target.stats = target_stats, constraints = dm_constraints)
+  expect_equal(coef(nw_dm_ergm), coef(nwL_dm_ergm))
+
+  ## simpler dyad-independent case where we can hit targets exactly  
+  set.seed(0)
+  nw_mple_ergm <- ergm(nw ~ edges + nodefactor("a"), target.stats = as.integer(target_stats[-length(target_stats)]), constraints = di_constraints)
+  set.seed(0)
+  nwL_mple_ergm <- ergm(nwL ~ edges + nodefactor("a"), target.stats = as.integer(target_stats[-length(target_stats)]), constraints = di_constraints)
+  expect_equal(coef(nw_mple_ergm), coef(nwL_mple_ergm))
+})
+
+
 test_that("network and networkLite simulate identically in ergm", {
   require(ergm)
 
