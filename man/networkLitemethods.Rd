@@ -5,6 +5,9 @@
 \alias{get.vertex.attribute.networkLite}
 \alias{set.vertex.attribute.networkLite}
 \alias{list.vertex.attributes.networkLite}
+\alias{get.network.attribute.networkLite}
+\alias{set.network.attribute.networkLite}
+\alias{list.network.attributes.networkLite}
 \alias{network.edgecount.networkLite}
 \alias{as.edgelist.networkLite}
 \alias{mixingmatrix.networkLite}
@@ -21,7 +24,13 @@
 
 \method{set.vertex.attribute}{networkLite}(x, attrname, value, v = seq_len(network.size(x)), ...)
 
-\method{list.vertex.attributes}{networkLite}(x)
+\method{list.vertex.attributes}{networkLite}(x, ...)
+
+\method{get.network.attribute}{networkLite}(x, attrname, ...)
+
+\method{set.network.attribute}{networkLite}(x, attrname, value, ...)
+
+\method{list.network.attributes}{networkLite}(x, ...)
 
 \method{network.edgecount}{networkLite}(x, ...)
 
@@ -54,7 +63,7 @@ as.networkLite(x, ...)
 \arguments{
 \item{x}{a \code{networkLite} object.}
 
-\item{attrname}{the name of a vertex attribute in \code{x}.}
+\item{attrname}{the name of an attribute in \code{x}.}
 
 \item{...}{any additional arguments.}
 

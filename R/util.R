@@ -135,7 +135,7 @@ networkLite.matrix <- networkLite.edgelist
 #'              network package.
 #'
 #' @param x a \code{networkLite} object.
-#' @param attrname the name of a vertex attribute in \code{x}.
+#' @param attrname the name of an attribute in \code{x}.
 #' @param ... any additional arguments.
 #'
 #' @details Allows use of networkLite objects in \code{ergm_model}.
@@ -148,7 +148,7 @@ get.vertex.attribute.networkLite <- function(x, attrname, ...) {
 }
 
 #' @rdname networkLitemethods
-#' @param value vertex attribute values.
+#' @param value attribute value.
 #' @param v indices at which to set vertex attribute values.
 #' @export
 #'
@@ -168,8 +168,34 @@ set.vertex.attribute.networkLite <- function(x, attrname, value, v = seq_len(net
 #' @rdname networkLitemethods
 #' @export
 #'
-list.vertex.attributes.networkLite <- function(x) {
-  sort(unique(names(x$attr)))
+list.vertex.attributes.networkLite <- function(x, ...) {
+  names(x$attr)
+}
+
+#' @rdname networkLitemethods
+#' @export
+#'
+get.network.attribute.networkLite <- function(x, attrname, ...) {
+  x$gal[[attrname]]
+}
+
+#' @rdname networkLitemethods
+#' @export
+#'
+set.network.attribute.networkLite <- function(x, attrname, value, ...) {
+  xn <- substitute(x)
+
+  x$gal[[attrname]] <- value
+
+  on.exit(eval.parent(call("<-", xn, x)))
+  invisible(x)
+}
+
+#' @rdname networkLitemethods
+#' @export
+#'
+list.network.attributes.networkLite <- function(x, ...) {
+  names(x$gal)
 }
 
 #' @rdname networkLitemethods
