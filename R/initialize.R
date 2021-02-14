@@ -125,7 +125,7 @@ init_tergmLite <- function(dat) {
       }
     } else {
       if (length(dat$control$MCMC_control) < i || !is(dat$control$MCMC_control[[i]], "control.simulate.formula")) {
-        dat$control$MCMC_control[[i]] <- control.simulate.formula(MCMC.burnin=10000L)
+        dat$control$MCMC_control[[i]] <- control.simulate.formula()
       }
       dat$control$MCMC_control[[i]]$MCMC.samplesize <- 1L
     
