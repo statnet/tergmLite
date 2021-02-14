@@ -89,8 +89,10 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
     nodes_to_remove <- sample(seq_len(network.size(nws)), rpois(1, 25), FALSE)
     nodes_to_add <- rpois(1,30)
     
-    nws <- update_nw(nws, nodes_to_remove, nodes_to_add, age_vals, race_vals)
+    nw_coef[1] <- nw_coef[1] + log(network.size(nws)) - log(network.size(nws) + nodes_to_add - length(nodes_to_remove))
 
+    nws <- update_nw(nws, nodes_to_remove, nodes_to_add, age_vals, race_vals)
+        
     nw_summstats <- rbind(nw_summstats, c(summary(ff, basis=nws), summary(ff_m, basis=nws)))
         
     nws <- simulate(ff, basis = nws, coef = nw_coef, constraints = constraints, control = control, output = "final", dynamic = TRUE)
@@ -103,6 +105,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   ## now do the same thing via tergmLite, and test for identical el, lt, and time  
   update_dat <- function(dat, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
+    dat$nwparam[[1]]$coef.form[1] <- dat$nwparam[[1]]$coef.form[1] + log(length(dat$attr$age)) - log(length(dat$attr$age) + nodes_to_add - length(nodes_to_remove))    
+    
     dat$attr$age <- c(dat$attr$age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
     dat$attr$race <- c(dat$attr$race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
     dat$attr$sex <- c(dat$attr$sex[-nodes_to_remove], sample(sex_vals, nodes_to_add, TRUE))
@@ -216,8 +220,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                     coef.form = x$coef.form,
                                     coef.diss = x$coef.diss,
                                     constraints = x$constraints)),
-                param = list(groups = Inf), # hack
-                epi = list(name = matrix(2,2,2)), # hack
+                param = list(groups = 1),
+                epi = list(num = network.size(nwL)),
                 control = control,
                 edgelist = list(),
                 lasttoggle = list(),
@@ -232,6 +236,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
     dat$time[[length(dat$time) + 1]] <- dat$p[[1]]$state$nw0 %n% "time"
     dat$lasttoggle[[length(dat$lasttoggle) + 1]] <- dat$p[[1]]$state$nw0 %n% "lasttoggle"
     dat$edgelist[[length(dat$edgelist) + 1]] <- dat$el[[1]]
+
+    dat$epi$num <- c(dat$epi$num, length(dat$attr$age))
     
     dat$attr$age <- dat$attr$age + 1
     
@@ -353,6 +359,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
     nodes_to_remove <- sample(seq_len(network.size(nws)), rpois(1, 25), FALSE)
     nodes_to_add <- rpois(1,30)
+
+    nw_coef[1] <- nw_coef[1] + log(network.size(nws)) - log(network.size(nws) + nodes_to_add - length(nodes_to_remove))
     
     nws <- update_nw(nws, nodes_to_remove, nodes_to_add, age_vals, race_vals)
 
@@ -366,6 +374,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   ## now do the same thing via tergmLite, and test for identical el, lt, and time  
   update_dat <- function(dat, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
+    dat$nwparam[[1]]$coef.form[1] <- dat$nwparam[[1]]$coef.form[1] + log(length(dat$attr$age)) - log(length(dat$attr$age) + nodes_to_add - length(nodes_to_remove))    
+
     dat$attr$age <- c(dat$attr$age[-nodes_to_remove], sample(age_vals, nodes_to_add, TRUE))
     dat$attr$race <- c(dat$attr$race[-nodes_to_remove], sample(race_vals, nodes_to_add, TRUE))
     dat$attr$sex <- c(dat$attr$sex[-nodes_to_remove], sample(sex_vals, nodes_to_add, TRUE))
@@ -458,8 +468,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                     coef.form = x$coef.form,
                                     coef.diss = x$coef.diss,
                                     constraints = x$constraints)),
-                param = list(groups = Inf), # hack
-                epi = list(name = matrix(2,2,2)), # hack
+                param = list(groups = 1),
+                epi = list(num = network.size(nwL)),
                 control = control,
                 edgelist = list())
   
@@ -471,6 +481,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   update_dat <- function(dat, at) {
     dat$edgelist[[length(dat$edgelist) + 1]] <- dat$el[[1]]
     
+    dat$epi$num <- c(dat$epi$num, length(dat$attr$age))
+
     dat$attr$age <- dat$attr$age + 1
     
     nodes_to_remove <- sample(seq_len(attr(dat$el[[1]], "n")), rpois(1, 25), FALSE)
