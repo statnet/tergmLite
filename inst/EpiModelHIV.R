@@ -279,9 +279,9 @@ control <- control_msm(simno = 1,
                        ncores = 1,
                        save.nwstats = TRUE,
                        save.clin.hist = FALSE,
-                       control = list(control.simulate.network.tergm(MCMC.burnin.min = 2e3),
-                                      control.simulate.network.tergm(MCMC.burnin.min = 2e3),
-                                      control.simulate.formula()))
+                       MCMC_control = list(control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                                           control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                                           control.simulate.formula()))
 
 sim <- netsim(out, param, init, control)
 
