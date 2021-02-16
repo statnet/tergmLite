@@ -1,28 +1,32 @@
 
-## Full scale EpiModelHIV example
+## install stack:
+## 
+## remotes::install_github(c("statnet/rle@master", 
+##                           "statnet/statnet.common@master", 
+##                           "statnet/network@master", 
+##                           "statnet/networkDynamic@master", 
+##                           "statnet/ergm-private@dev", 
+##                           "statnet/ergm.multi-private@dev", 
+##                           "statnet/tergm-private@dev", 
+##                           "statnet/tergmLite-private@dev", 
+##                           "statnet/EpiModel@summary_statistics",
+##                           "statnet/EpiModelHPC@a64dbf2",
+##                           "EpiModel/EpiModelHIV-p@CombPrev-dev",
+##                           "EpiModel/ARTnetData@1d8ec6e",
+##                           "EpiModel/ARTnet@150c631"), force=TRUE, dependencies=FALSE)
 
-# package install
-install.packages("EpiModel", dep = TRUE)
-remotes::install_github(c("statnet/EpiModel@2c131f0",
-                          "statnet/EpiModelHPC@a64dbf2",
-                          "statnet/tergmLite@v2.1.6",
-                          "EpiModel/EpiABC@c32ecb6",
-                          "EpiModel/ARTnetData@1d8ec6e",
-                          "EpiModel/ARTnet@150c631"),
-                        upgrade = FALSE)
-remotes::install_github("EpiModel/EpiModelHIV-p", ref = "CombPrev", upgrade = FALSE)
+require("EpiModelHIV")
+require("ARTnet")
 
-## Packages ##
-rm(list = ls())
-suppressMessages(library("EpiModelHIV"))
-suppressMessages(library("ARTnet"))
+# to avoid repeatedly reading the ergm version information
+options(ergm.term=list(version=packageVersion("ergm")))
 
 epistats <- build_epistats(city_name = "Atlanta")
 netparams <- build_netparams(epistats = epistats, smooth.main.dur.55p = TRUE)
 netstats <- build_netstats(epistats, netparams,
                            expect.mort = 0.000478213, network.size = 10000)
 
-save(epistats, netparams, netstats, file = "inst/ARTnetTestParams.rda")
+# save(epistats, netparams, netstats, file = "inst/ARTnetTestParams.rda")
 
 # 0. Initialize Network ---------------------------------------------------
 
@@ -68,9 +72,13 @@ fit_main <- netest(nw_main,
                    formation = model_main,
                    target.stats = netstats_main,
                    coef.diss = netstats$main$diss.byage,
-                   set.control.ergm = control.ergm(MCMLE.maxit = 500,
-                                                   SAN.maxit = 3,
-                                                   SAN.nsteps.times = 3),
+                   constraints = ~bd(maxout = 2) + blocks(~role.class, levels2 = diag(c(TRUE, TRUE, FALSE))),
+                   set.control.ergm = list(MCMLE.termination = "Hummel",
+                                           MCMLE.samplesize = 1024,
+                                           MCMLE.interval = 1024,
+                                           MCMLE.effectiveSize = NULL,
+                                           MPLE.constraints.ignore = TRUE,
+                                           init.method = "MPLE"),
                    verbose = FALSE)
 
 
@@ -108,9 +116,13 @@ fit_casl <- netest(nw_casl,
                    formation = model_casl,
                    target.stats = netstats_casl,
                    coef.diss = netstats$casl$diss.byage,
-                   set.control.ergm = control.ergm(MCMLE.maxit = 500,
-                                                   SAN.maxit = 3,
-                                                   SAN.nsteps.times = 3),
+                   constraints = ~bd(maxout = 3) + blocks(~role.class, levels2 = diag(c(TRUE, TRUE, FALSE))),
+                   set.control.ergm = list(MCMLE.termination = "Hummel",
+                                           MCMLE.samplesize = 1024,
+                                           MCMLE.interval = 1024,
+                                           MCMLE.effectiveSize = NULL,
+                                           MPLE.constraints.ignore = TRUE,
+                                           init.method = "MPLE"),
                    verbose = FALSE)
 
 
@@ -145,9 +157,12 @@ fit_inst <- netest(nw_inst,
                    formation = model_inst,
                    target.stats = netstats_inst,
                    coef.diss = dissolution_coefs(~offset(edges), 1),
-                   set.control.ergm = control.ergm(MCMLE.maxit = 500,
-                                                   SAN.maxit = 3,
-                                                   SAN.nsteps.times = 3),
+                   constraints = ~blocks(~role.class, levels2 = diag(c(TRUE, TRUE, FALSE))),
+                   set.control.ergm = list(MCMLE.termination = "Hummel",
+                                           MCMLE.samplesize = 1024,
+                                           MCMLE.interval = 1024,
+                                           MPLE.constraints.ignore = TRUE,
+                                           MCMLE.effectiveSize = NULL),
                    verbose = FALSE)
 
 out <- list(fit_main, fit_casl, fit_inst)
@@ -171,7 +186,7 @@ model_main_dx <- ~edges +
   degree(0:3)
 dx_main <- netdx(fit_main, nsims = 10, ncores = 6, nsteps = 500,
                  nwstats.formula = model_main_dx, skip.dissolution = TRUE,
-                 set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e5))
+                 set.control.stergm = list(MCMC.burnin.min = 2e3))
 print(dx_main)
 plot(dx_main)
 
@@ -194,7 +209,7 @@ model_casl_dx <- ~edges +
   degree(0:4)
 dx_casl <- netdx(fit_casl, nsims = 10, ncores = 6, nsteps = 500,
                  nwstats.formula = model_casl_dx, skip.dissolution = TRUE,
-                 set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e5))
+                 set.control.stergm = list(MCMC.burnin.min = 2e3))
 print(dx_casl, digits = 1)
 plot(dx_casl)
 
@@ -216,7 +231,7 @@ model_inst_dx <- ~edges +
   degree(0:4)
 dx_inst <- netdx(fit_inst, nsims = 10000, dynamic = FALSE,
                  nwstats.formula = model_inst_dx,
-                 set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e5))
+                 set.control.ergm = list(MCMC.burnin = 1e5))
 
 print(dx_inst, digits = 2)
 
@@ -263,7 +278,10 @@ control <- control_msm(simno = 1,
                        nsims = 1,
                        ncores = 1,
                        save.nwstats = TRUE,
-                       save.clin.hist = FALSE)
+                       save.clin.hist = FALSE,
+                       control = list(control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                                      control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                                      control.simulate.formula()))
 
 sim <- netsim(out, param, init, control)
 
@@ -274,3 +292,5 @@ df$cc.test.int
 
 par(mar = c(3,3,1,1), mgp = c(2,1,0))
 plot(sim, y = "i.prev", mean.smooth = FALSE, ylim = c(0, 1))
+
+
