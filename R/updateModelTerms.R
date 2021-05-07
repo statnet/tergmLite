@@ -69,7 +69,7 @@ updateModelTermInputs <- function(dat, network = 1) {
   
   if (is(dat$control$MCMC_control[[network]], "control.simulate.network.tergm")) { # dynamic
     proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, hints = dat$control$MCMC_control[[network]]$MCMC.prop, arguments = dat$control$MCMC_control[[network]]$MCMC.prop.args, weights = dat$control$MCMC_control[[network]]$MCMC.prop.weights, nw = nwL, class = "t")
-    model <- ergm_model(dat$nwparam[[network]]$tergm_formula, nw = nwL, term.options = dat$control$MCMC_control[[network]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=~.lasttoggle))
+    model <- ergm_model(dat$nwparam[[network]]$tergm_formula, nw = nwL, term.options = dat$control$MCMC_control[[network]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
     
     if(dat$control$track_duration) {
       nwL %n% "time" <- dat$p[[network]]$state$nw0 %n% "time"

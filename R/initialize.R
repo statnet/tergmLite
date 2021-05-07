@@ -116,11 +116,10 @@ init_tergmLite <- function(dat) {
 
       formation <- dat$nwparam[[i]]$formation
       dissolution <- dat$nwparam[[i]]$coef.diss$dissolution
-      dat$nwparam[[i]]$tergm_formula <- ~Form(formation) + Diss(dissolution)
-      environment(dat$nwparam[[i]]$tergm_formula) <- list2env(list(formation = formation, dissolution = dissolution))
+      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
 
       proposal <- ergm_proposal(nwp$constraints, hints = dat$control$MCMC_control[[i]]$MCMC.prop, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
-      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=~.lasttoggle))
+      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
       
@@ -144,7 +143,7 @@ init_tergmLite <- function(dat) {
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
     if(length(dat$control$monitors) < i || !is(dat$control$monitors[[i]], "formula")) {
-      dat$control$monitors[[i]] <- ~.
+      dat$control$monitors[[i]] <- trim_env(~.)
     }
     
     model_mon <- ergm_model(dat$control$monitors[[i]], nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options)
