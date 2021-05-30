@@ -90,7 +90,7 @@ init_tergmLite <- function(dat) {
                        "degree", "degree_by_attr",
                        "absdiff", "absdiffby", "nodecov", "nodemix",
                        "absdiffnodemix", "degrange", "triangle", "gwesp",
-                       "mean_age_mon", "_lasttoggle", "_utp_wtnet") # _utp_wtnet is an auxiliary for gwesp
+                       "mean_age", "_lasttoggle", "_utp_wtnet") # _utp_wtnet is an auxiliary for gwesp
   
   for (i in 1:num_nw) {
     dat$p[[i]] <- list()
