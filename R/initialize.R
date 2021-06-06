@@ -76,15 +76,8 @@ init_tergmLite <- function(dat) {
 
   dat$el <- list()
   dat$p <- list()
-
-  if (!is(dat$control$MCMC_control, "list")) {
-    dat$control$MCMC_control <- list()
-  }
+  dat$control$mcmc.control <- list()
   
-  if (!is(dat$control$monitors, "list")) {
-    dat$control$monitors <- list()  
-  }
-
   supported.terms <- c("edges", "nodematch", "nodefactor",
                        "concurrent", "concurrent_by_attr",
                        "degree", "degree_by_attr",
@@ -104,22 +97,22 @@ init_tergmLite <- function(dat) {
     attributes(dat$el[[i]])$vnames <- NULL
 
     if (is_tergm) {
-      if (length(dat$control$MCMC_control) < i || !is(dat$control$MCMC_control[[i]], "control.simulate.network.tergm")) {
-        dat$control$MCMC_control[[i]] <- control.simulate.network.tergm()
-      }
-      dat$control$MCMC_control[[i]]$MCMC.samplesize <- 1L
-      dat$control$MCMC_control[[i]]$time.burnin <- 0L
-      dat$control$MCMC_control[[i]]$time.interval <- 1L
-      dat$control$MCMC_control[[i]]$time.samplesize <- 1L
-      dat$control$MCMC_control[[i]]$changes <- TRUE
-      dat$control$MCMC_control[[i]]$collect <- FALSE
+      mcmc_control_name <- paste(c("mcmc.control.tergm", if(num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.network.tergm", "init_tergmLite", dat$control[[mcmc_control_name]])
+      ## enforce some specific values appropriate for tergmLite/EpiModel netsim
+      dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
+      dat$control$mcmc.control[[i]]$time.burnin <- 0L
+      dat$control$mcmc.control[[i]]$time.interval <- 1L
+      dat$control$mcmc.control[[i]]$time.samplesize <- 1L
+      dat$control$mcmc.control[[i]]$changes <- TRUE
+      dat$control$mcmc.control[[i]]$collect <- FALSE
 
       formation <- dat$nwparam[[i]]$formation
       dissolution <- dat$nwparam[[i]]$coef.diss$dissolution
       dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
 
-      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$MCMC_control[[i]]$MCMC.prop, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
-      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
+      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
       
@@ -128,13 +121,13 @@ init_tergmLite <- function(dat) {
         if(is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
       }
     } else {
-      if (length(dat$control$MCMC_control) < i || !is(dat$control$MCMC_control[[i]], "control.simulate.formula")) {
-        dat$control$MCMC_control[[i]] <- control.simulate.formula()
-      }
-      dat$control$MCMC_control[[i]]$MCMC.samplesize <- 1L
+      mcmc_control_name <- paste(c("mcmc.control.ergm", if(num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
+      ## enforce some specific values appropriate for tergmLite/EpiModel netsim
+      dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
     
-      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$MCMC_control[[i]]$MCMC.prop, arguments = dat$control$MCMC_control[[i]]$MCMC.prop.args, weights = dat$control$MCMC_control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
-      model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
+      model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
 
       term_names <- unlist(lapply(model$terms, function(x) x$name))
     }
@@ -146,7 +139,7 @@ init_tergmLite <- function(dat) {
       dat$control$monitors[[i]] <- trim_env(~.)
     }
     
-    model_mon <- ergm_model(dat$control$monitors[[i]], nw = nw, term.options = dat$control$MCMC_control[[i]]$term.options)
+    model_mon <- ergm_model(dat$control$monitors[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
     dat$p[[i]]$state_mon <- ergm_state(nw, model=model_mon, proposal=NULL, stats=rep(0, nparam(model_mon, canonical=TRUE)))
 
     term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))

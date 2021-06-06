@@ -140,7 +140,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                   coef.form = nwL_coef,
                                   coef.diss = diss_coefs,
                                   constraints = constraints)),
-              control = list(track_duration = TRUE, MCMC_control = list(control)))
+              control = list(track_duration = TRUE, mcmc.control.tergm = control))
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
@@ -154,7 +154,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   nwparam <- dat$nwparam[[1]]
   rv <- tergmLite::simulate_network(state = dat$p[[1]]$state,
                                     coef = c(nwparam$coef.form, nwparam$coef.diss$coef.adj),
-                                    control = dat$control$MCMC_control[[1]],
+                                    control = dat$control$mcmc.control[[1]],
                                     save.changes = TRUE)
 
   dat$el[[1]] <- rv$el
@@ -184,7 +184,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
     nwparam <- dat$nwparam[[1]]
     rv <- tergmLite::simulate_network(state = dat$p[[1]]$state,
                                       coef = c(nwparam$coef.form, nwparam$coef.diss$coef.adj),
-                                      control = dat$control$MCMC_control[[1]],
+                                      control = dat$control$mcmc.control[[1]],
                                       save.changes = TRUE)
   
     dat$el[[1]] <- rv$el
@@ -268,7 +268,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 extract.summary.stats = TRUE, 
                                 save.other = c("edgelist", "lasttoggle", "time"),
                                 monitors = list(ff_m),
-                                MCMC_control = list(control))
+                                mcmc.control.tergm = control)
 
   sim <- netsim(netest_ergm, NULL, NULL, netsim_control)
   
@@ -406,7 +406,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                   coef.form = nwL_coef,
                                   coef.diss = diss_coefs,
                                   constraints = constraints)),
-              control = list(MCMC_control = list(control)))
+              control = list(mcmc.control.ergm = control))
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
@@ -418,7 +418,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   nwparam <- dat$nwparam[[1]]
   rv <- tergmLite::simulate_ergm(state = dat$p[[1]]$state,
                                     coef = nwparam$coef.form,
-                                    control = dat$control$MCMC_control[[1]])
+                                    control = dat$control$mcmc.control[[1]])
 
   dat$el[[1]] <- rv$el
   dat_el[[length(dat_el) + 1]] <- rv$el
@@ -440,7 +440,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
     nwparam <- dat$nwparam[[1]]
     rv <- tergmLite::simulate_ergm(state = dat$p[[1]]$state,
                                       coef = nwparam$coef.form,
-                                      control = dat$control$MCMC_control[[1]])
+                                      control = dat$control$mcmc.control[[1]])
   
     dat$el[[1]] <- rv$el
     dat_el[[length(dat_el) + 1]] <- rv$el
@@ -510,7 +510,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 extract.summary.stats = TRUE, 
                                 save.other = c("edgelist"),
                                 monitors = list(ff_m),
-                                MCMC_control = list(control))
+                                mcmc.control.ergm = control)
 
   sim <- netsim(netest_ergm, NULL, NULL, netsim_control)
   

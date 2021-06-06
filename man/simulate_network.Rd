@@ -66,7 +66,7 @@ dat$el[[1]]
 dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state, 
                                 coef = c(dat$nwparam[[1]]$coef.form, 
                                          dat$nwparam[[1]]$coef.diss$coef.adj),
-                                control = dat$control$MCMC_control[[1]],
+                                control = dat$control$mcmc.control[[1]],
                                 save.changes = TRUE)$el
 dat$el[[1]]
 

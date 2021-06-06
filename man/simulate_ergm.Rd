@@ -59,7 +59,7 @@ dat$el[[1]]
 # New network structure (all edges are new)
 dat$el[[1]] <- simulate_ergm(state = dat$p[[1]]$state,
                              coef = dat$nwparam[[1]]$coef.form,
-                             control = dat$control$MCMC_control[[1]])$el
+                             control = dat$control$mcmc.control[[1]])$el
 dat$el[[1]]
 }
 

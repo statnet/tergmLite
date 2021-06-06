@@ -273,15 +273,16 @@ init <- init_msm(prev.ugc = 0,
                  prev.rct = 0,
                  prev.rgc = 0,
                  prev.uct = 0)
-control <- control_msm(simno = 1,
+                 
+control <- snctrl(simno = 1,
                        nsteps = 52*5,
                        nsims = 1,
                        ncores = 1,
                        save.nwstats = TRUE,
                        save.clin.hist = FALSE,
-                       MCMC_control = list(control.simulate.network.tergm(MCMC.burnin.min = 2e3),
-                                           control.simulate.network.tergm(MCMC.burnin.min = 2e3),
-                                           control.simulate.formula()))
+                       mcmc.control.tergm.1 = control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                       mcmc.control.tergm.2 = control.simulate.network.tergm(MCMC.burnin.min = 2e3),
+                       mcmc.control.ergm.3 = control.simulate.formula())
 
 sim <- netsim(out, param, init, control)
 

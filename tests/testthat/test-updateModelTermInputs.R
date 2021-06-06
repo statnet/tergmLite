@@ -26,12 +26,12 @@ run_checks <- function(nw, est) {
   ## now do a tergm simulation with a network, getting the ergm_state as output
   add.edges(nw, el_s[,1], el_s[,2])  
   set.seed(0)
-  es_t_n <- simulate(nw ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$MCMC_control[[1]])
+  es_t_n <- simulate(nw ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
 
   ## now do a tergm simulation with a networkLite, getting the ergm_state as output
   nwL <- networkLite(dat$el[[1]], dat$attr)
   set.seed(0)
-  es_t <- simulate(nwL ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$MCMC_control[[1]])
+  es_t <- simulate(nwL ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
 
   ## obviously the network structures will not be equal (network != networkLite), but
   ## the rest of the ergm_state data structures should be equal, in particular the final edgelists,
@@ -46,7 +46,7 @@ run_checks <- function(nw, est) {
   ## do an equivalent tergmLite simulation
   nwparam <- EpiModel::get_nwparam(dat, network = 1)
   set.seed(0)
-  es_tL <- simulate_network(dat$p[[1]]$state, coef=c(nwparam$coef.form, nwparam$coef.diss$coef.adj), control=dat$control$MCMC_control[[1]], save.changes=TRUE)$state
+  es_tL <- simulate_network(dat$p[[1]]$state, coef=c(nwparam$coef.form, nwparam$coef.diss$coef.adj), control=dat$control$mcmc.control[[1]], save.changes=TRUE)$state
 
   ## the two output states should be equal, up to some minor issues with attributes:
   

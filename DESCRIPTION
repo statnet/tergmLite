@@ -12,12 +12,12 @@ Description: Provides functions for the computationally efficient simulation of
     dynamic networks estimated with the statistical framework of temporal 
     exponential random graph models, implemented in the 'tergm' package.
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.2.0),
+    ergm (>= 3.10.4),
+    tergm (>= 3.6.1)
 License: GPL-3
 Imports:
-    ergm (>= 3.10.4),
     statnet.common (>= 4.3.0),
-    tergm (>= 3.6.1),
     network (>= 1.16.0),
     Rcpp,
     tibble,
