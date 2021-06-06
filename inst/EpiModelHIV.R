@@ -1,19 +1,18 @@
 
 ## install stack:
 ## 
-## remotes::install_github(c("statnet/rle@master", 
-##                           "statnet/statnet.common@master", 
-##                           "statnet/network@master", 
-##                           "statnet/networkDynamic@master", 
-##                           "statnet/ergm-private@dev", 
-##                           "statnet/ergm.multi-private@dev", 
-##                           "statnet/tergm-private@dev", 
-##                           "statnet/tergmLite-private@dev", 
-##                           "statnet/EpiModel@summary_statistics",
-##                           "statnet/EpiModelHPC@a64dbf2",
+## remotes::install_github(c("statnet/rle@master",
+##                           "statnet/statnet.common@master",
+##                           "statnet/network@master",
+##                           "statnet/networkDynamic@master",
+##                           "statnet/ergm@master",
+##                           "statnet/tergm@master",
+##                           "statnet/tergmLite@dev",
+##                           "statnet/EpiModel@dev",
+##                           "statnet/EpiModelHPC@master",
 ##                           "EpiModel/EpiModelHIV-p@CombPrev-dev",
 ##                           "EpiModel/ARTnetData@1d8ec6e",
-##                           "EpiModel/ARTnet@150c631"), force=TRUE, dependencies=FALSE)
+##                           "EpiModel/ARTnet@150c631"), dependencies = FALSE, force = TRUE)
 
 require("EpiModelHIV")
 require("ARTnet")
