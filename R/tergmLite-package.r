@@ -48,7 +48,7 @@
 #' @import ergm tergm network
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
-#' @importFrom statnet.common term.list.formula NVL set.control.class trim_env
+#' @importFrom statnet.common term.list.formula NVL set.control.class trim_env check.control.class
 #' @importFrom methods is
 #'
 #' @docType package
