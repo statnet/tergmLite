@@ -158,7 +158,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                   coef.form = nwL_coef,
                                   coef.diss = diss_coefs,
                                   constraints = constraints)),
-              control = list(track_duration = TRUE, mcmc.control.tergm = control))
+              control = list(tergmLite.track.duration = TRUE, 
+                             mcmc.control.tergm = control))
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
@@ -291,7 +292,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 resimulate.network = TRUE, 
                                 tergmLite = TRUE,
                                 skip.check = TRUE, 
-                                track_duration = TRUE,
+                                tergmLite.track.duration = TRUE,
                                 extract.summary.stats = TRUE, 
                                 save.other = c("edgelist", "lasttoggle", "time"),
                                 monitors = list(ff_m),

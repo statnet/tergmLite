@@ -97,7 +97,7 @@ init_tergmLite <- function(dat) {
     attributes(dat$el[[i]])$vnames <- NULL
 
     if (is_tergm) {
-      mcmc_control_name <- paste(c("mcmc.control.tergm", if(num_nw > 1) i), collapse = ".")
+      mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
       dat$control$mcmc.control[[i]] <- check.control.class("simulate.network.tergm", "init_tergmLite", dat$control[[mcmc_control_name]])
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
@@ -116,12 +116,12 @@ init_tergmLite <- function(dat) {
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
       
-      if (dat$control$track_duration) {
-        if(is.null(nw %n% "time")) nw %n% "time" <- 0
-        if(is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
+      if (dat$control$tergmLite.track.duration) {
+        if (is.null(nw %n% "time")) nw %n% "time" <- 0
+        if (is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
       }
     } else {
-      mcmc_control_name <- paste(c("mcmc.control.ergm", if(num_nw > 1) i), collapse = ".")
+      mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i), collapse = ".")
       dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
@@ -135,7 +135,7 @@ init_tergmLite <- function(dat) {
     proposal$aux.slots <- model$slots.extra.aux$proposal
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
-    if(length(dat$control$monitors) < i || !is(dat$control$monitors[[i]], "formula")) {
+    if (length(dat$control$monitors) < i || !is(dat$control$monitors[[i]], "formula")) {
       dat$control$monitors[[i]] <- trim_env(~.)
     }
     

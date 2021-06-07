@@ -68,24 +68,41 @@ updateModelTermInputs <- function(dat, network = 1) {
   nwL <- networkLite(dat$el[[network]], dat$attr)
   
   if (is(dat$control$mcmc.control[[network]], "control.simulate.network.tergm")) { # dynamic
-    proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, hints = dat$control$mcmc.control[[network]]$MCMC.prop, arguments = dat$control$mcmc.control[[network]]$MCMC.prop.args, weights = dat$control$mcmc.control[[network]]$MCMC.prop.weights, nw = nwL, class = "t")
-    model <- ergm_model(dat$nwparam[[network]]$tergm_formula, nw = nwL, term.options = dat$control$mcmc.control[[network]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
+    proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, 
+                              hints = dat$control$mcmc.control[[network]]$MCMC.prop, 
+                              arguments = dat$control$mcmc.control[[network]]$MCMC.prop.args, 
+                              weights = dat$control$mcmc.control[[network]]$MCMC.prop.weights, 
+                              nw = nwL, class = "t")
+    model <- ergm_model(dat$nwparam[[network]]$tergm_formula, nw = nwL, 
+                        term.options = dat$control$mcmc.control[[network]]$term.options, 
+                        extra.aux = list(proposal = proposal$auxiliaries, 
+                                         system = trim_env(~.lasttoggle)))
     
-    if(dat$control$track_duration) {
+    if (dat$control$tergmLite.track.duration) {
       nwL %n% "time" <- dat$p[[network]]$state$nw0 %n% "time"
       nwL %n% "lasttoggle" <- dat$p[[network]]$state$nw0 %n% "lasttoggle"
     }
   } else { # static
-    proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, hints = dat$control$mcmc.control[[network]]$MCMC.prop, arguments = dat$control$mcmc.control[[network]]$MCMC.prop.args, weights = dat$control$mcmc.control[[network]]$MCMC.prop.weights, nw = nwL, class = "c")
-    model <- ergm_model(dat$nwparam[[network]]$formation, nw = nwL, term.options = dat$control$mcmc.control[[network]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
+    proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, 
+                              hints = dat$control$mcmc.control[[network]]$MCMC.prop, 
+                              arguments = dat$control$mcmc.control[[network]]$MCMC.prop.args, 
+                              weights = dat$control$mcmc.control[[network]]$MCMC.prop.weights, 
+                              nw = nwL, class = "c")
+    model <- ergm_model(dat$nwparam[[network]]$formation, nw = nwL, 
+                        term.options = dat$control$mcmc.control[[network]]$term.options,  
+                        extra.aux = list(proposal = proposal$auxiliaries))
   }
   
   proposal$aux.slots <- model$slots.extra.aux$proposal
-  dat$p[[network]]$state <- ergm_state(nwL, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
+  dat$p[[network]]$state <- ergm_state(nwL, model = model, proposal = proposal, 
+                                       stats = rep(0, nparam(model, canonical = TRUE)))
   
   if(nparam(dat$p[[network]]$state_mon, canonical = TRUE) > 0) {
-    model_mon <- ergm_model(dat$control$monitors[[network]], nw = nwL, term.options = dat$control$mcmc.control[[network]]$term.options)
-    dat$p[[network]]$state_mon <- ergm_state(nwL, model=model_mon, proposal=NULL, stats=rep(0, nparam(model_mon, canonical=TRUE)))
+    model_mon <- ergm_model(dat$control$monitors[[network]], nw = nwL, 
+                            term.options = dat$control$mcmc.control[[network]]$term.options)
+    dat$p[[network]]$state_mon <- ergm_state(nwL, model = model_mon, 
+                                             proposal = NULL, 
+                                             stats=rep(0, nparam(model_mon, canonical=TRUE)))
   }
   
   return(dat)
