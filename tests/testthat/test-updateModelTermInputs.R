@@ -333,8 +333,8 @@ test_that("gwesp_truedecay", {
   nw <- network_initialize(100)
  
   est <- netest(nw = nw,
-                formation = ~edges + gwesp(decay=0.8, fixed=TRUE),
-                target.stats = c(50, 1.1),
+                formation = ~edges + gwesp(decay=0.1, fixed=TRUE),
+                target.stats = c(50, 10),
                 coef.diss = dissolution_coefs(~offset(edges), duration = 100))
  
   run_checks(nw, est)
