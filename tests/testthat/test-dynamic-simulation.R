@@ -32,8 +32,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   # set some arbitrary, non-default control to ensure it gets propagated correctly
   control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, 
                                             MCMC.burnin.max = 123456, 
-                                            MCMC.prop = ~Strat(~race, pmat=pmat) + 
-                                              discord + TNT)
+                                            MCMC.prop = ~strat(~race, pmat=pmat) + 
+                                              discord + sparse)
 
   update_nw <- function(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
     el <- as.edgelist(nw)
@@ -293,7 +293,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 tergmLite = TRUE,
                                 skip.check = TRUE, 
                                 tergmLite.track.duration = TRUE,
-                                extract.summary.stats = TRUE, 
+                                save.nwstats = TRUE, 
                                 save.other = c("edgelist", "lasttoggle", "time"),
                                 monitors = list(ff_m),
                                 mcmc.control.tergm = control)
@@ -306,7 +306,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   expect_equal(nw_time, sim$time[[1]])  
 
   expect_identical(nw_summstats, dat_summstats)
-  expect_identical(nw_summstats, sim$stats$summstats[[1]][[1]])
+  expect_identical(nw_summstats, sim$stats$nwstats[[1]][[1]])
 })
 
 
@@ -339,9 +339,11 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   ff_m <- ~edges + degree(0:3) + degrange(4) + nodematch("sex")
 
+  ff_gm <- ~edges + nodecov(~age) + nodefactor(~race) + edges + degree(0:3) + degrange(4) + nodematch("sex")
+  
   # set some arbitrary, non-default control to ensure it gets propagated correctly
   control <- control.simulate.formula(MCMC.burnin = 54321, 
-                                      MCMC.prop = ~Strat(~race, pmat = pmat) + TNT)
+                                      MCMC.prop = ~strat(~race, pmat = pmat) + sparse)
 
   update_nw <- function(nw, nodes_to_remove, nodes_to_add, age_vals, race_vals) {
     el <- as.edgelist(nw)
@@ -552,7 +554,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 resimulate.network = TRUE, 
                                 tergmLite = TRUE,
                                 skip.check = TRUE, 
-                                extract.summary.stats = TRUE, 
+                                save.nwstats = TRUE, 
                                 save.other = c("edgelist"),
                                 monitors = list(ff_m),
                                 mcmc.control.ergm = control)
@@ -563,5 +565,5 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                check.attributes = FALSE)
 
   expect_identical(nw_summstats, dat_summstats)
-  expect_identical(nw_summstats, sim$stats$summstats[[1]][[1]])
+  expect_identical(nw_summstats, sim$stats$nwstats[[1]][[1]])
 })

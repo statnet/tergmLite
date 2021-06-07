@@ -1,6 +1,8 @@
 test_that("network and networkLite estimate identically in ergm", {
   require(ergm)
 
+  options(ergm.loglik.warn_dyads=FALSE)
+
   set.seed(0)
   nw <- network.initialize(1000, dir = FALSE)
   nw %v% "a" <- rep(letters[1:5], each = 200)
