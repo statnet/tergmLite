@@ -122,7 +122,7 @@ init_tergmLite <- function(dat) {
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
       
-      nwstats_formula <- dat$control[[nwstats_formula_name]]
+      nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
       if (is.character(nwstats_formula)) {
         nwstats_formula <- switch(nwstats_formula,
                                   formation = formation,
@@ -148,7 +148,7 @@ init_tergmLite <- function(dat) {
 
       term_names <- unlist(lapply(model$terms, function(x) x$name))
 
-      nwstats_formula <- dat$control[[nwstats_formula_name]]
+      nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
       if (is.character(nwstats_formula)) {
         nwstats_formula <- switch(nwstats_formula,
                                   formation = dat$nwparam[[i]]$formation,
