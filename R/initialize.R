@@ -77,13 +77,17 @@ init_tergmLite <- function(dat) {
   dat$el <- list()
   dat$p <- list()
   dat$control$mcmc.control <- list()
+  dat$control$nwstats.formulas <- list()
   
   supported.terms <- c("edges", "nodematch", "nodefactor",
                        "concurrent", "concurrent_by_attr",
                        "degree", "degree_by_attr",
                        "absdiff", "absdiffby", "nodecov", "nodemix",
                        "absdiffnodemix", "degrange", "triangle", "gwesp",
-                       "mean_age", "_lasttoggle", "_utp_wtnet") # _utp_wtnet is an auxiliary for gwesp
+                       "mean_age", "_lasttoggle", "_utp_wtnet", 
+                       "on_union_lt_net_Network", "on_intersect_lt_net_Network", 
+                       "_union_lt_net_Network", "_previous_lt_net_Network",
+                       "_intersect_lt_net_Network")
   
   for (i in 1:num_nw) {
     dat$p[[i]] <- list()
@@ -95,6 +99,8 @@ init_tergmLite <- function(dat) {
 
     dat$el[[i]] <- as.edgelist(nw)
     attributes(dat$el[[i]])$vnames <- NULL
+
+    nwstats_formula_name <- paste(c("nwstats.formula", if (num_nw > 1) i), collapse = ".")
 
     if (is_tergm) {
       mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
@@ -116,6 +122,17 @@ init_tergmLite <- function(dat) {
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
       
+      nwstats_formula <- dat$control[[nwstats_formula_name]]
+      if (is.character(nwstats_formula)) {
+        nwstats_formula <- switch(nwstats_formula,
+                                  formation = formation,
+                                  dissolution = dissolution,
+                                  all = {formula_addition <- append_rhs.formula(~., dissolution, keep.onesided = TRUE); 
+                                         environment(formula_addition) <- environment(dissolution);
+                                         nonsimp_update.formula(formation, formula_addition, from.new = TRUE)})
+      }
+      dat$control$nwstats.formulas[[i]] <- nwstats_formula
+      
       if (dat$control$tergmLite.track.duration) {
         if (is.null(nw %n% "time")) nw %n% "time" <- 0
         if (is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
@@ -130,18 +147,21 @@ init_tergmLite <- function(dat) {
       model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
 
       term_names <- unlist(lapply(model$terms, function(x) x$name))
+
+      nwstats_formula <- dat$control[[nwstats_formula_name]]
+      if (is.character(nwstats_formula)) {
+        nwstats_formula <- switch(nwstats_formula,
+                                  formation = dat$nwparam[[i]]$formation,
+                                  dissolution = trim_env(~.),
+                                  all = dat$nwparam[[i]]$formation)
+      }
+      dat$control$nwstats.formulas[[i]] <- nwstats_formula
     }
 
     proposal$aux.slots <- model$slots.extra.aux$proposal
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
-    if (length(dat$control$monitors) < i || !is(dat$control$monitors[[i]], "formula")) {
-      dat$control$monitors[[i]] <- trim_env(~.)
-    }
-    
-    model_mon <- ergm_model(dat$control$monitors[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
-    dat$p[[i]]$state_mon <- ergm_state(nw, model=model_mon, proposal=NULL, stats=rep(0, nparam(model_mon, canonical=TRUE)))
-
+    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
     term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
 
     ## check for unsupported terms

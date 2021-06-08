@@ -29,6 +29,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   ff_m <- ~edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
 
+  ff_gm <- ~Form(formation) + Diss(dissolution) + edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
+
   # set some arbitrary, non-default control to ensure it gets propagated correctly
   control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, 
                                             MCMC.burnin.max = 123456, 
@@ -159,7 +161,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                   coef.diss = diss_coefs,
                                   constraints = constraints)),
               control = list(tergmLite.track.duration = TRUE, 
-                             mcmc.control.tergm = control))
+                             mcmc.control.tergm = control,
+                             nwstats.formula = ~.))
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
@@ -295,7 +298,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 tergmLite.track.duration = TRUE,
                                 save.nwstats = TRUE, 
                                 save.other = c("edgelist", "lasttoggle", "time"),
-                                monitors = list(ff_m),
+                                nwstats.formula = ff_gm,
                                 mcmc.control.tergm = control)
 
   sim <- netsim(netest_ergm, NULL, NULL, netsim_control)
@@ -449,7 +452,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                   coef.form = nwL_coef,
                                   coef.diss = diss_coefs,
                                   constraints = constraints)),
-              control = list(mcmc.control.ergm = control))
+              control = list(mcmc.control.ergm = control,
+                             nwstats.formula = ~.))
 
   dat <- init_tergmLite(dat)
   dat <- updateModelTermInputs(dat)
@@ -556,7 +560,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                                 skip.check = TRUE, 
                                 save.nwstats = TRUE, 
                                 save.other = c("edgelist"),
-                                monitors = list(ff_m),
+                                nwstats.formula = ff_gm,
                                 mcmc.control.ergm = control)
 
   sim <- netsim(netest_ergm, NULL, NULL, netsim_control)
