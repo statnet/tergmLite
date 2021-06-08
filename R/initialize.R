@@ -81,7 +81,7 @@ init_tergmLite <- function(dat) {
   
   supported.terms <- c("edges", "nodematch", "nodefactor",
                        "concurrent", "concurrent_by_attr",
-                       "degree", "degree_by_attr",
+                       "degree", "degree_by_attr", "meandeg",
                        "absdiff", "absdiffby", "nodecov", "nodemix",
                        "absdiffnodemix", "degrange", "triangle", "gwesp",
                        "mean_age", "_lasttoggle", "_utp_wtnet", 
