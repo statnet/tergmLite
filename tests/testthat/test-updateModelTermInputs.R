@@ -23,8 +23,8 @@ run_checks <- function(nw, est) {
   ## this checks that the edge sets and basic network attributes are the same
   expect_identical(dat$el[[1]], el_s)
 
-  ## now do a tergm simulation with a network, getting the ergm_state as output
-  add.edges(nw, el_s[,1], el_s[,2])  
+  ## now do a tergm simulation with a networkLite, getting the ergm_state as output
+  nw <- networkLite(dat$el[[1]], dat$attr)
   set.seed(0)
   es_t_n <- simulate(nw ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
 
@@ -32,14 +32,6 @@ run_checks <- function(nw, est) {
   nwL <- networkLite(dat$el[[1]], dat$attr)
   set.seed(0)
   es_t <- simulate(nwL ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
-
-  ## obviously the network structures will not be equal (network != networkLite), but
-  ## the rest of the ergm_state data structures should be equal, in particular the final edgelists,
-  ## indicating we got equivalent simulation results
-  es_t_n$nw0 <- es_t$nw0  
-  ## the discord hint now also copies the network, which we need to fix before testing for equality
-  ## (because, again, network != networkLite)
-  es_t_n$proposal$arguments$constraints$discord$nw <- es_t$proposal$arguments$constraints$discord$nw
   
   expect_equal(es_t_n, es_t)
 
