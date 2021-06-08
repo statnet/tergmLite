@@ -7,8 +7,8 @@
 ##                           "statnet/networkDynamic@master",
 ##                           "statnet/ergm@master",
 ##                           "statnet/tergm@master",
-##                           "statnet/tergmLite@dev",
-##                           "statnet/EpiModel@dev",
+##                           "statnet/tergmLite@master",
+##                           "statnet/EpiModel@master",
 ##                           "statnet/EpiModelHPC@master",
 ##                           "EpiModel/EpiModelHIV-p@CombPrev-dev",
 ##                           "EpiModel/ARTnetData@1d8ec6e",
@@ -274,14 +274,16 @@ init <- init_msm(prev.ugc = 0,
                  prev.uct = 0)
                  
 control <- snctrl(simno = 1,
-                       nsteps = 52*5,
-                       nsims = 1,
-                       ncores = 1,
-                       save.nwstats = TRUE,
-                       save.clin.hist = FALSE,
-                       mcmc.control.tergm.1 = control.simulate.formula.tergm(MCMC.burnin.min = 2e3),
-                       mcmc.control.tergm.2 = control.simulate.formula.tergm(MCMC.burnin.min = 2e3),
-                       mcmc.control.ergm.3 = control.simulate.formula())
+                  nsteps = 52*5,
+                  nsims = 1,
+                  ncores = 1,
+                  save.nwstats = TRUE,
+                  save.clin.hist = FALSE,
+                  tergmLite.track.duration = TRUE,
+                  nwstats.formula.2 = ~edges + concurrent + mean.age + Form(~concurrent),
+                  mcmc.control.tergm.1 = control.simulate.formula.tergm(MCMC.burnin.min = 2e3),
+                  mcmc.control.tergm.2 = control.simulate.formula.tergm(MCMC.burnin.min = 2e3),
+                  mcmc.control.ergm.3 = control.simulate.formula())
 
 sim <- netsim(out, param, init, control)
 
