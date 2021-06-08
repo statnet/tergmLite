@@ -6,14 +6,14 @@
 using namespace Rcpp;
 
 // shiftVec
-NumericVector shiftVec(NumericVector elv, NumericVector vid);
-RcppExport SEXP _tergmLite_shiftVec(SEXP elvSEXP, SEXP vidSEXP) {
+IntegerVector shiftVec(IntegerVector x, IntegerVector y);
+RcppExport SEXP _tergmLite_shiftVec(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type elv(elvSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type vid(vidSEXP);
-    rcpp_result_gen = Rcpp::wrap(shiftVec(elv, vid));
+    Rcpp::traits::input_parameter< IntegerVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(shiftVec(x, y));
     return rcpp_result_gen;
 END_RCPP
 }

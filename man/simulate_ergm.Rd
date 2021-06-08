@@ -2,26 +2,26 @@
 % Please edit documentation in R/simulate.R
 \name{simulate_ergm}
 \alias{simulate_ergm}
-\title{Fast Version of ergm::simulate.ergm for Edgelist-formatted Network}
+\title{A Version of ergm::simulate.ergm Tailored to tergmLite Simulation}
 \usage{
-simulate_ergm(p, el, coef)
+simulate_ergm(state, coef, control)
 }
 \arguments{
-\item{p}{A list of network-related nodal covariates and related terms that
-is produced with \code{\link{ergm_prep}}.}
+\item{state}{An \code{ergm_state} object representing the starting state
+for the simulation.}
 
-\item{el}{A two-column matrix of current edges (edgelist) with an attribute
-variable \code{n} containing the total current network size.}
+\item{coef}{Vector of coefficients for the generative model.}
 
-\item{coef}{Vector of coefficients associated with the formation formula.}
+\item{control}{A control list of class \code{control.simulate.formula}.}
 }
 \value{
-Returns an updated network edgelist object, typically stored on the master
-\code{dat} list object, based on the model simulation.
+Returns a named list with members \code{el} (the updated network edgelist
+representation) and \code{state} (the \code{ergm_state} object returned by
+\code{ergm_MCMC_slave}).
 }
 \description{
-Resimulates a networkLite object given thin network data structure,
-             edgelist, and ERGM model coefficients.
+Resimulates an edgelist given ergm_state data representation
+             and model coefficients.
 }
 \details{
 This function is used within the network resimulation module in \code{EpiModel}
@@ -57,9 +57,9 @@ str(dat, max.level = 1)
 dat$el[[1]]
 
 # New network structure (all edges are new)
-dat$el[[1]] <- simulate_ergm(p = dat$p[[1]],
-                             el = dat$el[[1]],
-                             coef = dat$nwparam[[1]]$coef.form)
+dat$el[[1]] <- simulate_ergm(state = dat$p[[1]]$state,
+                             coef = dat$nwparam[[1]]$coef.form,
+                             control = dat$control$mcmc.control[[1]])$el
 dat$el[[1]]
 }
 

@@ -1,16 +1,30 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+// assumes x and y are sorted in increasing order
+
 // [[Rcpp::export]]
-NumericVector shiftVec(NumericVector elv, NumericVector vid) {
+IntegerVector shiftVec(IntegerVector x, IntegerVector y) {
 
-  int n = elv.size();
-  NumericVector out(n);
+  int x_len = x.size();
+  int y_len = y.size();
+  
+  IntegerVector z(x_len);
 
-  for (int i = 0; i < n; ++i) {
-    out[i] = elv[i] - sum(elv[i] > vid);
+  int i = 0;
+  
+  for(int j = 0; j < y_len; j++) {
+    while(i < x_len && x[i] < y[j]) {
+      z[i] = x[i] - j;
+      i++;
+    }
   }
 
-  return(out);
+  // handle any trailing part of x after getting to the end of y
+  while(i < x_len) {
+    z[i] = x[i] - y_len;
+    i++;
+  }
 
+  return(z);
 }

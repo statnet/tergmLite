@@ -2,33 +2,32 @@
 % Please edit documentation in R/simulate.R
 \name{simulate_network}
 \alias{simulate_network}
-\title{Fast Version of tergm::simulate.network for networkLite Object}
+\title{A Version of tergm::simulate.network Tailored to tergmLite Simulation}
 \usage{
-simulate_network(p, el, coef.form, coef.diss, save.changes = FALSE)
+simulate_network(state, coef, control, save.changes = FALSE)
 }
 \arguments{
-\item{p}{A list of network-related nodal covariates and related terms that
-is produced with \code{\link{stergm_prep}}.}
+\item{state}{An \code{ergm_state} object representing the starting state
+for the simulation.}
 
-\item{el}{A two-column matrix of current edges (edgelist) with an attribute
-variable \code{n} containing the total current network size.}
+\item{coef}{Vector of coefficients for the generative model.}
 
-\item{coef.form}{Vector of coefficients associated with the formation formula.}
-
-\item{coef.diss}{Vector of coefficients associated with the dissolution formula.}
+\item{control}{A control list of class \code{control.simulate.formula.tergm},
+with augmentations made in \code{init_tergmLite}.}
 
 \item{save.changes}{Logical, if \code{TRUE}, saves a matrix of changed edges
-as an attribute of the output edgelist matrix.}
+as an attribute of the output edgelist matrix}
 }
 \value{
-Returns an updated network edgelist object, typically stored on the master
-\code{dat} list object, based on the model simulation. If \code{save.changes}
-is \code{TRUE}, also returns a list of new edges and disolved edges with the
-resimulation.
+Returns a named list with members \code{el} (the updated network edgelist
+representation) and \code{state} (the \code{ergm_state} object returned by
+\code{tergm_MCMC_slave}).  If \code{save.changes} is \code{TRUE}, also 
+returns a list of new edges and dissolved edges with the resimulation,
+attached to \code{el} as the \code{changes} attribute.
 }
 \description{
-Resimulates a networkLite object given thin network data structure,
-             edgelist, and STERGM model coefficients.
+Resimulates an edgelist given ergm_state data representation
+             and model coefficients.
 }
 \details{
 This function is used within the network resimulation module in \code{EpiModel}
@@ -64,11 +63,11 @@ str(dat, max.level = 1)
 dat$el[[1]]
 
 # New network structure
-dat$el[[1]] <- simulate_network(p = dat$p[[1]],
-                                el = dat$el[[1]],
-                                coef.form = dat$nwparam[[1]]$coef.form,
-                                coef.diss = dat$nwparam[[1]]$coef.diss$coef.adj,
-                                save.changes = TRUE)
+dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state, 
+                                coef = c(dat$nwparam[[1]]$coef.form, 
+                                         dat$nwparam[[1]]$coef.diss$coef.adj),
+                                control = dat$control$mcmc.control[[1]],
+                                save.changes = TRUE)$el
 dat$el[[1]]
 
 # Specific changes listed under changes list

@@ -2,14 +2,14 @@
 % Please edit documentation in R/updateModelTerms.R
 \name{updateModelTermInputs}
 \alias{updateModelTermInputs}
-\title{Methods for Computing and Updating ERGM/STERGM Term Inputs}
+\title{Methods for Computing and Updating ERGM/TERGM Simulation Inputs}
 \usage{
 updateModelTermInputs(dat, network = 1)
 }
 \arguments{
 \item{dat}{EpiModel dat object tracking simulation state}
 
-\item{network}{Numberic number of network location for multi-network simulations.}
+\item{network}{Numeric number of network location for multi-network simulations.}
 }
 \value{
 Returns an updated \code{dat} object with the network list structure inputs
@@ -17,33 +17,18 @@ used by \code{\link{simulate_network}} or \code{\link{simulate_ergm}} with chang
 to network size or nodal covariates.
 }
 \description{
-Function to appropriately update model inputs based on ERGM model
-             terms when using networkLite representation.
+Function to appropriately update the ergm_state object used
+             to start ERGM/TERGM simulation within the context of a tergmLite
+             simulation.
 }
 \details{
 Calls \code{ergm_model} to update model inputs based on potential
 exogenous changes to network structure (e.g., number of nodes) or nodal attributes
 used within ERGM model (see example below). This function is typically used
 within \code{EpiModel} module for network resimulation, immediately prior to
-calling \code{\link{simulate_network}} or \code{\link{simulate_ergm}}.
-
-Implemented terms are:
- \itemize{
-   \item \code{edges}
-   \item \code{nodematch}
-   \item \code{nodefactor}
-   \item \code{concurrent} (including heterogenous by attribute)
-   \item \code{degree} (including heterogenous by attribute)
-   \item \code{degrange}
-   \item \code{absdiff}
-   \item \code{absdiffby} (in the EpiModel package)
-   \item \code{nodecov}
-   \item \code{nodemix}
-   \item \code{absdiffnodemix} (in the EpiModel package)
-   \item \code{triangle}
-   \item \code{gwesp(fixed=TRUE)}
- }
-All other ERGM terms will return errors.
+calling \code{\link{simulate_network}} or \code{\link{simulate_ergm}}. Both
+\code{ergm_proposal} and \code{ergm_state} are also called to fully prepare
+for the next round of simulation.
 }
 \examples{
 \dontrun{
@@ -69,7 +54,7 @@ dat <- initialize.net(x, param, init, control)
 str(dat, max.level = 1)
 
 # Examine the network list structure for nodefactor term
-dat$p[[1]]$model.form$terms[[2]]
+dat$p[[1]]$state$model$terms[[2]]
 
 # inputs vector corresponds to group attribute stored here
 dat$attr$group
@@ -83,7 +68,7 @@ dat$attr$group
 dat <- updateModelTermInputs(dat)
 
 # Check that network list structure for nodefactor term has been updated
-dat$p[[1]]$model.form$terms[[2]]
+dat$p[[1]]$state$model$terms[[2]]
 }
 
 }

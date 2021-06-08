@@ -1,119 +1,4 @@
 
-#' @title Prepare Network and STERGM Objects for tergmLite
-#'
-#' @description Converts network object, formation and dissolution formulas,
-#'              formation and dissolution coefficients, and control settings to a
-#'              thin list format for STERGM resimulation.
-#'
-#' @param nw An object of class \code{network}.
-#' @param formation Right-hand sided formation formula.
-#' @param dissolution Right-hand sided dissolution formula.
-#' @param coef.form Vector of coefficients associated with the formation formula.
-#' @param coef.diss Vector of coefficients associated with the dissolution formula.
-#' @param constraints Constraints for the formation model (only \code{bd})
-#'                    constraints currently supported.
-#' @param control Control settings passed to \code{tergm::control.simulate.network}.
-#'
-#' @details
-#' This is an internal function used within \code{\link{init_tergmLite}}. It is
-#' not exported from the package but it is documented here to demonstrate the
-#' internal inputs for \code{\link{init_tergmLite}}.
-#'
-#' @return
-#' Returns a list class object with four elements:
-#' \itemize{
-#'   \item{\code{model.form}}: Formation model coefficients and data elements.
-#'   \item{\code{model.diss}}: Dissolution model coefficients and data elements.
-#'   \item{\code{MHproposal.form}}: Formation model constraint data elements.
-#'   \item{\code{MHproposal.diss}}: Dissolution model constraint data elements.
-#' }
-#'
-stergm_prep <- function(nw,
-                        formation,
-                        dissolution,
-                        coef.form,
-                        coef.diss,
-                        constraints,
-                        control = control.simulate.network()) {
-
-  if (inherits(nw, "network") == FALSE) {
-    stop("A network object must be given")
-  }
-
-  formation <- statnet.common::nonsimp_update.formula(formation, nw ~ ., from.new = "nw")
-  dissolution <- statnet.common::nonsimp_update.formula(dissolution, nw ~ ., from.new = "nw")
-
-  model.form <- ergm::ergm_model(formation, nw, role = "formation")
-  if (!missing(coef.form) && ergm::nparam(model.form) != length(coef.form)) {
-    stop("coef.form has ", length(coef.form), " elements, while the model requires ",
-         ergm::nparam(model.form), " parameters.")
-  }
-  model.diss <- ergm::ergm_model(dissolution, nw, role = "dissolution")
-  if (!missing(coef.diss) && ergm::nparam(model.diss) != length(coef.diss)) {
-    stop("coef.diss has ", length(coef.diss), " elements, while the model requires ",
-         ergm::nparam(model.diss), " parameters.")
-  }
-
-  MHproposal.form <- ergm::ergm_proposal(constraints, control$MCMC.prop.args.form,
-                                      nw, weights = control$MCMC.prop.weights.form,
-                                      class = "f")
-  MHproposal.diss <- ergm::ergm_proposal(constraints, control$MCMC.prop.args.diss,
-                                      nw, weights = control$MCMC.prop.weights.diss,
-                                      class = "d")
-
-  MHproposal.form$arguments$constraints$.attributes <- NULL
-  MHproposal.diss$arguments$constraints$.attributes <- NULL
-
-  out <- list(model.form = model.form, model.diss = model.diss,
-              MHproposal.form = MHproposal.form, MHproposal.diss = MHproposal.diss)
-
-  return(out)
-}
-
-#' @title Prepare Network and ERGM Objects for tergmLite
-#'
-#' @description Converts network object, formation and dissolution formulas,
-#'              formation and dissolution coefficients, and control settings to a
-#'              thin list format for ERGM resimulation.
-#'
-#' @param nw An object of class \code{network}.
-#' @param formation Right-hand sided formation formula.
-#' @param coef Vector of coefficients associated with the formation formula
-#' @param constraints Constraints for the formation model (only \code{bd})
-#'                    constraints currently supported.
-#' @param control Control settings passed to \code{ergm::control.simulate.ergm}.
-#'
-#' @details
-#' This is an internal function used within \code{\link{init_tergmLite}}. It is
-#' not exported from the package but it is documented here to demonstrate the
-#' internal inputs for \code{\link{init_tergmLite}}.
-#'
-#' @return
-#' Returns a list class object with two elements:
-#' \itemize{
-#'   \item{\code{model.form}}: Model coefficients and data elements.
-#'   \item{\code{MHproposal}}: Model constraint data elements.
-#' }
-#'
-ergm_prep <- function(nw,
-                      formation,
-                      coef,
-                      constraints,
-                      control = ergm::control.simulate.ergm()) {
-
-  form <- statnet.common::nonsimp_update.formula(formation, nw ~ ., from.new = "nw")
-  m <- ergm::ergm_model(form, nw, response = NULL, role = "static")
-
-  MHproposal <- ergm_proposal(constraints, arguments = control$MCMC.prop.args,
-                           nw = nw, weights = control$MCMC.prop.weights, class = "c",
-                           reference = ~Bernoulli, response = NULL)
-
-  MHproposal$arguments$constraints$.attributes <- NULL
-
-  out <- list(model.form = m, MHproposal = MHproposal)
-  return(out)
-}
-
 #' @title Initializes EpiModel netsim Object for tergmLite Simulation
 #'
 #' @param dat A list object containing a \code{networkDynamic} object and other
@@ -126,6 +11,25 @@ ergm_prep <- function(nw,
 #' converts (and then removes) the \code{network} class objects into an edgelist
 #' only format and prepares the ERGM structural information for simulation. The
 #' example below demonstrates the specific information returned.
+#'
+#' Implemented terms are:
+#' \itemize{
+#'   \item edges
+#'   \item nodematch
+#'   \item nodefactor
+#'   \item concurrent (including heterogenous by attribute)
+#'   \item degree (including heterogenous by attribute)
+#'   \item degrange
+#'   \item absdiff
+#'   \item absdiffby (in the EpiModel package)
+#'   \item nodecov
+#'   \item nodemix
+#'   \item absdiffnodemix (in the EpiModel package)
+#'   \item triangle
+#'   \item gwesp(fixed=TRUE)
+#'   \item mean.age
+#' }
+#' All other terms will return errors.
 #'
 #' @export
 #'
@@ -167,36 +71,109 @@ ergm_prep <- function(nw,
 
 #'
 init_tergmLite <- function(dat) {
-
-  num_nw <- length(dat$nw)
+  
+  num_nw <- ifelse(inherits(dat$nw, "network"), 1, length(dat$nw))
 
   dat$el <- list()
   dat$p <- list()
-
+  dat$control$mcmc.control <- list()
+  dat$control$nwstats.formulas <- list()
+  
+  supported.terms <- c("edges", "nodematch", "nodefactor",
+                       "concurrent", "concurrent_by_attr",
+                       "degree", "degree_by_attr", "meandeg",
+                       "absdiff", "absdiffby", "nodecov", "nodemix",
+                       "absdiffnodemix", "degrange", "triangle", "gwesp",
+                       "mean_age", "_lasttoggle", "_utp_wtnet", 
+                       "on_union_lt_net_Network", "on_intersect_lt_net_Network", 
+                       "_union_lt_net_Network", "_previous_lt_net_Network",
+                       "_intersect_lt_net_Network")
+  
   for (i in 1:num_nw) {
-
+    dat$p[[i]] <- list()
+    
     nwp <- dat$nwparam[[i]]
     is_tergm <- all(nwp$coef.diss$duration > 1)
-    if (num_nw == 1) {
-      nw <- dat$nw[[1]]
-    } else {
-      nw <- dat$nw[[i]]
-    }
+
+    nw <- dat$nw[[i]]
 
     dat$el[[i]] <- as.edgelist(nw)
     attributes(dat$el[[i]])$vnames <- NULL
 
-    if (is_tergm == TRUE) {
-      p <- stergm_prep(nw, nwp$formation, nwp$coef.diss$dissolution,
-                       nwp$coef.form, nwp$coef.diss$coef.adj, nwp$constraints)
-      p$model.form$formula <- NULL
-      p$model.diss$formula <- NULL
-    } else {
-      p <- ergm_prep(nw, nwp$formation, nwp$coef.form, nwp$constraints)
-      p$model.form$formula <- NULL
-    }
-    dat$p[[i]] <- p
+    nwstats_formula_name <- paste(c("nwstats.formula", if (num_nw > 1) i), collapse = ".")
 
+    if (is_tergm) {
+      mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm", "init_tergmLite", dat$control[[mcmc_control_name]])
+      ## enforce some specific values appropriate for tergmLite/EpiModel netsim
+      dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
+      dat$control$mcmc.control[[i]]$time.burnin <- 0L
+      dat$control$mcmc.control[[i]]$time.interval <- 1L
+      dat$control$mcmc.control[[i]]$time.samplesize <- 1L
+      dat$control$mcmc.control[[i]]$changes <- TRUE
+      dat$control$mcmc.control[[i]]$collect <- FALSE
+
+      formation <- dat$nwparam[[i]]$formation
+      dissolution <- dat$nwparam[[i]]$coef.diss$dissolution
+      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
+
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
+      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
+
+      term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
+      
+      nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
+      if (is.character(nwstats_formula)) {
+        nwstats_formula <- switch(nwstats_formula,
+                                  formation = formation,
+                                  dissolution = dissolution,
+                                  all = {formula_addition <- append_rhs.formula(~., dissolution, keep.onesided = TRUE); 
+                                         environment(formula_addition) <- environment(dissolution);
+                                         nonsimp_update.formula(formation, formula_addition, from.new = TRUE)})
+      }
+      dat$control$nwstats.formulas[[i]] <- nwstats_formula
+      
+      if (dat$control$tergmLite.track.duration) {
+        if (is.null(nw %n% "time")) nw %n% "time" <- 0
+        if (is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
+      }
+    } else {
+      mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
+      ## enforce some specific values appropriate for tergmLite/EpiModel netsim
+      dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
+    
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
+      model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
+
+      term_names <- unlist(lapply(model$terms, function(x) x$name))
+
+      nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
+      if (is.character(nwstats_formula)) {
+        nwstats_formula <- switch(nwstats_formula,
+                                  formation = dat$nwparam[[i]]$formation,
+                                  dissolution = trim_env(~.),
+                                  all = dat$nwparam[[i]]$formation)
+      }
+      dat$control$nwstats.formulas[[i]] <- nwstats_formula
+    }
+
+    proposal$aux.slots <- model$slots.extra.aux$proposal
+    dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
+
+    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
+    term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
+
+    ## check for unsupported terms
+    difference <- setdiff(term_names, supported.terms)
+    if (length(difference) > 0) {
+      ## special error message for gwesp without fixed=TRUE
+      if (difference[1] == "esp") {
+        stop("tergmLite does not support the esp term, and only supports the gwesp term with fixed=TRUE")
+      }
+      ## error message for all others
+      stop("tergmLite does not know how to update the term ", difference[1])
+    }
   }
 
   dat$nw <- NULL

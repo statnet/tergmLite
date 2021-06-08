@@ -4,8 +4,8 @@
 #' \tabular{ll}{
 #'    Package: \tab tergmLite\cr
 #'    Type: \tab Package\cr
-#'    Version: \tab 2.2.1\cr
-#'    Date: \tab 2020-10-06\cr
+#'    Version: \tab 2.5.0\cr
+#'    Date: \tab 2021-06-07\cr
 #'    License: \tab GPL-3\cr
 #'    LazyLoad: \tab yes\cr
 #' }
@@ -45,12 +45,12 @@
 #'
 #' @useDynLib tergmLite
 #'
-#' @import ergm tergm
+#' @import ergm tergm network
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats formula
-#' @importFrom statnet.common term.list.formula NVL
-#' @importFrom network as.edgelist network.initialize get.vertex.attribute
-#'             set.vertex.attribute network.size
+#' @importFrom statnet.common term.list.formula NVL set.control.class trim_env check.control.class
+#'                            append_rhs.formula nonsimp_update.formula
+#' @importFrom methods is
 #'
 #' @docType package
 #' @keywords package
