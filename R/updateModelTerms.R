@@ -67,7 +67,7 @@
 updateModelTermInputs <- function(dat, network = 1) {
   nwL <- networkLite(dat$el[[network]], dat$attr)
   
-  if (is(dat$control$mcmc.control[[network]], "control.simulate.network.tergm")) { # dynamic
+  if (is(dat$control$mcmc.control[[network]], "control.simulate.formula.tergm")) { # dynamic
     proposal <- ergm_proposal(dat$nwparam[[network]]$constraints, 
                               hints = dat$control$mcmc.control[[network]]$MCMC.prop, 
                               arguments = dat$control$mcmc.control[[network]]$MCMC.prop.args, 

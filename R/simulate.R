@@ -9,7 +9,7 @@
 #' @param state An \code{ergm_state} object representing the starting state
 #'              for the simulation.
 #' @param coef Vector of coefficients for the generative model.
-#' @param control A control list of class \code{control.simulate.network.tergm},
+#' @param control A control list of class \code{control.simulate.formula.tergm},
 #'                with augmentations made in \code{init_tergmLite}.
 #' @param save.changes Logical, if \code{TRUE}, saves a matrix of changed edges
 #'                     as an attribute of the output edgelist matrix

@@ -32,7 +32,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   ff_gm <- ~Form(formation) + Diss(dissolution) + edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
 
   # set some arbitrary, non-default control to ensure it gets propagated correctly
-  control <- control.simulate.network.tergm(MCMC.burnin.min = 54321, 
+  control <- control.simulate.formula.tergm(MCMC.burnin.min = 54321, 
                                             MCMC.burnin.max = 123456, 
                                             MCMC.prop = ~strat(~race, pmat=pmat) + 
                                               discord + sparse)

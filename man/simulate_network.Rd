@@ -12,7 +12,7 @@ for the simulation.}
 
 \item{coef}{Vector of coefficients for the generative model.}
 
-\item{control}{A control list of class \code{control.simulate.network.tergm},
+\item{control}{A control list of class \code{control.simulate.formula.tergm},
 with augmentations made in \code{init_tergmLite}.}
 
 \item{save.changes}{Logical, if \code{TRUE}, saves a matrix of changed edges
