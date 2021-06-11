@@ -240,6 +240,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
     nwL <- x$fit$network
     nwL[,] <- FALSE
     
+    control$isTERGM <- TRUE
+    
     dat <- list(nw = list(nwL),
                 attr = list(age = nwL %v% "age",
                             race = nwL %v% "race",
@@ -510,6 +512,8 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
   init_dat <- function(x, param, init, control, s) {
     nwL <- x$fit$network
     nwL[,] <- FALSE
+    
+    control$isTERGM <- FALSE    
     
     dat <- list(nw = list(nwL),
                 attr = list(age = nwL %v% "age",

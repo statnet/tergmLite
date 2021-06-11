@@ -76,7 +76,8 @@ updateModelTermInputs <- function(dat, network = 1) {
     model <- ergm_model(dat$nwparam[[network]]$tergm_formula, nw = nwL,
                         term.options = dat$control$mcmc.control[[network]]$term.options,
                         extra.aux = list(proposal = proposal$auxiliaries,
-                                         system = trim_env(~.lasttoggle)))
+                                         system = trim_env(~.lasttoggle)),
+                        dynamic = TRUE)
 
     if (dat$control$tergmLite.track.duration) {
       nwL %n% "time" <- dat$p[[network]]$state$nw0 %n% "time"

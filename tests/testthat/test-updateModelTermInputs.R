@@ -26,12 +26,12 @@ run_checks <- function(nw, est) {
   ## now do a tergm simulation with a networkLite, getting the ergm_state as output
   nw <- networkLite(dat$el[[1]], dat$attr)
   set.seed(0)
-  es_t_n <- simulate(nw ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
+  es_t_n <- simulate(nw ~ Form(est$formation) + Diss(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
 
   ## now do a tergm simulation with a networkLite, getting the ergm_state as output
   nwL <- networkLite(dat$el[[1]], dat$attr)
   set.seed(0)
-  es_t <- simulate(nwL ~ FormE(est$formation) + DissE(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
+  es_t <- simulate(nwL ~ Form(est$formation) + Diss(est$coef.diss$dissolution), coef = c(est$coef.form, est$coef.diss$coef.adj), output="ergm_state", dynamic=TRUE, control=dat$control$mcmc.control[[1]])
   
   expect_equal(es_t_n, es_t)
 

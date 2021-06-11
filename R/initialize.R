@@ -118,7 +118,7 @@ init_tergmLite <- function(dat) {
       dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
 
       proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
-      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
+      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)), dynamic = TRUE)
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
 
@@ -161,7 +161,7 @@ init_tergmLite <- function(dat) {
     proposal$aux.slots <- model$slots.extra.aux$proposal
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
-    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
+    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, dynamic = TRUE)
     term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
 
     ## check for unsupported terms
