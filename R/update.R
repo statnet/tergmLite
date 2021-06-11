@@ -14,7 +14,7 @@
 #' @details
 #' This function is used in \code{EpiModel} modules to add vertices (nodes) to the
 #' edgelist object to account for entries into the population (e.g., births and
-#' in-migration)
+#' in-migration).
 #'
 #' @return
 #' Returns the updated the attribute containing the population size on the
@@ -114,7 +114,7 @@ add_vertices <- function(el, nv) {
 #'
 delete_vertices <- function(el, vid) {
 
-  vid <- sort(vid)  
+  vid <- sort(vid)
 
   new.el <- el
   if (length(vid) > 0) {

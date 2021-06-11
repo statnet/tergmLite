@@ -71,27 +71,27 @@
 
 #'
 init_tergmLite <- function(dat) {
-  
+
   num_nw <- ifelse(inherits(dat$nw, "network"), 1, length(dat$nw))
 
   dat$el <- list()
   dat$p <- list()
   dat$control$mcmc.control <- list()
   dat$control$nwstats.formulas <- list()
-  
+
   supported.terms <- c("edges", "nodematch", "nodefactor",
                        "concurrent", "concurrent_by_attr",
                        "degree", "degree_by_attr", "meandeg",
                        "absdiff", "absdiffby", "nodecov", "nodemix",
                        "absdiffnodemix", "degrange", "triangle", "gwesp",
-                       "mean_age", "_lasttoggle", "_utp_wtnet", 
-                       "on_union_lt_net_Network", "on_intersect_lt_net_Network", 
+                       "mean_age", "_lasttoggle", "_utp_wtnet",
+                       "on_union_lt_net_Network", "on_intersect_lt_net_Network",
                        "_union_lt_net_Network", "_previous_lt_net_Network",
                        "_intersect_lt_net_Network")
-  
+
   for (i in 1:num_nw) {
     dat$p[[i]] <- list()
-    
+
     nwp <- dat$nwparam[[i]]
     is_tergm <- all(nwp$coef.diss$duration > 1)
 
@@ -121,18 +121,18 @@ init_tergmLite <- function(dat) {
       model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
 
       term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
-      
+
       nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
       if (is.character(nwstats_formula)) {
         nwstats_formula <- switch(nwstats_formula,
                                   formation = formation,
                                   dissolution = dissolution,
-                                  all = {formula_addition <- append_rhs.formula(~., dissolution, keep.onesided = TRUE); 
+                                  all = {formula_addition <- append_rhs.formula(~., dissolution, keep.onesided = TRUE);
                                          environment(formula_addition) <- environment(dissolution);
                                          nonsimp_update.formula(formation, formula_addition, from.new = TRUE)})
       }
       dat$control$nwstats.formulas[[i]] <- nwstats_formula
-      
+
       if (dat$control$tergmLite.track.duration) {
         if (is.null(nw %n% "time")) nw %n% "time" <- 0
         if (is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
@@ -142,7 +142,7 @@ init_tergmLite <- function(dat) {
       dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
-    
+
       proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
       model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
 

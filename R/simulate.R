@@ -12,7 +12,7 @@
 #' @param control A control list of class \code{control.simulate.formula.tergm},
 #'                with augmentations made in \code{init_tergmLite}.
 #' @param save.changes Logical, if \code{TRUE}, saves a matrix of changed edges
-#'                     as an attribute of the output edgelist matrix
+#'                     as an attribute of the output edgelist matrix.
 #'
 #' @details
 #' This function is used within the network resimulation module in \code{EpiModel}
@@ -26,7 +26,7 @@
 #' @return
 #' Returns a named list with members \code{el} (the updated network edgelist
 #' representation) and \code{state} (the \code{ergm_state} object returned by
-#' \code{tergm_MCMC_slave}).  If \code{save.changes} is \code{TRUE}, also 
+#' \code{tergm_MCMC_slave}).  If \code{save.changes} is \code{TRUE}, also
 #' returns a list of new edges and dissolved edges with the resimulation,
 #' attached to \code{el} as the \code{changes} attribute.
 #'
@@ -57,8 +57,8 @@
 #' dat$el[[1]]
 #'
 #' # New network structure
-#' dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state, 
-#'                                 coef = c(dat$nwparam[[1]]$coef.form, 
+#' dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state,
+#'                                 coef = c(dat$nwparam[[1]]$coef.form,
 #'                                          dat$nwparam[[1]]$coef.diss$coef.adj),
 #'                                 control = dat$control$mcmc.control[[1]],
 #'                                 save.changes = TRUE)$el
@@ -69,7 +69,7 @@
 #' attributes(dat$el[[1]])$changes
 #' }
 #'
-simulate_network <- function(state, 
+simulate_network <- function(state,
                              coef,
                              control,
                              save.changes = FALSE) {
@@ -78,7 +78,7 @@ simulate_network <- function(state,
   ## need matrix not tibble
   el <- as.matrix(z$state$el)
   storage.mode(el) <- "integer"
-  
+
   if (save.changes == TRUE) {
     if (z$diffnwtime[1] > 0) {
       changes <- cbind(z$diffnwtails[2:(z$diffnwtails[1] + 1)],
@@ -97,7 +97,7 @@ simulate_network <- function(state,
   attributes(el)$loops <- attributes(state$el)$loops
   attributes(el)$inverted <- attributes(state$el)$inverted
   class(el) <- c("edgelist", class(el))
-  
+
   return(list(el = el, state = z$state))
 }
 
