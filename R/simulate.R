@@ -15,11 +15,11 @@
 #'                     as an attribute of the output edgelist matrix.
 #'
 #' @details
-#' This function is used within the network resimulation module in
-#' \code{EpiModel} to update temporal ERGMs based on the model coefficients and
-#' current network structure. If network structure (e.g., number of nodes) or
-#' nodal attributes has changed since the last simulation, this network
-#' resimulation should be run only after \code{\link{updateModelTermInputs}}.
+#' This function is used within the network resimulation module in \code{EpiModel}
+#' to update temporal ERGMs based on the model coefficients and current network
+#' structure. If network structure (e.g., number of nodes) or nodal attributes
+#' has changed since the last simulation, this network resimulation should be run
+#' only after \code{\link{updateModelTermInputs}}.
 #'
 #' @export
 #'
@@ -46,8 +46,7 @@
 #'
 #' param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.25)
 #' init <- init.net(i.num = 10, i.num.g2 = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-#'                        tergmLite = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
 #' # Full network structure after initialization
 #' dat <- crosscheck.net(x, param, init, control)
@@ -74,8 +73,7 @@ simulate_network <- function(state,
                              coef,
                              control,
                              save.changes = FALSE) {
-  z <- tergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control,
-                        verbose = FALSE)
+  z <- tergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control, verbose = FALSE)
 
   ## need matrix not tibble
   el <- as.matrix(z$state$el)
@@ -117,12 +115,11 @@ simulate_network <- function(state,
 #' @param control A control list of class \code{control.simulate.formula}.
 #'
 #' @details
-#' This function is used within the network resimulation module in
-#' \code{EpiModel} to update cross-sectional ERGMs based on the model
-#' coefficients and current network structure. If network structure (e.g.,
-#' number of nodes) or nodal attributes has changed since the last simulation,
-#' this network resimulation should be run only after
-#' \code{\link{updateModelTermInputs}}.
+#' This function is used within the network resimulation module in \code{EpiModel}
+#' to update cross-sectional ERGMs based on the model coefficients and current
+#' network structure. If network structure (e.g., number of nodes) or nodal attributes
+#' has changed since the last simulation, this network resimulation should be run
+#' only after \code{\link{updateModelTermInputs}}.
 #'
 #' @export
 #'
@@ -147,8 +144,7 @@ simulate_network <- function(state,
 #'
 #' param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.1)
 #' init <- init.net(i.num = 10, i.num.g2 = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-#'                        tergmLite = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
 #' # Full network structure after initialization
 #' dat <- crosscheck.net(x, param, init, control)
@@ -166,10 +162,8 @@ simulate_network <- function(state,
 #' }
 #'
 simulate_ergm <- function(state, coef, control) {
-  z <- ergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control,
-                       verbose = FALSE)
-  el <- structure(as.matrix(z$state$el), n = attr(state$el, "n"),
-                  class = c("edgelist", "matrix"))
+  z <- ergm_MCMC_slave(state, ergm.eta(coef, state$model$etamap), control, verbose = FALSE)
+  el <- structure(as.matrix(z$state$el), n = attr(state$el, "n"), class = c("edgelist", "matrix"))
   storage.mode(el) <- "integer"
   list(el = el, state = z$state)
 }

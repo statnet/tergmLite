@@ -34,11 +34,11 @@
 #' @export
 #'
 #' @return
-#' Returns the list object \code{dat} and adds two elements to the objects:
-#' \code{el} is an edgelist representation of the network; and \code{p} is a
-#' list object that contains all the relevant structural information for
-#' ERGM/TERGM simulation. The function also removes the network class object on
-#' the \code{dat} object, stored under \code{nw} because it is no longer needed.
+#' Returns the list object \code{dat} and adds two elements to the objects: \code{el}
+#' is an edgelist representation of the network; and \code{p} is a list object
+#' that contains all the relevant structural information for ERGM/TERGM simulation.
+#' The function also removes the network class object on the \code{dat} object,
+#' stored under \code{nw} because it is no longer needed.
 #'
 #' @examples
 #' \dontrun{
@@ -51,8 +51,7 @@
 #'
 #' param <- param.net(inf.prob = 0.3)
 #' init <- init.net(i.num = 10)
-#' control <- control.net(type = "SI", nsteps = 100, nsims = 5,
-#'                        tergmLite = TRUE)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
 #'
 #' # networkLite representation after initialization
 #' dat <- crosscheck.net(x, param, init, control)
@@ -66,7 +65,7 @@
 #' # Elements added are el (edgelist representation of network)...
 #' dat$el
 #'
-#' # ... and p (contains relevant ERGM structural information for simulation)
+#' # ... and p (contains all relevant ERGM structural information for simulation)
 #' str(dat$p, max.level = 3)
 #' }
 
@@ -101,15 +100,11 @@ init_tergmLite <- function(dat) {
     dat$el[[i]] <- as.edgelist(nw)
     attributes(dat$el[[i]])$vnames <- NULL
 
-    nwstats_formula_name <- paste(c("nwstats.formula",
-                                    if (num_nw > 1) i), collapse = ".")
+    nwstats_formula_name <- paste(c("nwstats.formula", if (num_nw > 1) i), collapse = ".")
 
     if (is_tergm) {
-      mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i),
-                                 collapse = ".")
-      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm",
-                                                           "init_tergmLite",
-                                                           dat$control[[mcmc_control_name]])
+      mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm", "init_tergmLite", dat$control[[mcmc_control_name]])
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
       dat$control$mcmc.control[[i]]$time.burnin <- 0L
@@ -120,35 +115,21 @@ init_tergmLite <- function(dat) {
 
       formation <- dat$nwparam[[i]]$formation
       dissolution <- dat$nwparam[[i]]$coef.diss$dissolution
-      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) +
-                                                   Diss(dissolution),
-                                                 keep = c("formation", "dissolution"))
+      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
 
-      proposal <- ergm_proposal(nwp$constraints,
-                                hints = dat$control$mcmc.control[[i]]$MCMC.prop,
-                                arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args,
-                                weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights,
-                                nw = nw, class = "t")
-      model <- ergm_model(dat$nwparam[[i]]$tergm_formula,
-                          nw = nw,
-                          term.options = dat$control$mcmc.control[[i]]$term.options,
-                          extra.aux = list(proposal = proposal$auxiliaries,
-                                           system = trim_env(~.lasttoggle)))
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
+      model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)))
 
-      term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms,
-                                    function(x) x$name), lapply(model$terms[[2]]$submodel$terms,
-                                                                function(x) x$name)))
+      term_names <- unlist(c(lapply(model$terms[[1]]$submodel$terms, function(x) x$name), lapply(model$terms[[2]]$submodel$terms, function(x) x$name)))
 
       nwstats_formula <- NVL(dat$control[[nwstats_formula_name]], trim_env(~.))
       if (is.character(nwstats_formula)) {
         nwstats_formula <- switch(nwstats_formula,
                                   formation = formation,
                                   dissolution = dissolution,
-                                  all = {formula_addition <- append_rhs.formula(~., dissolution,
-                                                                                keep.onesided = TRUE);
+                                  all = {formula_addition <- append_rhs.formula(~., dissolution, keep.onesided = TRUE);
                                          environment(formula_addition) <- environment(dissolution);
-                                         nonsimp_update.formula(formation, formula_addition,
-                                                                from.new = TRUE)})
+                                         nonsimp_update.formula(formation, formula_addition, from.new = TRUE)})
       }
       dat$control$nwstats.formulas[[i]] <- nwstats_formula
 
@@ -157,24 +138,13 @@ init_tergmLite <- function(dat) {
         if (is.null(nw %n% "lasttoggle")) nw %n% "lasttoggle" <- matrix(0L, nrow = 0, ncol = 3)
       }
     } else {
-      mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i),
-                                 collapse = ".")
-      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula",
-                                                           "init_tergmLite",
-                                                           dat$control[[mcmc_control_name]])
+      mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i), collapse = ".")
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
 
-      proposal <- ergm_proposal(nwp$constraints,
-                                hints = dat$control$mcmc.control[[i]]$MCMC.prop,
-                                arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args,
-                                weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights,
-                                nw = nw,
-                                class = "c")
-      model <- ergm_model(dat$nwparam[[i]]$formation,
-                          nw = nw,
-                          term.options = dat$control$mcmc.control[[i]]$term.options,
-                          extra.aux = list(proposal = proposal$auxiliaries))
+      proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "c")
+      model <- ergm_model(dat$nwparam[[i]]$formation, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options,  extra.aux=list(proposal=proposal$auxiliaries))
 
       term_names <- unlist(lapply(model$terms, function(x) x$name))
 
@@ -189,14 +159,9 @@ init_tergmLite <- function(dat) {
     }
 
     proposal$aux.slots <- model$slots.extra.aux$proposal
-    dat$p[[i]]$state <- ergm_state(nw,
-                                   model = model,
-                                   proposal = proposal,
-                                   stats = rep(0, nparam(model, canonical = TRUE)))
+    dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
-    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]],
-                            nw = nw,
-                            term.options = dat$control$mcmc.control[[i]]$term.options)
+    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options)
     term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
 
     ## check for unsupported terms
