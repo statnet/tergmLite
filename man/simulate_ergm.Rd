@@ -24,11 +24,12 @@ Resimulates an edgelist given ergm_state data representation
              and model coefficients.
 }
 \details{
-This function is used within the network resimulation module in \code{EpiModel}
-to update cross-sectional ERGMs based on the model coefficients and current
-network structure. If network structure (e.g., number of nodes) or nodal attributes
-has changed since the last simulation, this network resimulation should be run
-only after \code{\link{updateModelTermInputs}}.
+This function is used within the network resimulation module in
+\code{EpiModel} to update cross-sectional ERGMs based on the model
+coefficients and current network structure. If network structure (e.g.,
+number of nodes) or nodal attributes has changed since the last simulation,
+this network resimulation should be run only after
+\code{\link{updateModelTermInputs}}.
 }
 \examples{
 \dontrun{
@@ -46,7 +47,8 @@ x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
 param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.1)
 init <- init.net(i.num = 10, i.num.g2 = 10)
-control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5,
+                       tergmLite = TRUE)
 
 # Full network structure after initialization
 dat <- crosscheck.net(x, param, init, control)

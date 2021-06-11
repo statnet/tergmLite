@@ -11,11 +11,11 @@ init_tergmLite(dat)
 initialization information passed from \code{netsim}.}
 }
 \value{
-Returns the list object \code{dat} and adds two elements to the objects: \code{el}
-is an edgelist representation of the network; and \code{p} is a list object
-that contains all the relevant structural information for ERGM/TERGM simulation.
-The function also removes the network class object on the \code{dat} object,
-stored under \code{nw} because it is no longer needed.
+Returns the list object \code{dat} and adds two elements to the objects:
+\code{el} is an edgelist representation of the network; and \code{p} is a
+list object that contains all the relevant structural information for
+ERGM/TERGM simulation. The function also removes the network class object on
+the \code{dat} object, stored under \code{nw} because it is no longer needed.
 }
 \description{
 Initializes EpiModel netsim Object for tergmLite Simulation
@@ -58,7 +58,8 @@ x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
 param <- param.net(inf.prob = 0.3)
 init <- init.net(i.num = 10)
-control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5,
+                       tergmLite = TRUE)
 
 # networkLite representation after initialization
 dat <- crosscheck.net(x, param, init, control)
@@ -72,7 +73,7 @@ str(dat$p, max.level = 3)
 # Elements added are el (edgelist representation of network)...
 dat$el
 
-# ... and p (contains all relevant ERGM structural information for simulation)
+# ... and p (contains relevant ERGM structural information for simulation)
 str(dat$p, max.level = 3)
 }
 

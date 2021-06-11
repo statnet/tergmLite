@@ -16,12 +16,12 @@ for the simulation.}
 with augmentations made in \code{init_tergmLite}.}
 
 \item{save.changes}{Logical, if \code{TRUE}, saves a matrix of changed edges
-as an attribute of the output edgelist matrix}
+as an attribute of the output edgelist matrix.}
 }
 \value{
 Returns a named list with members \code{el} (the updated network edgelist
 representation) and \code{state} (the \code{ergm_state} object returned by
-\code{tergm_MCMC_slave}).  If \code{save.changes} is \code{TRUE}, also 
+\code{tergm_MCMC_slave}).  If \code{save.changes} is \code{TRUE}, also
 returns a list of new edges and dissolved edges with the resimulation,
 attached to \code{el} as the \code{changes} attribute.
 }
@@ -30,11 +30,11 @@ Resimulates an edgelist given ergm_state data representation
              and model coefficients.
 }
 \details{
-This function is used within the network resimulation module in \code{EpiModel}
-to update temporal ERGMs based on the model coefficients and current network
-structure. If network structure (e.g., number of nodes) or nodal attributes
-has changed since the last simulation, this network resimulation should be run
-only after \code{\link{updateModelTermInputs}}.
+This function is used within the network resimulation module in
+\code{EpiModel} to update temporal ERGMs based on the model coefficients and
+current network structure. If network structure (e.g., number of nodes) or
+nodal attributes has changed since the last simulation, this network
+resimulation should be run only after \code{\link{updateModelTermInputs}}.
 }
 \examples{
 \dontrun{
@@ -52,7 +52,8 @@ x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
 
 param <- param.net(inf.prob = 0.3, inf.prob.g2 = 0.25)
 init <- init.net(i.num = 10, i.num.g2 = 10)
-control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
+control <- control.net(type = "SI", nsteps = 100, nsims = 5,
+                       tergmLite = TRUE)
 
 # Full network structure after initialization
 dat <- crosscheck.net(x, param, init, control)
@@ -63,8 +64,8 @@ str(dat, max.level = 1)
 dat$el[[1]]
 
 # New network structure
-dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state, 
-                                coef = c(dat$nwparam[[1]]$coef.form, 
+dat$el[[1]] <- simulate_network(state = dat$p[[1]]$state,
+                                coef = c(dat$nwparam[[1]]$coef.form,
                                          dat$nwparam[[1]]$coef.diss$coef.adj),
                                 control = dat$control$mcmc.control[[1]],
                                 save.changes = TRUE)$el

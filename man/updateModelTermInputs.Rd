@@ -13,8 +13,8 @@ updateModelTermInputs(dat, network = 1)
 }
 \value{
 Returns an updated \code{dat} object with the network list structure inputs
-used by \code{\link{simulate_network}} or \code{\link{simulate_ergm}} with changes
-to network size or nodal covariates.
+used by \code{\link{simulate_network}} or \code{\link{simulate_ergm}} with
+changes to network size or nodal covariates.
 }
 \description{
 Function to appropriately update the ergm_state object used
