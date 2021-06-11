@@ -161,7 +161,7 @@ init_tergmLite <- function(dat) {
     proposal$aux.slots <- model$slots.extra.aux$proposal
     dat$p[[i]]$state <- ergm_state(nw, model=model, proposal=proposal, stats=rep(0,nparam(model, canonical=TRUE)))
 
-    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, dynamic = TRUE)
+    model_mon <- ergm_model(dat$control$nwstats.formulas[[i]], nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, dynamic = is_tergm)
     term_names <- c(term_names, unlist(lapply(model_mon$terms, function(x) x$name)))
 
     ## check for unsupported terms
