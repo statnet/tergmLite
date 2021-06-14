@@ -26,17 +26,17 @@ networkLite(x, ...)
 \arguments{
 \item{x}{either an \code{edgelist} class network representation (including network
 attributes in its \code{attributes} list), or a number specifying the network
-size}
+size.}
 
-\item{...}{additional arguments used by other methods}
+\item{...}{additional arguments used by other methods.}
 
-\item{directed, bipartite, loops, hyper, multiple}{common network attributes that 
-may be set via arguments to the \code{networkLite.numeric} method}
+\item{directed, bipartite, loops, hyper, multiple}{common network attributes that
+may be set via arguments to the \code{networkLite.numeric} method.}
 
 \item{attr}{a named list of vertex attributes for the network represented by \code{x}.}
 }
 \value{
-A networkLite object with edge list \code{el}, vertex attributes \code{attr}, and 
+A networkLite object with edge list \code{el}, vertex attributes \code{attr}, and
          network attributes \code{gal}.
 }
 \description{
@@ -44,17 +44,17 @@ Constructor methods for \code{networkLite} objects.
 }
 \details{
 Currently there are two distinct \code{networkLite} constructor methods available.
-         
-         The \code{edgelist} method takes an \code{edgelist} class object \code{x} with network 
-         attributes attached in its \code{attributes} list, and a named list of vertex 
-         attributes \code{attr}, and returns a \code{networkLite} object, which is a named  
+
+         The \code{edgelist} method takes an \code{edgelist} class object \code{x} with network
+         attributes attached in its \code{attributes} list, and a named list of vertex
+         attributes \code{attr}, and returns a \code{networkLite} object, which is a named
          list with fields \code{el}, \code{attr}, and \code{gal}; the fields \code{el} and \code{attr} match
-         the arguments \code{x} and \code{attr} respectively, and the field \code{gal} is the list 
+         the arguments \code{x} and \code{attr} respectively, and the field \code{gal} is the list
          of network attributes (copied from \code{attributes(x)}). Missing attributes
-         \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple} are defaulted to 
-         \code{FALSE}; the network size attribute \code{n} must not be missing.  Attributes 
-         \code{class}, \code{dim}, and \code{vnames} (if present) are not copied from \code{x} to the 
-         \code{networkLite}.  (For convenience, a \code{matrix} method, identical to the 
+         \code{directed}, \code{bipartite}, \code{loops}, \code{hyper}, and \code{multiple} are defaulted to
+         \code{FALSE}; the network size attribute \code{n} must not be missing.  Attributes
+         \code{class}, \code{dim}, and \code{vnames} (if present) are not copied from \code{x} to the
+         \code{networkLite}.  (For convenience, a \code{matrix} method, identical to the
          \code{edgelist} method, is also defined, to handle cases where the edgelist is,
          for whatever reason, not classed as an \code{edgelist}.)
 

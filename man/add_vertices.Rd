@@ -26,7 +26,7 @@ This function performs a simple operation of updating the
 \details{
 This function is used in \code{EpiModel} modules to add vertices (nodes) to the
 edgelist object to account for entries into the population (e.g., births and
-in-migration)
+in-migration).
 }
 \examples{
 \dontrun{
