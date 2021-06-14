@@ -114,9 +114,9 @@ test_that("network and networkLite simulate identically in tergm", {
   coef <- c(-4, 1, 1.5, 0.5, -1, 0.5, 3)
   
   set.seed(0)
-  nw_1 <- simulate(nw ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nw_1 <- simulate(nw ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   set.seed(0)
-  nwL_1 <- simulate(nwL ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nwL_1 <- simulate(nwL ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   
   expect_equal(unclass(as.edgelist(nw_1)), unclass(as.edgelist(nwL_1)), check.attributes = FALSE)
   expect_identical(nw_1 %n% "lasttoggle", nwL_1 %n% "lasttoggle")
@@ -125,9 +125,9 @@ test_that("network and networkLite simulate identically in tergm", {
                    summary(nwL_1 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)))
   
   set.seed(0)
-  nw_2 <- simulate(nw_1 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nw_2 <- simulate(nw_1 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   set.seed(0)
-  nwL_2 <- simulate(nwL_1 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nwL_2 <- simulate(nwL_1 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   
   expect_equal(unclass(as.edgelist(nw_2)), unclass(as.edgelist(nwL_2)), check.attributes = FALSE)  
   expect_identical(nw_2 %n% "lasttoggle", nwL_2 %n% "lasttoggle")
@@ -136,9 +136,9 @@ test_that("network and networkLite simulate identically in tergm", {
                    summary(nwL_2 ~ nodemix(~a) + absdiff(~b) + concurrent + gwesp + mean.age + edge.ages + nodemix.mean.age(~a) + gwnsp(0.3, fixed=TRUE)))
 
   set.seed(0)
-  nw_3 <- simulate(nw_2 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nw_3 <- simulate(nw_2 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   set.seed(0)
-  nwL_3 <- simulate(nwL_2 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Diss(~edges), coef = coef, output = "final", dynamic = TRUE)
+  nwL_3 <- simulate(nwL_2 ~ Form(~edges + nodefactor("a") + nodecov(~b^2 + b)) + Persist(~edges), coef = coef, output = "final", dynamic = TRUE)
   
   expect_equal(unclass(as.edgelist(nw_3)), unclass(as.edgelist(nwL_3)), check.attributes = FALSE)  
   expect_identical(nw_3 %n% "lasttoggle", nwL_3 %n% "lasttoggle")

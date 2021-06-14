@@ -20,7 +20,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   diss_coefs <- dissolution_coefs(dissolution, duration = 1 + exp(3))    
   
-  ff <- ~Form(formation) + Diss(dissolution)
+  ff <- ~Form(formation) + Persist(dissolution)
 
   pmat <- matrix(3 + runif(25), 5, 5)
   pmat <- pmat + t(pmat)
@@ -29,7 +29,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
 
   ff_m <- ~edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
 
-  ff_gm <- ~Form(formation) + Diss(dissolution) + edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
+  ff_gm <- ~Form(formation) + Persist(dissolution) + edges + mean.age + degree(0:3) + degrange(4) + nodematch("sex")
 
   # set some arbitrary, non-default control to ensure it gets propagated correctly
   control <- control.simulate.formula.tergm(MCMC.burnin.min = 54321, 
