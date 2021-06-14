@@ -115,7 +115,7 @@ init_tergmLite <- function(dat) {
 
       formation <- dat$nwparam[[i]]$formation
       dissolution <- dat$nwparam[[i]]$coef.diss$dissolution
-      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Diss(dissolution), keep = c("formation", "dissolution"))
+      dat$nwparam[[i]]$tergm_formula <- trim_env(~Form(formation) + Persist(dissolution), keep = c("formation", "dissolution"))
 
       proposal <- ergm_proposal(nwp$constraints, hints = dat$control$mcmc.control[[i]]$MCMC.prop, arguments = dat$control$mcmc.control[[i]]$MCMC.prop.args, weights = dat$control$mcmc.control[[i]]$MCMC.prop.weights, nw = nw, class = "t")
       model <- ergm_model(dat$nwparam[[i]]$tergm_formula, nw = nw, term.options = dat$control$mcmc.control[[i]]$term.options, extra.aux=list(proposal=proposal$auxiliaries, system=trim_env(~.lasttoggle)), dynamic = TRUE)
