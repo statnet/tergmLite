@@ -574,5 +574,7 @@ test_that("manual and tergmLite dynamic simulations produce identical results fo
                check.attributes = FALSE)
 
   expect_identical(nw_summstats, dat_summstats)
-  expect_identical(nw_summstats, sim$stats$nwstats[[1]][[1]])
+  keep.cols.1 <- which(!duplicated(colnames(nw_summstats)))
+  keep.cols.2 <- which(!duplicated(colnames(sim$stats$nwstats[[1]][[1]])))
+  expect_identical(nw_summstats[,keep.cols.1,drop=FALSE], sim$stats$nwstats[[1]][[1]][,keep.cols.2,drop=FALSE])
 })
