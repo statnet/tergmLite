@@ -104,7 +104,7 @@ init_tergmLite <- function(dat) {
 
     if (is_tergm) {
       mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
-      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm", "init_tergmLite", dat$control[[mcmc_control_name]])
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm", "init_tergmLite", NVL(dat$control[[mcmc_control_name]], control.simulate.formula.tergm()))
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
       dat$control$mcmc.control[[i]]$time.burnin <- 0L
@@ -139,7 +139,7 @@ init_tergmLite <- function(dat) {
       }
     } else {
       mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i), collapse = ".")
-      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", dat$control[[mcmc_control_name]])
+      dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", NVL(dat$control[[mcmc_control_name]], control.simulate.formula()))
       ## enforce some specific values appropriate for tergmLite/EpiModel netsim
       dat$control$mcmc.control[[i]]$MCMC.samplesize <- 1L
 
