@@ -68,7 +68,6 @@
 #' # ... and p (contains all relevant ERGM structural information for simulation)
 #' str(dat$p, max.level = 3)
 #' }
-
 #'
 init_tergmLite <- function(dat) {
 
