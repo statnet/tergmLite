@@ -29,5 +29,4 @@ LinkingTo: Rcpp, ergm
 LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8
-Remotes: github::statnet/tergm@master,
-    github::statnet/EpiModel@master
+Remotes: github::statnet/EpiModel@master
