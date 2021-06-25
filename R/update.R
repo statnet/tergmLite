@@ -122,7 +122,7 @@ delete_vertices <- function(el, vid) {
     if (length(el.rows.to.del) > 0) {
       new.el <- el[-el.rows.to.del, , drop = FALSE]
     }
-    if (nrow(new.el) > 0) {
+    if (NROW(new.el) > 0) {
       o1 <- order(new.el[,1])
       new.el[,1] <- shiftVec(new.el[o1,1], vid)[order(o1)]
       o2 <- order(new.el[,2])
