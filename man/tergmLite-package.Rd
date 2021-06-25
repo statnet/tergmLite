@@ -9,8 +9,8 @@
 \tabular{ll}{
    Package: \tab tergmLite\cr
    Type: \tab Package\cr
-   Version: \tab 2.5.0\cr
-   Date: \tab 2021-06-24\cr
+   Version: \tab 2.5.1\cr
+   Date: \tab 2021-06-25\cr
    License: \tab GPL-3\cr
    LazyLoad: \tab yes\cr
 }
