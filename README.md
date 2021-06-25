@@ -1,7 +1,7 @@
 # tergmLite
 
 <!-- badges: start -->
-[![Version](http://img.shields.io/badge/Version-2.2.1-orange.svg?style=flat)](https://github.com/statnet/tergmLite/releases)
+[![Version](http://img.shields.io/badge/Version-2.5.0-orange.svg?style=flat)](https://github.com/statnet/tergmLite/releases)
 [![R-CMD-check](https://github.com/statnet/tergmLite/workflows/R-CMD-check/badge.svg)](https://github.com/statnet/tergmLite/actions)
 <!-- badges: end -->
 
