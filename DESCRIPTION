@@ -19,6 +19,7 @@ License: GPL-3
 Imports:
     statnet.common (>= 4.4.0),
     network (>= 1.17.0),
+    networkDynamic (>= 0.11.0), 
     Rcpp,
     tibble,
     methods
