@@ -54,7 +54,11 @@ init_tergmLite <- function(dat) {
     nwp <- dat$nwparam[[i]]
     is_tergm <- all(nwp$coef.diss$duration > 1)
 
-    nw <- as.networkLite(dat$nw[[i]])
+    if(is(dat$nw[[i]], "networkDynamic")) {
+      nw <- as.networkLite(network.collapse(dat$nw[[i]], at = 1))
+    } else {
+      nw <- as.networkLite(dat$nw[[i]])    
+    }
 
     dat$el[[i]] <- as.edgelist(nw)
     attributes(dat$el[[i]])$vnames <- NULL
@@ -67,6 +71,11 @@ init_tergmLite <- function(dat) {
     if (is_tergm) {
       mcmc_control_name <- paste(c("mcmc.control.tergm", if (num_nw > 1) i), collapse = ".")
       dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula.tergm", "init_tergmLite", NVL(dat$control[[mcmc_control_name]], control.simulate.formula.tergm()))
+
+      if (dat$control$tergmLite.track.duration == TRUE) {
+        nw %n% "time" <- 1
+        nw %n% "lasttoggle" <- cbind(as.edgelist(nw), 1)
+      }
     } else {
       mcmc_control_name <- paste(c("mcmc.control.ergm", if (num_nw > 1) i), collapse = ".")
       dat$control$mcmc.control[[i]] <- check.control.class("simulate.formula", "init_tergmLite", NVL(dat$control[[mcmc_control_name]], control.simulate.formula()))
