@@ -64,10 +64,7 @@ Currently there are two distinct \code{networkLite} constructor methods availabl
          and number of nodes \code{x}.
 
          Within \code{tergmLite}, the \code{networkLite} data structure is used in the
-         \code{\link{updateModelTermInputs}} function to wrap the relevant parts of the
-         \code{dat} object in a form that will be usable by \code{ergm}'s proposal, model, and
-         state initialization functions, whose outputs are then utilized for network
-         simulation.
+         calls to \code{ergm} and \code{tergm} \code{simulate} functions.
 }
 \examples{
 \dontrun{

@@ -11,41 +11,18 @@ init_tergmLite(dat)
 initialization information passed from \code{netsim}.}
 }
 \value{
-Returns the list object \code{dat} and adds two elements to the objects: \code{el}
-is an edgelist representation of the network; and \code{p} is a list object
-that contains all the relevant structural information for ERGM/TERGM simulation.
-The function also removes the network class object on the \code{dat} object,
-stored under \code{nw} because it is no longer needed.
+Returns the list object \code{dat} and adds the element \code{el} which is
+an edgelist representation of the network.  Also converts the \code{nw}
+element to a \code{networkLite} representation.
 }
 \description{
 Initializes EpiModel netsim Object for tergmLite Simulation
 }
 \details{
 This function is typically used within the initialization modules of
-\code{EpiModel} to establish the necessary \code{networkLite} infrastructure
-needed for \code{tergmLite} network resimulation. Specifically, this function
-converts (and then removes) the \code{network} class objects into an edgelist
-only format and prepares the ERGM structural information for simulation. The
-example below demonstrates the specific information returned.
-
-Implemented terms are:
-\itemize{
-  \item edges
-  \item nodematch
-  \item nodefactor
-  \item concurrent (including heterogenous by attribute)
-  \item degree (including heterogenous by attribute)
-  \item degrange
-  \item absdiff
-  \item absdiffby (in the EpiModel package)
-  \item nodecov
-  \item nodemix
-  \item absdiffnodemix (in the EpiModel package)
-  \item triangle
-  \item gwesp(fixed=TRUE)
-  \item mean.age
-}
-All other terms will return errors.
+\code{EpiModel} to establish the necessary infrastructure needed for 
+\code{tergmLite} network resimulation.  The example below demonstrates 
+the specific information returned.
 }
 \examples{
 \dontrun{
@@ -65,15 +42,11 @@ dat <- crosscheck.net(x, param, init, control)
 dat <- initialize.net(x, param, init, control)
 str(dat, max.level = 1)
 
-# networkLite representation used by tergmLite
-str(dat$p, max.level = 3)
-
-# Elements removed are nw (network class object)
-# Elements added are el (edgelist representation of network)...
+# Element added is el (edgelist representation of network)...
 dat$el
 
-# ... and p (contains all relevant ERGM structural information for simulation)
-str(dat$p, max.level = 3)
+# ... and nw is now a networkLite
+dat$nw[[1]]
 }
 
 }
