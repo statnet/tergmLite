@@ -51,6 +51,7 @@
 #' @importFrom statnet.common term.list.formula NVL set.control.class trim_env check.control.class
 #'                            append_rhs.formula nonsimp_update.formula
 #' @importFrom methods is
+#' @importFrom networkDynamic network.collapse
 #'
 #' @docType package
 #' @keywords package
