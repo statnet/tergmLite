@@ -4,8 +4,8 @@
 #' \tabular{ll}{
 #'    Package: \tab tergmLite\cr
 #'    Type: \tab Package\cr
-#'    Version: \tab 2.5.1\cr
-#'    Date: \tab 2021-06-25\cr
+#'    Version: \tab 2.5.5\cr
+#'    Date: \tab 2021-11-11\cr
 #'    License: \tab GPL-3\cr
 #'    LazyLoad: \tab yes\cr
 #' }

@@ -1,7 +1,7 @@
 test_that("mcmc controls default appropriately when NULL", {
   require(EpiModel)
 
-  if (packageVersion("EpiModel") >= "2.1.0") {
+  if (packageVersion("EpiModel") >= "2.1.0" & packageVersion("EpiModel") < "2.2.0") {
 
     nw <- network_initialize(n = 50)
     nw <- set_vertex_attribute(nw, "race", rbinom(50, 1, 0.5))
