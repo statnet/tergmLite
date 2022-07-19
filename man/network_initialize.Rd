@@ -43,7 +43,9 @@ This function is used in \code{EpiModel} workflows to initialize an empty
 network object with the directed network attribute hard set to \code{FALSE}.
 }
 \examples{
+\dontrun{
 nw <- network_initialize(100)
 nw
+}
 
 }

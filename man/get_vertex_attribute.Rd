@@ -23,8 +23,10 @@ This function is used in \code{EpiModel} workflow to query vertex attributes on
 an initialized empty network object (with \code{\link{network_initialize}}.
 }
 \examples{
+\dontrun{
 nw <- network_initialize(100)
 nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
 get_vertex_attribute(nw, "age")
+}
 
 }
