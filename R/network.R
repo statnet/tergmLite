@@ -26,8 +26,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' nw <- network_initialize(100)
 #' nw
+#' }
 #'
 network_initialize <- function(n, directed = FALSE, hyper = FALSE, loops = FALSE,
                                multiple = FALSE, bipartite = FALSE) {
@@ -56,9 +58,11 @@ network_initialize <- function(n, directed = FALSE, hyper = FALSE, loops = FALSE
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' nw <- network_initialize(100)
 #' nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
 #' nw
+#' }
 #'
 set_vertex_attribute <- function(x, attrname, value, v) {
   if (missing(v)) {
@@ -86,9 +90,11 @@ set_vertex_attribute <- function(x, attrname, value, v) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' nw <- network_initialize(100)
 #' nw <- set_vertex_attribute(nw, "age", runif(100, 15, 65))
 #' get_vertex_attribute(nw, "age")
+#' }
 #'
 get_vertex_attribute <- function(x, attrname) {
   attr <- get.vertex.attribute(x, attrname, na.omit = FALSE,
