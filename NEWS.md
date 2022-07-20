@@ -4,7 +4,7 @@
 
 ## tergmLite 2.2.0
 
--   This release coincides with the release of EpiModel 2.0.0 and supports the new application programming interface therein. The major substantive changes are summarized in a EpiModel 1.x to EpiModel 2.0 migration guide on our primary website: <https://epimodel.org/>.
+-   This release coincides with the release of EpiModel 2.0.0 and supports the new application programming interface therein. The major substantive changes are summarized in a EpiModel 1.x to EpiModel 2.0 migration guide on our primary website (see README).
 
 ## tergmLite 2.1.7
 
